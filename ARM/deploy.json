@@ -1,0 +1,1489 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "tenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "Your tenant ID"
+            }
+        },
+        "springCloudPrincipalObjectId": {
+            "type": "string",
+            "metadata": {
+                "description": "The object ID of the Azure Spring Cloud Resource Provider service principal"
+            }
+        },
+        "keyVaultAdminObjectId": {
+            "type": "string",
+            "metadata": {
+                "description": "The object ID of the security principal that will have permissions over the Key Vault instance"
+            }
+        },
+        "vmAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Administrator name for VMs that are created"
+            }
+        },
+        "vmAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the VMs that are created"
+            }
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "The tags that will be associated to the VM"
+            },
+            "defaultValue": {
+                "environment": "lab"
+            }
+        },
+        "roleGuidName": {
+            "type": "string",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment"
+            },
+            "defaultValue": "[newGuid()]"
+        }
+    },
+    "variables": {
+        "springCloudSkuName": "S0",
+        "springCloudSkuTier": "Standard",
+        "vmSku": "Standard_DS2_v2",
+        "keyVaultSku": "Standard",
+        "ddosStandardProtection": false,
+        "logAnalyticsRetention": 30,
+        "keyPermissions": [
+            "list",
+            "encrypt",
+            "decrypt",
+            "wrapKey",
+            "unwrapKey",
+            "sign",
+            "verify",
+            "get",
+            "create",
+            "update",
+            "import",
+            "backup",
+            "restore",
+            "recover"
+        ],
+        "secretsPermissions": [
+            "list",
+            "get",
+            "set",
+            "backup",
+            "restore",
+            "recover"
+        ],
+        "certPermissions": [
+            "backup",
+            "create",
+            "get",
+            "getissuers",
+            "import",
+            "list",
+            "listissuers",
+            "managecontacts",
+            "manageissuers",
+            "recover",
+            "restore",
+            "setissuers",
+            "update"
+        ],
+        "location": "[resourceGroup().location]",
+        "networkApiVersion": "2020-05-01",
+        "dnsApiVersion": "2018-09-01",
+        "resourceDeploymentsApiVersion": "2019-10-01",
+        "laApiVersion": "2015-11-01-preview",
+        "diagApiVersion": "2017-05-01-preview",
+        "springApiVersion": "2020-07-01",
+        "appInsightsApiVersion": "2015-05-01",
+        "azureRbacApiVersion": "2020-04-01-preview",
+        "keyVaultApiVersion": "2019-09-01",
+        "hubVnetName": "vnet-hub",
+        "spokeVnetName": "vnet-spoke",
+        "hubCidr": "10.0.0.0/16",
+        "spokeCidr": "10.1.0.0/16",
+        "hubGatewaySubnetCidr": "10.0.0.0/24",
+        "hubFirewallSubnetCidr": "10.0.1.0/24",
+        "hubBastionSubnetCidr": "10.0.2.0/24",
+        "hubAppGatewayCidr": "10.0.3.0/24",
+        "hubSharedServicesCidr": "10.0.4.0/24",
+        "spokeRuntimeSubnetCidr": "10.1.0.0/24",
+        "spokeAppSubnetCidr": "10.1.1.0/24",
+        "spokeSupportSubnetCidr": "10.1.2.0/24",
+        "spokeDataSubnetCidr": "10.1.3.0/24",
+        "springCloudServiceCidrs": "10.3.0.0/16,10.4.0.0/16,10.5.0.1/16",
+        "appGatewaySubnetName": "snet-agw",
+        "sharedServicesSubnetName": "snet-shared",
+        "supportSubnetName": "snet-support",
+        "runtimeSubnetName": "snet-runtime",
+        "appSubnetName": "snet-app",
+        "dataSubnetName": "snet-data",
+        "bastionPublicIpName": "pip-bastion",
+        "azFirewallPublicIpName": "pip-azfw",
+        "bastionName": "bstss",
+        "azureFirewallName": "fwhub",
+        "hubRouteTable": "rt-hub",
+        "hubVmName": "vm01",
+        "hubToSpokePeeringName": "peerhubtospoke",
+        "spokeToHubPeeringName": "peerspoketohub",
+        "laWorkspaceName": "[concat('la-',uniqueString(subscription().id, resourceGroup().id))]",
+        "keyVaultName": "[concat('kv-',uniqueString(subscription().id, resourceGroup().id))]",
+        "mysqlServerName": "[concat('mysql-',uniqueString(resourceGroup().id))]",
+        "nsgHubShared": "nsg-hubshared",
+        "nsgHubAgw": "nsg-hubagw",
+        "appInsightsName": "[concat('appi-', uniqueString(subscription().id, resourceGroup().id))]",
+        "springCloudInstanceName": "[concat('spring-', uniqueString(subscription().id, resourceGroup().id))]",
+        "ownerDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
+        "appPrivateDnsZone": "private.azuremicroservices.io",
+        "keyVaultPrivateDnsZone": "privatelink.vaultcore.azure.net",
+        "msSqlPrivateDnsZone": "privatelink.mysql.database.azure.com",
+        "uniqueKvPrivateEndpointName": "[substring(concat(concat('pl-',variables('keyVaultName')),uniqueString(subscription().id, resourceGroup().id)),10)]",
+        "uniqueKvPlConnName": "[substring(concat(concat('plconn',variables('keyVaultName')),uniqueString(subscription().id, resourceGroup().id)),10)]",
+        "uniqueSqlPrivateEndpointName": "[substring(concat(concat('pl-',variables('mysqlServerName')),uniqueString(subscription().id, resourceGroup().id)),10)]",
+        "uniqueSqlPlConnName": "[substring(concat(concat('plconn',variables('mysqlServerName')),uniqueString(subscription().id, resourceGroup().id)),10)]",
+        "appPrivateZoneLinkName": "[concat(variables('appPrivateDnsZone'), '-link')]",
+        "keyVaultPrivateZoneLinkName": "[concat(variables('keyVaultPrivateDnsZone'), '-link')]",
+        "msSqlPrivateZoneLinkName": "[concat(variables('msSqlPrivateDnsZone'), '-link')]",
+        "deployDnsARecord": "deploy-springDnsRecord",
+        "deployRouteAssign": "deploy-routeAssign",
+        "deployDnsSettings": "deploy-dnsSettings"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('nsgHubShared')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('nsgHubAgw')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('hubVnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubAgw'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubShared'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('hubCidr')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "[variables('hubGatewaySubnetCidr')]"
+                        }
+                    },
+                    {
+                        "name": "AzureFirewallSubnet",
+                        "properties": {
+                            "addressPrefix": "[variables('hubFirewallSubnetCidr')]"
+                        }
+                    },
+                    {
+                        "name": "AzureBastionSubnet",
+                        "properties": {
+                            "addressPrefix": "[variables('hubBastionSubnetCidr')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('sharedServicesSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('hubSharedServicesCidr')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubShared'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('appGatewaySubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('hubAppGatewayCidr')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubAgw'))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": "[variables('ddosStandardProtection')]"
+            },
+            "resources": [
+            ]
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('spokeVnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('spokeCidr')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('runtimeSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('appSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('spokeAppSubnetCidr')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('supportSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('spokeSupportSubnetCidr')]",
+                            "privateEndpointNetworkPolicies": "Disabled"
+                        }
+                    },
+                    {
+                        "name": "[variables('dataSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('spokeDataSubnetCidr')]",
+                            "privateEndpointNetworkPolicies": "Disabled"
+                        }
+                    }
+                ],
+                "enableDdosProtection": "[variables('ddosStandardProtection')]"
+            },
+            "resources": [
+            ]
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "[variables('azureRbacApiVersion')]",
+            "name": "[parameters('roleGuidName')]",
+            "scope": "[concat('Microsoft.Network/virtualNetworks', '/', variables('spokeVnetName'))]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('ownerDefinitionId')]",
+                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+            }
+        },
+        {
+            "name": "[concat(variables('hubVnetName'),'/',variables('hubToSpokePeeringName'))]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidName'))]"
+            ],
+            "properties": {
+                "allowVirtualNetworkAccess": "true",
+                "allowForwardedTraffic": "true",
+                "allowGatewayTransit": "false",
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks',variables('spokeVnetName'))]"
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('spokeVnetName'),'/',variables('spokeToHubPeeringName'))]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidName'))]"
+            ],
+            "properties": {
+                "allowVirtualNetworkAccess": "true",
+                "allowForwardedTraffic": "true",
+                "useRemoteGateways": "false",
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks',variables('hubVnetName'))]"
+                }
+            }
+        },
+        {
+            "name": "[variables('laWorkspaceName')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "[variables('laApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "sku": {
+                    "name": "PerGB2018"
+                },
+                "retentionInDays": "[variables('logAnalyticsRetention')]"
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "name": "[variables('appInsightsName')]",
+            "apiVersion": "[variables('appInsightsApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "ApplicationId": "[variables('appInsightsName')]",
+                "Flow_Type": "Bluefield",
+                "Request_Source": "rest"
+            }
+        },
+        {
+            "name": "[variables('keyVaultName')]",
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "[variables('keyVaultApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "objectId": "[parameters('keyVaultAdminObjectId')]",
+                        "tenantId": "[parameters('tenantId')]",
+                        "permissions": {
+                            "keys": "[variables('keyPermissions')]",
+                            "secrets": "[variables('secretsPermissions')]",
+                            "certificates": "[variables('certPermissions')]"
+                        }
+                    }
+                ],
+                "tenantid": "[parameters('tenantId')]",
+                "sku": {
+                    "family": "A",
+                    "name": "[variables('keyVaultSku')]"
+                }
+            }
+        },
+        {
+            "name": "[variables('mysqlServerName')]",
+            "type": "Microsoft.DBforMySQL/servers",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "GP_Gen5_2",
+                "tier": "GeneralPurpose",
+                "capacity": 2,
+                "size": "51200",
+                "family": "Gen5"
+            },
+            "kind": "",
+            "properties": {
+                "createMode": "Default",
+                "version": "5.7",
+                "administratorLogin": "[parameters('vmAdminUsername')]",
+                "administratorLoginPassword": "[parameters('vmAdminPassword')]",
+                "sslEnforcement": "Disabled",
+                "storageProfile": {
+                    "storageMB": 51200,
+                    "backupRetentionDays": 7,
+                    "geoRedundantBackup": "Disabled"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "[variables('dnsApiVersion')]",
+            "name": "[variables('keyVaultPrivateDnsZone')]",
+            "location": "global"
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "[variables('dnsApiVersion')]",
+            "name": "[variables('msSqlPrivateDnsZone')]",
+            "location": "global"
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "[variables('dnsApiVersion')]",
+            "name": "[variables('appPrivateDnsZone')]",
+            "location": "global"
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('uniqueKvPrivateEndpointName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZone'))]",
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ],
+            "properties": {
+                "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeVnetName'), variables('supportSubnetName'))]"
+                },
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[variables('uniqueKvPlConnName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+                            "groupIds": [
+                                "Vault"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[concat(variables('uniqueKvPrivateEndpointName'),'/default')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZone'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints' , variables('uniqueKvPrivateEndpointName'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "config1",
+                        "properties": {
+                            "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZone'))]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "[variables('dnsApiVersion')]",
+            "name": "[concat(variables('keyVaultPrivateDnsZone'), '/', variables('keyVaultPrivateZoneLinkName'))]",
+            "location": "global",
+            "dependsOn": [
+                "[concat('Microsoft.Network/privateEndpoints/',variables('uniqueKvPrivateEndpointName'))]"
+            ],
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('uniqueSqlPrivateEndpointName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('msSqlPrivateDnsZone'))]",
+                "[resourceId('Microsoft.DBforMySQL/servers', variables('mysqlServerName'))]"
+            ],
+            "properties": {
+                "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeVnetName'), variables('dataSubnetName'))]"
+                },
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[variables('uniqueSqlPlConnName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.DBforMySQL/servers', variables('mysqlServerName'))]",
+                            "groupIds": [
+                                "mysqlServer"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[concat(variables('uniqueSqlPrivateEndpointName'),'/default')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('msSqlPrivateDnsZone'))]",
+                "[resourceId('Microsoft.Network/privateEndpoints' , variables('uniqueSqlPrivateEndpointName'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "config1",
+                        "properties": {
+                            "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('msSqlPrivateDnsZone'))]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "[variables('dnsApiVersion')]",
+            "name": "[concat(variables('msSqlPrivateDnsZone'), '/', variables('msSqlPrivateZoneLinkName'))]",
+            "location": "global",
+            "dependsOn": [
+                "[concat('Microsoft.Network/privateEndpoints/',variables('uniqueSqlPrivateEndpointName'))]"
+            ],
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "[variables('dnsApiVersion')]",
+            "name": "[concat(variables('appPrivateDnsZone'), '/', variables('appPrivateZoneLinkName'))]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', variables('appPrivateDnsZone') )]",
+                "[concat('Microsoft.Network/privateDnsZones/',variables('keyVaultPrivateDnsZone'),'/virtualNetworkLinks/',variables('keyVaultPrivateZoneLinkName'))]"
+            ],
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]"
+                }
+            }
+        },
+        {
+            "name": "[variables('bastionPublicIpName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "publicIpAllocationMethod": "Static"
+            },
+            "sku": {
+                "name": "Standard"
+            }
+        },
+        {
+            "name": "[variables('azFirewallPublicIpName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "publicIpAllocationMethod": "Static"
+            },
+            "sku": {
+                "name": "Standard"
+            }
+        },
+        {
+            "name": "[variables('azureFirewallName')]",
+            "type": "Microsoft.Network/azureFirewalls",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIpAddresses/', variables('azFirewallPublicIpName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'),'/virtualNetworkPeerings/',variables('spokeToHubPeeringName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'),'/virtualNetworkPeerings/',variables('hubToSpokePeeringName'))]",
+                "[concat('Microsoft.Network/privateDnsZones/',variables('keyVaultPrivateDnsZone'),'/virtualNetworkLinks/',variables('keyVaultPrivateZoneLinkName'))]",
+                "[concat('Microsoft.Network/privateDnsZones/',variables('appPrivateDnsZone'),'/virtualNetworkLinks/',variables('appPrivateZoneLinkName'))]"
+            ],
+            "zones": [
+                "1"
+            ],
+            "properties": {
+                "networkRuleCollections": [
+                    {
+                        "name": "VmAppAccess",
+                        "properties": {
+                            "priority": 100,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "AllowVMAppAccess",
+                                    "description": "Allows VM in hub to call web Spring Apps direct",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('hubSharedServicesCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationPorts": [
+                                        "80",
+                                        "443"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "VmInternetAccess",
+                        "properties": {
+                            "priority": 101,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "AllowVMAppAccess",
+                                    "description": "Allows VM access to the web",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('hubSharedServicesCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "*"
+                                    ],
+                                    "destinationPorts": [
+                                        "80",
+                                        "443"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowKMSActivation",
+                                    "description": "Allows VM acess to KMS servers",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('hubSharedServicesCidr')]"
+                                    ],
+                                    "destinationFqdns": [
+                                        "kms.core.windows.net"
+                                    ],
+                                    "destinationPorts": [
+                                        "1688"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "SpringCloudAccess",
+                        "properties": {
+                            "priority": 102,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "SpringMgmt",
+                                    "description": "Allows access to Spring Cloud Management plane",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "AzureCloud"
+                                    ],
+                                    "destinationPorts": [
+                                        "443"
+                                    ]
+                                },
+                                {
+                                    "name": "KubernetesMgmtTcp",
+                                    "description": "Allows underlining Kubernetes cluster management for TCP traffic",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "AzureCloud"
+                                    ],
+                                    "destinationPorts": [
+                                        "9000"
+                                    ]
+                                },
+                                {
+                                    "name": "KubernetesMgmtUdp",
+                                    "description": "Allows underlining Kubernetes cluster management for UDP traffic",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "AzureCloud"
+                                    ],
+                                    "destinationPorts": [
+                                        "1194"
+                                    ]
+                                },
+                                {
+                                    "name": "AzureContainerRegistery",
+                                    "description": "Allows access to Azure Container Registery",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "AzureContainerRegistry"
+                                    ],
+                                    "destinationPorts": [
+                                        "443"
+                                    ]
+                                },
+                                {
+                                    "name": "AzureStorage",
+                                    "description": "Allows access to Azure File Storage",
+                                    "protocols": [
+                                        "TCP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "Storage"
+                                    ],
+                                    "destinationPorts": [
+                                        "445"
+                                    ]
+                                },
+                                {
+                                    "name": "NtpQuery",
+                                    "description": "Allows access of nodes for NTP to Ubuntu time servers",
+                                    "protocols": [
+                                        "UDP"
+                                    ],
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "destinationAddresses": [
+                                        "*"
+                                    ],
+                                    "destinationPorts": [
+                                        "123"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "applicationRuleCollections": [
+                    {
+                        "name": "AllowSpringCloudWebAccess",
+                        "properties": {
+                            "priority": 100,
+                            "action": {
+                                "type": "Allow"
+                            },
+                            "rules": [
+                                {
+                                    "name": "AllowAks",
+                                    "description": "Allow access for Azure Kubernetes Service",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "fqdnTags": [
+                                        "AzureKubernetesService"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowKubMgmt",
+                                    "description": "Allow access for Kubernetes Cluster Management",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "*.azmk8s.io",
+                                        "management.azure.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowMCR",
+                                    "description": "Allow access to Microsoft Container Registry",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "mcr.microsoft.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowMCRStorage",
+                                    "description": "Allow access to Microsoft Container Registry storage backed by CDN",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "*.cdn.mscr.io",
+                                        "*.data.mcr.microsoft.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowAzureAd",
+                                    "description": "Allow access to Azure AD for authentication",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "login.microsoftonline.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowMSPackRepo",
+                                    "description": "Allow access to Microsoft package repository",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "packages.microsoft.com",
+                                        "acs-mirror.azureedge.net"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowGitHub",
+                                    "description": "Allow GitHub",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "github.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowDocker",
+                                    "description": "Allow Docker",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "*.docker.io",
+                                        "*.docker.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowSnapcraft",
+                                    "description": "Allow Snapcraft",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "api.snapcraft.io"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowClamAv",
+                                    "description": "Allow ClamAv",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "database.clamav.net"
+                                    ]
+                                },
+                                {
+                                    "name": "Allow*UbuntuMisc",
+                                    "description": "Allow Ubuntu Misc",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Https",
+                                            "port": "443"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "motd.ubuntu.com"
+                                    ]
+                                },
+                                {
+                                    "name": "MsCrls",
+                                    "description": "Allows access to Microsoft CRL distribution points",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Http",
+                                            "port": "80"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "crl.microsoft.com",
+                                        "mscrl.microsoft.com"
+                                    ]
+                                },
+                                {
+                                    "name": "AllowDigiCerty",
+                                    "description": "Allows access to Microsoft CRL distribution points",
+                                    "sourceAddresses": [
+                                        "[variables('spokeRuntimeSubnetCidr')]",
+                                        "[variables('spokeAppSubnetCidr')]"
+                                    ],
+                                    "protocols": [
+                                        {
+                                            "protocolType": "Http",
+                                            "port": "80"
+                                        }
+                                    ],
+                                    "targetFqdns": [
+                                        "crl3.digicert.com",
+                                        "crl4.digicert.com"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubVnetName'), 'AzureFirewallSubnet')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('azFirewallPublicIpName'))]"
+                            }
+                        }
+                    }
+                ],
+                "threatIntelMode": "Alert",
+                "sku": {
+                    "name": "AZFW_VNet",
+                    "tier": "Standard"
+                },
+                "additionalProperties": {
+                    "Network.DNS.EnableProxy": "true"
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('azureFirewallName'),'/microsoft.insights/diag')]",
+            "type": "Microsoft.Network/azureFirewalls/providers/diagnosticSettings",
+            "apiVersion": "[variables('diagApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]",
+                "[concat('Microsoft.OperationalInsights/workspaces/', variables('laWorkspaceName'))]"
+            ],
+            "properties": {
+                "name": "SendToWorkspace",
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces',variables('laWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "AzureFirewallApplicationRule",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AzureFirewallNetworkRule",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AzureFirewallDnsProxy",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            },
+            "resources": [
+            ]
+        },
+        {
+            "name": "[variables('deployDnsSettings')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "name": "[variables('spokeVnetName')]",
+                            "apiVersion": "[variables('networkApiVersion')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "[variables('spokeCidr')]"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "[variables('runtimeSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('appSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('spokeAppSubnetCidr')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('supportSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('spokeSupportSubnetCidr')]",
+                                            "privateEndpointNetworkPolicies": "Disabled"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('dataSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('spokeDataSubnetCidr')]",
+                                            "privateEndpointNetworkPolicies": "Disabled"
+                                        }
+                                    }
+                                ],
+                                "enableDdosProtection": "[variables('ddosStandardProtection')]",
+                                "dhcpOptions": {
+                                    "dnsServers": [
+                                        "[reference(variables('azureFirewallName')).ipConfigurations[0].properties.privateIPAddress]"
+                                    ]
+                                }
+                            },
+                            "resources": [
+                            ]
+                        },
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "name": "[variables('hubVnetName')]",
+                            "apiVersion": "[variables('networkApiVersion')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "[variables('hubCidr')]"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "GatewaySubnet",
+                                        "properties": {
+                                            "addressPrefix": "[variables('hubGatewaySubnetCidr')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureFirewallSubnet",
+                                        "properties": {
+                                            "addressPrefix": "[variables('hubFirewallSubnetCidr')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureBastionSubnet",
+                                        "properties": {
+                                            "addressPrefix": "[variables('hubBastionSubnetCidr')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('sharedServicesSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('hubSharedServicesCidr')]",
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubShared'))]"
+                                            }
+
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('appGatewaySubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('hubAppGatewayCidr')]",
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubAgw'))]"
+                                            }
+                                        }
+
+                                    }
+                                ],
+                                "enableDdosProtection": "[variables('ddosStandardProtection')]",
+                                "dhcpOptions": {
+                                    "dnsServers": [
+                                        "[reference(variables('azureFirewallName')).ipConfigurations[0].properties.privateIPAddress]"
+                                    ]
+                                }
+                            },
+                            "resources": [
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('springApiVersion')]",
+            "name": "[variables('springCloudInstanceName')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+                "[resourceId('Microsoft.Network/azureFirewalls', variables('azureFirewallName'))]",
+                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSettings'))]"
+            ],
+            "type": "Microsoft.AppPlatform/Spring",
+            "sku": {
+                "name": "[variables('springCloudSkuName')]",
+                "tier": "[variables('springCloudSkuTier')]"
+            },
+            "properties": {
+                "networkProfile": {
+                    "serviceCidr": "[variables('springCloudServiceCidrs')]",
+                    "serviceRuntimeSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeVnetName'), variables('runtimeSubnetName'))]",
+                    "appSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeVnetName'), variables('appSubnetName'))]"
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('springApiVersion')]",
+            "name": "[concat(variables('springCloudInstanceName'), '/default')]",
+            "type": "Microsoft.AppPlatform/Spring/monitoringSettings",
+            "properties": {
+                "traceEnabled": true,
+                "appInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), variables('appInsightsApiVersion')).InstrumentationKey]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('spokeVnetName'))]",
+
+                "[resourceId('Microsoft.AppPlatform/Spring', variables('springCloudInstanceName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.AppPlatform/Spring/providers/diagnosticSettings",
+            "name": "[concat(variables('springCloudInstanceName'), '/Microsoft.Insights/monitoring')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.AppPlatform/Spring', variables('springCloudInstanceName'))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]"
+            ],
+            "apiVersion": "[variables('diagApiVersion')]",
+            "properties": {
+                "name": "monitoring",
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "ApplicationConsole",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 30,
+                            "enabled": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('hubRouteTable')]",
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]"
+            ],
+            "properties": {
+                "routes": [
+                    {
+                        "name": "udr-default",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[reference(variables('azureFirewallName')).ipConfigurations[0].properties.privateIPAddress]"
+                        }
+                    }
+                ],
+                "disableBgpRoutePropagation": "False"
+            },
+            "resources": [
+            ]
+        },
+        {
+            "name": "[variables('deployRouteAssign')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.AppPlatform/Spring/', variables('springCloudInstanceName'))]",
+                "[concat('Microsoft.Network/routeTables/', variables('hubRouteTable'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "name": "[concat(variables('hubVnetName'),'/',variables('sharedServicesSubnetName'))]",
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "apiVersion": "[variables('networkApiVersion')]",
+                            "properties": {
+                                "addressPrefix": "[variables('hubSharedServicesCidr')]",
+                                "routeTable": {
+                                    "id": "[resourceId('Microsoft.Network/routeTables',variables('hubRouteTable'))]"
+                                },
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubShared'))]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[variables('hubVmName')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
+                "[concat('Microsoft.Network/azureFirewalls/', variables('azureFirewallName'))]",
+                "[concat('Microsoft.OperationalInsights/workspaces/', variables('laWorkspaceName'))]",
+                "[concat('Microsoft.Resources/deployments/', variables('deployRouteAssign'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "tagValues": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "vmName": {
+                        "value": "[variables('hubVmName')]"
+                    },
+                    "vnetName": {
+                        "value": "[variables('hubVnetName')]"
+                    },
+                    "subnetName": {
+                        "value": "[variables('sharedServicesSubnetName')]"
+                    },
+                    "virtualMachineSize": {
+                        "value": "[variables('vmSku')]"
+                    },
+                    "adminUserName": {
+                        "value": "[parameters('vmAdminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('vmAdminPassword')]"
+                    },
+                    "myWorkspaceId": {
+                        "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces',variables('laWorkspaceName')), '2015-03-20').customerId]"
+                    },
+                    "myWorkspaceKey": {
+                        "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces',variables('laWorkspaceName')), '2015-03-20').primarySharedKey]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/mattfeltonma/arm-templates/master/examples/vm-windows-server-2016/vm-win-2016.json",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('bastionName')]",
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIpAddresses/',variables('bastionPublicIpName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/',variables('hubVnetName'))]",
+                "[concat('Microsoft.Resources/deployments/',variables('hubVmName'))]"
+            ],
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "bastionConfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubVnetName'), 'AzureBastionSubnet')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionPublicIpName'))]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[variables('deployDnsARecord')]",
+            "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSettings'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "parameters": {
+                    "networkApiVersion": {
+                        "value": "[variables('networkApiVersion')]"
+                    },
+                    "dnsApiVersion": {
+                        "value": "[variables('dnsApiVersion')]"
+                    },
+                    "springInstanceRg": {
+                        "value": "[reference(variables('springCloudInstanceName')).networkProfile.serviceRuntimeNetworkResourceGroup]"
+                    },
+                    "appPrivateDnsZone": {
+                        "value": "[variables('appPrivateDnsZone')]"
+                    }
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "networkApiVersion": {
+                            "type": "string"
+                        },
+                        "dnsApiVersion": {
+                            "type": "string"
+                        },
+                        "springInstanceRg": {
+                            "type": "string"
+                        },
+                        "appPrivateDnsZone": {
+                            "type": "string"
+                        }
+                    },
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/privateDnsZones/A",
+                            "apiVersion": "[parameters('dnsApiVersion')]",
+                            "name": "[concat(parameters('appPrivateDnsZone'), '/*')]",
+                            "location": "global",
+                            "properties": {
+                                "ttl": 3600,
+                                "aRecords": [
+                                    {
+                                        "ipv4Address": "[reference(resourceId(parameters('springInstanceRg'),'Microsoft.Network/loadBalancers','kubernetes-internal'), parameters('networkApiVersion')).frontendIPConfigurations[0].properties.privateIpAddress]"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
