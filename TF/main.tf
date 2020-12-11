@@ -15,7 +15,7 @@ provider "azurerm" {
 }
 
 # Resource group 
-resource "azurerm_resource_group" "spring_cloud_rg" {
+resource "azurerm_resource_group" "sc_corp_rg" {
     name                        = var.resource_group_name
     location                    = var.location
     tags                        = var.tags 
@@ -45,8 +45,9 @@ module "spring_cloud" {
 # Hub-Spoke VNET, Azure Bastion, Azure Firewall, BIND DNS 
 module "hub_spoke" { 
     source                          = "./modules/single_region_hub_spoke"
+    //depends_on = [ azurerm_resource_group.spring_cloud_rg ]
     resource_group_name             = var.resource_group_name
-    depends_on = [ azurerm_resource_group.spring_cloud_rg ]
+    depends_on = [ azurerm_resource_group.sc_corp_rg ]
     location                        = var.location
 
     hub_vnet_name                   = var.hub_vnet_name
