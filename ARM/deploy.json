@@ -1388,7 +1388,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mattfeltonma/arm-templates/master/examples/vm-windows-server-2016/vm-win-2016.json",
+                    "uri": "https://raw.githubusercontent.com/mattfeltonma/azure-labs/master/azure-spring-cloud/resources/deploy-vm-2016.json",
                     "contentVersion": "1.0.0.0"
                 }
             }
