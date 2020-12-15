@@ -12,6 +12,14 @@ variable "tags" {
 variable "sc_resource_group_name" {}
 variable "sc_service_name" {}
 
+# Key Vault module
+
+variable "keyvault_name" {
+    type        = string 
+    description = "Key Vault Prefix"
+    default     = "dapolina"
+}
+
 # Hub-spoke module 
 variable "hub_vnet_name" {}
 variable "hub_vnet_addr_prefix" {}

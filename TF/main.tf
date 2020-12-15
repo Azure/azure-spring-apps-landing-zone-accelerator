@@ -42,6 +42,16 @@ module "spring_cloud" {
   depends_on = [ azurerm_resource_group.sc_spring_cloud_rg ]
 }
 
+module "keyvault" {
+  source                          = "./modules/key_vault"
+    //depends_on = [ azurerm_resource_group.spring_cloud_rg ]
+    resource_group_name             = azurerm_resource_group.sc_corp_rg.name
+    //depends_on = [ azurerm_resource_group.sc_corp_rg ]
+    location                        = var.location
+    keyvault_name                            = var.keyvault_name
+
+}
+
 # Hub-Spoke VNET, Azure Bastion, Azure Firewall, BIND DNS 
 module "hub_spoke" { 
     source                          = "./modules/single_region_hub_spoke"
