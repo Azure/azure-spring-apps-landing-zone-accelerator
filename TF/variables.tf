@@ -14,10 +14,10 @@ variable "sc_service_name" {}
 
 # Key Vault module
 
-variable "keyvault_name" {
+variable "keyvault_prefix" {
     type        = string 
     description = "Key Vault Prefix"
-    default     = "dapolina"
+    default     = "sckeyvault"
 }
 
 # Hub-spoke module 

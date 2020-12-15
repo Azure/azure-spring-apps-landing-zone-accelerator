@@ -44,11 +44,13 @@ module "spring_cloud" {
 
 module "keyvault" {
   source                          = "./modules/key_vault"
-    //depends_on = [ azurerm_resource_group.spring_cloud_rg ]
+
     resource_group_name             = azurerm_resource_group.sc_corp_rg.name
-    //depends_on = [ azurerm_resource_group.sc_corp_rg ]
     location                        = var.location
-    keyvault_name                            = var.keyvault_name
+    keyvault_prefix                 = var.keyvault_prefix
+    sc_support_subnetid             = module.hub_spoke.sc_support_subnetid
+    hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
+    spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
 
 }
 

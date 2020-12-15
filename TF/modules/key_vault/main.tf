@@ -10,14 +10,33 @@ resource "random_string" "number" {
 }
 
 locals {
-  //full_keyvault_name = "${var.keyvault_name}-${tostring(random_string.number.result)}"
-  full_keyvault_name = join("",
-            [var.keyvault_name],
+
+  keyvault_name = join("",
+            [var.keyvault_prefix],
             [random_string.number.result])
 }
 
+resource "azurerm_private_dns_zone" "keyvault_zone" {
+  name                = "private.vaultcore.azure.net"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "hub-link" {
+  name                  = "keyvault-zone-hub-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.keyvault_zone.name
+  virtual_network_id    = var.hub_virtual_network_id
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
+  name                  = "keyvault-zone-spoke-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.keyvault_zone.name
+  virtual_network_id    = var.spoke_virtual_network_id
+}
+
 resource "azurerm_key_vault" "sc_vault" {
-  name                = local.full_keyvault_name
+  name                = local.keyvault_name
   location            = var.location
   resource_group_name = var.resource_group_name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -40,4 +59,23 @@ resource "azurerm_key_vault" "sc_vault" {
     ]
   }*/
 
+}
+
+resource "azurerm_private_endpoint" "keyvault-endpoint" {
+  name                = "keyvault-endpoint"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.sc_support_subnetid
+
+  private_service_connection {
+    name                           = "example-privateserviceconnection"
+    private_connection_resource_id = azurerm_key_vault.sc_vault.id
+    is_manual_connection           = false
+    subresource_names              = ["vault"]
+  }
+
+  private_dns_zone_group {
+    name                          = azurerm_private_dns_zone.keyvault_zone.name
+    private_dns_zone_ids = [ azurerm_private_dns_zone.keyvault_zone.id ]
+  }     
 }
