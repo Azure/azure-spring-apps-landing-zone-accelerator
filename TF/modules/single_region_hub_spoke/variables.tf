@@ -20,6 +20,19 @@ variable "hub_vnet_addr_prefix" {
     default     = "10.0.0.0/16"
 }
 
+# Hub Subnets
+
+variable "appgw-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "sc-service-subnet"
+}
+variable "appgw-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.230.3.0/24"
+}
+
 variable "spoke_vnet_name" {
     type        = string 
     description = "VNet name for spoke-vnet"
@@ -54,6 +67,30 @@ variable "springboot-apps-subnet-addr" {
     description = "Spring Cloud CIDR Subnet"
     default     = "10.231.2.0/24"
 }
+
+variable "springboot-data-subnet-name" {
+    type        = string
+    description = "Spring Cloud Data Services Subnet"
+    default     = "sc-data-subnet"
+}
+variable "springboot-data-subnet-addr" {
+    type        = string
+    description = "Spring Cloud Data Services Subnet"
+    default     = "10.231.3.0/24"
+}
+
+variable "springboot-support-subnet-addr" {
+    type        = string
+    description = "Spring Cloud Private Link Subnet"
+    default     = "10.231.4.0/24"
+}
+
+variable "springboot-support-subnet-name" {
+    type        = string
+    description = "Spring Cloud Private Link Subnet Name"
+    default     = "sc-support-subnet"
+}
+
 variable "service_principal_resource_provider_display_name" {
   type    = string
   default = "Azure Spring Cloud Resource Provider"
