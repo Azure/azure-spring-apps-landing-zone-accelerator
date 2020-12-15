@@ -35,7 +35,7 @@ Additional features of the lab are:
 
 5. Get the object id of the Spring Cloud Resource Provider from your Azure AD tenant. This will be used for the springCloudPrincipalObjectId parameter of the template.
 
-    `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --output tsv`
+    `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query objectId --output tsv`
 
 6. Create a resource group to deploy the resource to.
 
