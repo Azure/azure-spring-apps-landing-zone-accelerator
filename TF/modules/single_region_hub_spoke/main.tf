@@ -7,6 +7,13 @@ resource "azurerm_virtual_network" "hub" {
     tags                        = var.tags
 }
 
+resource "azurerm_subnet" "appgwsubnet" {
+  name                 = var.appgw-subnet-name
+  resource_group_name = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.hub.name
+  address_prefixes       = [var.appgw-subnet-addr]
+}
+
 # Spoke VNET 
 resource "azurerm_virtual_network" "spoke" {
     name                        = var.spoke_vnet_name
@@ -29,6 +36,20 @@ resource "azurerm_subnet" "azuresbcloudapps" {
   resource_group_name = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.spoke.name
   address_prefixes       = [var.springboot-apps-subnet-addr]
+}
+
+resource "azurerm_subnet" "azuresbclouddata" {
+  name                 = var.springboot-data-subnet-name
+  resource_group_name = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.spoke.name
+  address_prefixes       = [var.springboot-data-subnet-addr]
+}
+
+resource "azurerm_subnet" "azuresbcloudsupport" {
+  name                 = var.springboot-support-subnet-name
+  resource_group_name = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.spoke.name
+  address_prefixes       = [var.springboot-support-subnet-addr]
 }
 
 
