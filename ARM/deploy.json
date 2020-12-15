@@ -47,7 +47,27 @@
                 "description": "A new GUID used to identify the role assignment"
             },
             "defaultValue": "[newGuid()]"
+        },
+        "appGWPublicIpAddressName": {
+            "type": "string",
+            "defaultValue": "appGW01-PIP"
+        },
+        "applicationGatewayName": {
+            "type": "string",
+            "defaultValue": "appGW01"
+        },
+        "https_data": {
+            "type": "securestring",
+            "metadata": {
+              "description": "Base64 value of a PFX certificate file used by the Application Gateway Listener"
+            }
+        },
+        "https_password": {
+            "type": "securestring",
+            "metadata": {
+              "description": "Password of the PFX certificate file used by the Application Gateway listener"
         }
+      }
     },
     "variables": {
         "springCloudSkuName": "S0",
@@ -137,7 +157,6 @@
         "keyVaultName": "[concat('kv-',uniqueString(subscription().id, resourceGroup().id))]",
         "mysqlServerName": "[concat('mysql-',uniqueString(resourceGroup().id))]",
         "nsgHubShared": "nsg-hubshared",
-        "nsgHubAgw": "nsg-hubagw",
         "appInsightsName": "[concat('appi-', uniqueString(subscription().id, resourceGroup().id))]",
         "springCloudInstanceName": "[concat('spring-', uniqueString(subscription().id, resourceGroup().id))]",
         "ownerDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
@@ -153,22 +172,15 @@
         "msSqlPrivateZoneLinkName": "[concat(variables('msSqlPrivateDnsZone'), '-link')]",
         "deployDnsARecord": "deploy-springDnsRecord",
         "deployRouteAssign": "deploy-routeAssign",
-        "deployDnsSettings": "deploy-dnsSettings"
+        "deployDnsSettings": "deploy-dnsSettings",
+		"appGWPublicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses/', parameters('appGWPublicIpAddressName'))]",
+		"appGWSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubVnetName'), variables('appGatewaySubnetName'))]",
+		"applicationGatewayId": "[resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName'))]"
     },
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[variables('nsgHubShared')]",
-            "apiVersion": "[variables('networkApiVersion')]",
-            "location": "[variables('location')]",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "securityRules": []
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "name": "[variables('nsgHubAgw')]",
             "apiVersion": "[variables('networkApiVersion')]",
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
@@ -183,7 +195,6 @@
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubAgw'))]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubShared'))]"
             ],
             "properties": {
@@ -223,10 +234,8 @@
                     {
                         "name": "[variables('appGatewaySubnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('hubAppGatewayCidr')]",
-                            "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubAgw'))]"
-                            }
+                            "addressPrefix": "[variables('hubAppGatewayCidr')]"
+                            
                         }
                     }
                 ],
@@ -567,6 +576,140 @@
                 }
             }
         },
+      {
+        "name": "[parameters('applicationGatewayName')]",
+        "type": "Microsoft.Network/applicationGateways",
+        "apiVersion": "2019-11-01",
+        "location": "[variables('location')]",
+        "dependsOn": [
+          "[concat('Microsoft.Network/publicIPAddresses/', parameters('appGWPublicIpAddressName'))]",
+          "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]"
+        ],
+        "tags": "[parameters('tags')]",
+        "properties": {
+          "sku": {
+            "name": "WAF_v2",
+            "tier": "WAF_v2",
+            "capacity": 2
+          },
+          "gatewayIPConfigurations": [
+            {
+              "name": "appGatewayIpConfig",
+              "properties": {
+                "subnet": {
+                  "id": "[variables('appGWSubnetRef')]"
+                }
+              }
+            }
+          ],
+          "frontendIPConfigurations": [
+            {
+              "name": "appGwPublicFrontendIp",
+              "properties": {
+                "PublicIPAddress": {
+                  "id": "[variables('appGWPublicIPRef')]"
+                }
+              }
+            }
+          ],
+          "frontendPorts": [
+            {
+              "name": "port_443",
+              "properties": {
+                "Port": 443
+              }
+            }
+          ],
+          "backendAddressPools": [
+            {
+              "name": "PetClinic-BEP",
+              "properties": {
+                "backendAddresses": [
+                  
+                ]
+              }
+            }
+          ],
+          "sslCertificates": [
+            {
+              "name": "petclinic",
+              "properties": {
+                "data": "[parameters('https_data')]",
+                "password": "[parameters('https_password')]"
+              }
+            }
+          ],
+          "backendHttpSettingsCollection": [
+            {
+              "name": "petClinic-Httpsetting",
+              "properties": {
+                "Port": 443,
+                "Protocol": "Https",
+                "cookieBasedAffinity": "Disabled",
+                "requestTimeout": 20,
+                "pickHostNameFromBackendAddress": true
+              }
+            }
+          ],
+          "httpListeners": [
+            {
+              "name": "petclinic-listener-https",
+              "properties": {
+                "frontendIPConfiguration": {
+                  "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
+                },
+                "frontendPort": {
+                  "id": "[concat(variables('applicationGatewayId'), '/frontendPorts/port_443')]"
+                },
+                "protocol": "Https",
+                "sslCertificate": {
+                  "id": "[concat(variables('applicationGatewayId'), '/sslCertificates/petclinic')]"
+                }
+              }
+            }
+          ],
+          "requestRoutingRules": [
+            {
+              "Name": "petClinic-RR",
+              "properties": {
+                "RuleType": "Basic",
+                "httpListener": {
+                  "id": "[concat(variables('applicationGatewayId'), '/httpListeners/petclinic-listener-https')]"
+                },
+                "backendAddressPool": {
+                  "id": "[concat(variables('applicationGatewayId'), '/backendAddressPools/PetClinic-BEP')]"
+                },
+                "backendHttpSettings": {
+                  "id": "[concat(variables('applicationGatewayId'), '/backendHttpSettingsCollection/petClinic-Httpsetting')]"
+                }
+              }
+            }
+          ],
+          "enableHttp2": false,
+          "probes": [],
+          "webApplicationFirewallConfiguration": {
+            "enabled": true,
+            "firewallMode": "Detection",
+            "ruleSetType": "OWASP",
+            "ruleSetVersion": "3.0"
+          }
+        }
+      },
+      {
+        "apiVersion": "2019-02-01",
+        "type": "Microsoft.Network/publicIPAddresses",
+        "name": "[parameters('appGWPublicIpAddressName')]",
+        "location": "[variables('location')]",
+        "tags": "[parameters('tags')]",
+        "sku": {
+          "name": "Standard"
+        },
+        "properties": {
+          "publicIPAllocationMethod": "Static"
+        }
+      },
+
+        
         {
             "name": "[variables('bastionPublicIpName')]",
             "type": "Microsoft.Network/publicIpAddresses",
@@ -1204,10 +1347,8 @@
                                     {
                                         "name": "[variables('appGatewaySubnetName')]",
                                         "properties": {
-                                            "addressPrefix": "[variables('hubAppGatewayCidr')]",
-                                            "networkSecurityGroup": {
-                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgHubAgw'))]"
-                                            }
+                                            "addressPrefix": "[variables('hubAppGatewayCidr')]"
+                                            
                                         }
 
                                     }
@@ -1387,10 +1528,10 @@
                         "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces',variables('laWorkspaceName')), '2015-03-20').primarySharedKey]"
                     }
                 },
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/mattfeltonma/azure-labs/master/azure-spring-cloud/resources/deploy-vm-2016.json",
-                    "contentVersion": "1.0.0.0"
-                }
+              "templateLink": {
+                "uri": "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deploy-vm-2016.json",
+                "contentVersion": "1.0.0.0"
+              }
             }
         },
         {
