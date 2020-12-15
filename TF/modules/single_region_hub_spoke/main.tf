@@ -50,6 +50,7 @@ resource "azurerm_subnet" "azuresbcloudsupport" {
   resource_group_name = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.spoke.name
   address_prefixes       = [var.springboot-support-subnet-addr]
+  enforce_private_link_endpoint_network_policies = true
 }
 
 
