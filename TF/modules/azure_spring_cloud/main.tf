@@ -12,7 +12,6 @@ data "azuread_service_principal" "resource_provider" {
 resource "azurerm_role_assignment" "scowner" {
   scope                 = var.spoke_virtual_network_id
   role_definition_name = "Owner"
- // principal_id         = "1ba5d9ec-7bbb-4727-9f08-b3804e8bb769"
   principal_id = data.azuread_service_principal.resource_provider.object_id
 }
 

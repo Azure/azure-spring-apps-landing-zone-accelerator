@@ -76,6 +76,6 @@ resource "azurerm_private_endpoint" "keyvault-endpoint" {
 
   private_dns_zone_group {
     name                          = azurerm_private_dns_zone.keyvault_zone.name
-    private_dns_zone_ids = [ azurerm_private_dns_zone.keyvault_zone.id ]
+    private_dns_zone_ids          = [ azurerm_private_dns_zone.keyvault_zone.id ]
   }     
 }
