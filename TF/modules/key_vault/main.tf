@@ -17,7 +17,7 @@ locals {
 }
 
 resource "azurerm_private_dns_zone" "keyvault_zone" {
-  name                = "private.vaultcore.azure.net"
+  name                = "privatelink.vaultcore.azure.net"
   resource_group_name = var.resource_group_name
 }
 
