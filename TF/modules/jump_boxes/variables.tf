@@ -26,11 +26,11 @@ variable "jump_box_private_ip_addr" {
     type        = string 
     description = "Private IP Address for Jump Box"
 }
-
+/*
 variable "jump_box_ssh_source_addr_prefixes" { 
     type        = tuple([string])
     description = "Jump Box SSH Source Addr Prefixes for NSG Rule"
-}
+}*/
 
 variable "jump_box_vm_size" { 
     type        = string
@@ -42,8 +42,10 @@ variable "jump_box_admin_username" {
     type        = string 
     description = "jump_box VM Username"
 }
-
+/*
 variable "jump_box_pub_key_name" { 
     type        = string 
     description = "Local public key name"
-}
+}*/
+
+variable "jump_box_password" {}

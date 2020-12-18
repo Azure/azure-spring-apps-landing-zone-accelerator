@@ -39,3 +39,7 @@ output "sc_rt_subnetid" {
 output "sc_apps_subnetid" {
     value = azurerm_subnet.azuresbcloudapps.id
 }
+
+output "sc_support_subnetid" {
+    value = azurerm_subnet.azuresbcloudsupport.id
+}
