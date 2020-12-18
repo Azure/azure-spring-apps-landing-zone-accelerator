@@ -83,4 +83,4 @@ You will be prompted to set a password.  This will be the password for the virtu
 
 This lab deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
 
-Azure Application Gateway can also retrive TLS certificates from Key Vault. Fore more information see https://docs.microsoft.com/en-us/azure/application-gateway/key-vault-certs 
+Azure Application Gateway can also retrive TLS certificates from Azure Key Vault. Fore more information see https://docs.microsoft.com/en-us/azure/application-gateway/key-vault-certs 
