@@ -81,7 +81,7 @@ resource "null_resource" "set-route-table" {
     EOS
   }
 }*/
-
+/*
 data "azurerm_resources" "runtime-route" {
   type = "Microsoft.Network/virtualNetworks/routeTables"
   resource_group_name = "${var.sc_service_name}-runtime-rg"
@@ -95,6 +95,7 @@ data "azurerm_resources" "apps-route" {
   
   depends_on = [azurerm_spring_cloud_service.sc]
 }
+*/
 /*
 resource "azurerm_route" "default-route" {
   name                = "default"
