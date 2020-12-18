@@ -5,7 +5,7 @@
 ## Overview
 This ARM template creates a small lab in Azure that can be used for experimenting with [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) in a typical enterprise landing zone design for a regulated organization. It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
 
-![lab image](https://github.com/mattfeltonma/azure-labs/blob/master/azure-spring-cloud/images/lab.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/lab.jpeg)
 
 Additional features of the lab are:
 
@@ -53,11 +53,31 @@ You will be prompted to set a password.  This will be the password for the virtu
 2. Run the add-routes.sh bash script or the commands within it to set the default routes on the Spring Cloud subnets.
 
 ## Post Installation
-Install one of the following sample applications:
-* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+1. Install one of the following sample applications:
+    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+    * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
 
+2. Connect to the virtual machine deployed into the resource group using Azure Bastion.
 
+3. From the virtual machine, browse to the private URL of the application e.g. https://petclinic-in-vnet-api-gateway.private.azuremicroservices.io
 
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-Internal.jpeg)
 
+## Deploy Azure Application Gateway with WAF (optional)
+
+1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this lab, you can use a self signed certificate or one issued from an internal Certificate Authority. You will need to convert the certificate to a Base64 string value for the next step.  
+
+2. Execute the template and when prompted, enter the Base64 string value for parameter https_data, the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this lab, use the same resource group that was created previously.
+
+    `az deployment group create --resource-group my-resource-group --name appGW --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployAppGw.json"`
+
+3. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address
+
+4. From a browser that isn't in the lab virtual network, browse to https://<publicIPofAppGW> . You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.     
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-external.jpeg)
+
+## Aditional Notes
+
+This lab deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
 
