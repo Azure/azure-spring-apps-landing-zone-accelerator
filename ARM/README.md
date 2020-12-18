@@ -5,7 +5,7 @@
 ## Overview
 This ARM template creates a small lab in Azure that can be used for experimenting with [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) in a typical enterprise landing zone design for a regulated organization. It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/images/lab.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/lab.jpeg)
 
 Additional features of the lab are:
 
@@ -61,7 +61,7 @@ You will be prompted to set a password.  This will be the password for the virtu
 
 3. From the virtual machine, browse to the private URL of the application e.g. https://petclinic-in-vnet-api-gateway.private.azuremicroservices.io
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/images/Petclinic-Internal.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-Internal.jpeg)
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
@@ -75,7 +75,7 @@ You will be prompted to set a password.  This will be the password for the virtu
 
 4. From a browser that isn't in the lab virtual network, browse to https://<publicIPofAppGW> . You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.     
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/images/Petclinic-external.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-external.jpeg)
 
 ## Aditional Notes
 
