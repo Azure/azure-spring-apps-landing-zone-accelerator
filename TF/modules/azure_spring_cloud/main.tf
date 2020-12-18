@@ -120,7 +120,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
 
 data "azurerm_lb" "svc_load_balancer" {
   name                = var.internal_lb_svc_load_balancer_name
-  //resource_group_name = "ap-svc-rt_${var.sc_service_name}_eastus2"
   resource_group_name = "${var.sc_service_name}-runtime-rg"
   depends_on = [azurerm_spring_cloud_service.sc]
 }
