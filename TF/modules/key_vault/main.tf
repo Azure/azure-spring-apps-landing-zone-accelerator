@@ -45,30 +45,26 @@ resource "azurerm_key_vault" "sc_vault" {
   soft_delete_enabled        = true
   purge_protection_enabled   = false
   soft_delete_retention_days = 7
-/*
+
   network_acls {
     bypass         = "AzureServices"
     default_action = "Deny"
-    virtual_network_subnet_ids = [
-      azurerm_subnet.adx1.id,
-      azurerm_subnet.adx2.id,
-      azurerm_subnet.adx3.id
-    ]
+    /*
     ip_rules = [
       "${chomp(data.http.myip.body)}/32"
-    ]
-  }*/
+    ]*/
+  }
 
 }
 
 resource "azurerm_private_endpoint" "keyvault-endpoint" {
-  name                = "keyvault-endpoint"
+  name                = "sc-keyvault-endpoint"
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.sc_support_subnetid
 
   private_service_connection {
-    name                           = "example-privateserviceconnection"
+    name                           = "kv-private-link-connection"
     private_connection_resource_id = azurerm_key_vault.sc_vault.id
     is_manual_connection           = false
     subresource_names              = ["vault"]

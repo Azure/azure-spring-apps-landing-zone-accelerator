@@ -25,7 +25,7 @@ resource "azurerm_resource_group" "sc_corp_rg" {
 resource "azurerm_resource_group" "sc_spring_cloud_rg" {
     name                        = var.sc_resource_group_name 
     location                    = var.location
-    tags                        = var.tags 
+    //tags                        = var.tags 
 }
 
 module "spring_cloud" {

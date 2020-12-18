@@ -49,7 +49,7 @@ resource "azurerm_virtual_machine" "jump_box" {
   }
 
   storage_os_disk {
-    name              = "server-os"
+    name              = "${var.jump_box_name}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
