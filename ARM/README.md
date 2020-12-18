@@ -1,6 +1,5 @@
 # Azure Spring Cloud Lab
 
-## To Do Terraform
 
 ## Overview
 This ARM template creates a small lab in Azure that can be used for experimenting with [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) in a typical enterprise landing zone design for a regulated organization. It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
@@ -17,6 +16,7 @@ Additional features of the lab are:
 * Log Analytics Workspace where Azure Spring Cloud, Azure Firewall, and the virtual machine deliver logs and metrics.
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage for applications deployed to Azure Spring Cloud
 * Instance of Azure Database for MySQL deployed with a Private Endpoint.  This can be used to deploy the sample app described in this document.
+* Optional - Instance of [Azure Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview) with Web Application Firewall for securely exposing applications to the internet. 
 
 ## Prerequisites
 1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
@@ -41,7 +41,7 @@ Additional features of the lab are:
 
 6. Create a resource group to deploy the resource to.
 
-    `az group create --name my-resource-group`
+    `az group create --name my-resource-group --location eastus`
 
 ## Installation
 1. Execute the template including the parameters of the tenant id from step 3, the object id from step 4, the object id from step 5, and a username for the administrator account on the virtual machine created and for the My SQL instance.
