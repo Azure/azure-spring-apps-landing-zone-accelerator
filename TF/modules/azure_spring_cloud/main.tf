@@ -12,7 +12,6 @@ data "azuread_service_principal" "resource_provider" {
 resource "azurerm_role_assignment" "scowner" {
   scope                 = var.spoke_virtual_network_id
   role_definition_name = "Owner"
- // principal_id         = "1ba5d9ec-7bbb-4727-9f08-b3804e8bb769"
   principal_id = data.azuread_service_principal.resource_provider.object_id
 }
 
@@ -82,16 +81,21 @@ resource "null_resource" "set-route-table" {
     EOS
   }
 }*/
-
-data "azurerm_resources" "routes" {
+/*
+data "azurerm_resources" "runtime-route" {
   type = "Microsoft.Network/virtualNetworks/routeTables"
   resource_group_name = "${var.sc_service_name}-runtime-rg"
-  required_tags = {
-    environment = "production"
-    role        = "spokeNetwork"
-  }
+  
   depends_on = [azurerm_spring_cloud_service.sc]
 }
+
+data "azurerm_resources" "apps-route" {
+  type = "Microsoft.Network/virtualNetworks/routeTables"
+  resource_group_name = "${var.sc_service_name}-apps-rg"
+  
+  depends_on = [azurerm_spring_cloud_service.sc]
+}
+*/
 /*
 resource "azurerm_route" "default-route" {
   name                = "default"
@@ -117,7 +121,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
 
 data "azurerm_lb" "svc_load_balancer" {
   name                = var.internal_lb_svc_load_balancer_name
-  //resource_group_name = "ap-svc-rt_${var.sc_service_name}_eastus2"
   resource_group_name = "${var.sc_service_name}-runtime-rg"
   depends_on = [azurerm_spring_cloud_service.sc]
 }
