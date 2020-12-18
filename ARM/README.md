@@ -75,7 +75,7 @@ You will be prompted to set a password.  This will be the password for the virtu
 
 4. From a browser that isn't in the lab virtual network, browse to https://<publicIPofAppGW> . You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.     
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-external.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
 ## Aditional Notes
 
