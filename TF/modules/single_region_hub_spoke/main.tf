@@ -4,7 +4,6 @@ resource "azurerm_virtual_network" "hub" {
     location                    = var.location 
     resource_group_name         = var.resource_group_name
     address_space               = [var.hub_vnet_addr_prefix]
-    tags                        = var.tags
 }
 
 resource "azurerm_subnet" "appgwsubnet" {
@@ -21,7 +20,6 @@ resource "azurerm_virtual_network" "spoke" {
     resource_group_name         = var.resource_group_name
     address_space               = [var.spoke_vnet_addr_prefix]
     dns_servers                 = [module.azure_firewall.ip]
-    tags                        = var.tags
 }
 
 resource "azurerm_subnet" "azuresbcloudsvc" {
@@ -99,9 +97,7 @@ module "jump_boxes" {
     jump_box_vnet_name                  = azurerm_virtual_network.hub.name
     jump_box_addr_prefix                = var.jump_box_addr_prefix
     jump_box_private_ip_addr            = var.jump_box_private_ip_addr
-   // jump_box_ssh_source_addr_prefixes   = var.jump_box_ssh_source_addr_prefixes
     jump_box_vm_size                    = var.jump_box_vm_size
     jump_box_admin_username             = var.jump_box_admin_username
-   // jump_box_pub_key_name               = var.jump_box_pub_key_name
     jump_box_password                   = var.jump_box_password
 }

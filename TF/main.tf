@@ -18,14 +18,14 @@ provider "azurerm" {
 resource "azurerm_resource_group" "sc_corp_rg" {
     name                        = var.resource_group_name
     location                    = var.location
-    tags                        = var.tags 
+
 }
 
 # SC Resource group 
 resource "azurerm_resource_group" "sc_spring_cloud_rg" {
     name                        = var.sc_resource_group_name 
     location                    = var.location
-    //tags                        = var.tags 
+
 }
 
 module "spring_cloud" {
@@ -57,7 +57,6 @@ module "keyvault" {
 # Hub-Spoke VNET, Azure Bastion, Azure Firewall, BIND DNS 
 module "hub_spoke" { 
     source                          = "./modules/single_region_hub_spoke"
-    //depends_on = [ azurerm_resource_group.spring_cloud_rg ]
     resource_group_name             = var.resource_group_name
     depends_on = [ azurerm_resource_group.sc_corp_rg ]
     location                        = var.location
@@ -76,9 +75,7 @@ module "hub_spoke" {
     jump_box_name                       = var.jump_box_name
     jump_box_addr_prefix                = var.jump_box_addr_prefix
     jump_box_private_ip_addr            = var.jump_box_private_ip_addr
-    //jump_box_ssh_source_addr_prefixes   = var.jump_box_ssh_source_addr_prefixes
     jump_box_vm_size                    = var.jump_box_vm_size
     jump_box_admin_username             = var.jump_box_admin_username
-   // jump_box_pub_key_name               = var.jump_box_pub_key_name
     jump_box_password                   = var.jump_box_password
 }
