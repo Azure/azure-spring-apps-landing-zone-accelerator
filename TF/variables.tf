@@ -1,6 +1,11 @@
 variable "resource_group_name" {}
 variable "location" {} 
 
+# my sql module
+
+variable "my_sql_name" {}
+variable "my_sql_admin" {}
+variable "my_sql_password" {}
 
 # Spring Cloud module
 

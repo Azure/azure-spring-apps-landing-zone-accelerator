@@ -42,6 +42,19 @@ module "spring_cloud" {
   depends_on = [ azurerm_resource_group.sc_spring_cloud_rg ]
 }
 
+module "my_sql" {
+  source                          = "./modules/my_sql"
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  my_sql_name                     = var.my_sql_name
+  my_sql_password                 = var.my_sql_password
+  my_sql_admin                    = var.my_sql_admin
+  sc_support_subnetid             = module.hub_spoke.sc_support_subnetid
+  hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
+  spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
+  depends_on = [ azurerm_resource_group.sc_corp_rg]
+}
+
 module "keyvault" {
   source                          = "./modules/key_vault"
 
