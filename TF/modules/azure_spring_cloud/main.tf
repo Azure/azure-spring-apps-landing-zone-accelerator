@@ -15,6 +15,51 @@ resource "azurerm_role_assignment" "scowner" {
   principal_id = data.azuread_service_principal.resource_provider.object_id
 }
 
+resource "azurerm_application_insights" "sc_app_insights" {
+  name                = "sc-appinsights"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  application_type    = "web"
+}
+
+resource "azurerm_log_analytics_workspace" "sc_law" {
+  name                = "sc-law-${random_string.random.result}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
+resource "random_string" "random" {
+  length = 8
+  upper = false
+  special = false
+
+}
+
+resource "azurerm_monitor_diagnostic_setting" "sc_diag" {
+  name                        = "monitoring"
+  target_resource_id          = azurerm_spring_cloud_service.sc.id
+  log_analytics_workspace_id  = azurerm_log_analytics_workspace.sc_law.id
+
+  log {
+    category = "ApplicationConsole"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = false
+    }
+  }
+}
+
 resource "azurerm_spring_cloud_service" "sc" {
   name                = var.sc_service_name
   resource_group_name = var.sc_resource_group_name
@@ -31,6 +76,10 @@ resource "azurerm_spring_cloud_service" "sc" {
   timeouts {
       create = "60m"
       delete = "2h"
+  }
+
+  trace {
+    instrumentation_key = azurerm_application_insights.sc_app_insights.instrumentation_key
   }
   depends_on = [azurerm_role_assignment.scowner]
   /*
