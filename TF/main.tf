@@ -28,6 +28,14 @@ resource "azurerm_resource_group" "sc_spring_cloud_rg" {
 
 }
 
+resource "random_string" "random" {
+  length = 8
+  upper = false
+  special = false
+
+}
+
+
 module "spring_cloud" {
   source                          = "./modules/azure_spring_cloud"
   resource_group_name             = var.resource_group_name
@@ -37,9 +45,22 @@ module "spring_cloud" {
   hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
   spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
   sc_resource_group_name          = var.sc_resource_group_name
-  sc_service_name                 = var.sc_service_name
+  sc_service_name                 = "${var.sc_service_name}-${random_string.random.result}"
   azure_fw_private_ip             = module.hub_spoke.azure_firewall_private_ip
   depends_on = [ azurerm_resource_group.sc_spring_cloud_rg ]
+}
+
+module "my_sql" {
+  source                          = "./modules/my_sql"
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  my_sql_name                     = var.my_sql_name
+  my_sql_password                 = var.my_sql_password
+  my_sql_admin                    = var.my_sql_admin
+  sc_support_subnetid             = module.hub_spoke.sc_support_subnetid
+  hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
+  spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
+  depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "keyvault" {
