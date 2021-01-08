@@ -45,6 +45,7 @@ module "spring_cloud" {
   source                          = "./modules/azure_spring_cloud"
   resource_group_name             = var.resource_group_name
   location                        = var.location
+  sc_cidr                         = var.sc_cidr
   app_subnet_id                   = module.hub_spoke.sc_rt_subnetid
   service_runtime_subnet_id       = module.hub_spoke.sc_apps_subnetid
   hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
