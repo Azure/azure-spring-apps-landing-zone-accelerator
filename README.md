@@ -17,41 +17,6 @@ Additional features of the lab are:
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage for applications deployed to Azure Spring Cloud
 * Instance of Azure Database for MySQL deployed with a Private Endpoint.  This can be used to deploy the sample app described in this document.
 
-## Prerequisites
-
-1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-
-2. Run the two commands below to add the required extensions to Azure CLI.
-
-    `az extension add --name firewall`
-
-    `az extension add --name spring-cloud`
-
-3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to.
-
-    `az account show --subscription mysubscription --query tenantId --output tsv`
-
-4. Get the object id of the security principal (user, managed identity, service principal) that will have access to the Azure Key Vault instance.
-
-    `az ad user show --id someuser@sometenant.com --query objectId --output tsv`
-
-5. Get the object id of the Spring Cloud Resource Provider from your Azure AD tenant.
-
-    `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --output tsv`
-
-6. Create a resource group to deploy the resource to.
-
-    `az group create --name my-resource-group`
-
-## Installation
-1. Execute the template including the parameters of the tenant id from step 3, the object id from step 4, the object id from step 5, and a username for the administrator account on the virtual machine created and for the My SQL instance.
-
-    `az deployment group create --resource-group my-resource-group --name initial --template-file="/Users/mattfelton/OneDrive - Microsoft/Code/Azure Labs/azure-labs/azure-spring-cloud/deploy.json" --parameters tenantId <TENANT_ID>  keyVaultAdminObjectId <KEY_VAULT_ADMIN_OBJECT_ID> springCloudPrincipalObjectId <SPRING_CLOUD_SP_OBJECT_ID>`
-
-You will be prompted to set a password.  This will be the password for the virtual machine and the My SQL instance.
-
-2. Run the add-routes.sh bash script or the commands within it to set the default routes on the Spring Cloud subnets.
-
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
