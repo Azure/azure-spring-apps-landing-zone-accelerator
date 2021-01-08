@@ -20,3 +20,4 @@ variable "private_dns_a_record_a_record_ttl" {
   type    = number
   default = 3600
 }
+variable "sc_law_id" {}

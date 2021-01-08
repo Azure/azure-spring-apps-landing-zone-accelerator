@@ -14,6 +14,8 @@ resource "azurerm_public_ip" "azure_firewall" {
     sku                         = "Standard"
 }
 
+
+
 resource "azurerm_firewall" "azure_firewall_instance" { 
     name                        = var.azurefw_name
     location                    = var.location
@@ -27,6 +29,46 @@ resource "azurerm_firewall" "azure_firewall_instance" {
         subnet_id               = azurerm_subnet.azure_firewall.id 
         public_ip_address_id    = azurerm_public_ip.azure_firewall.id
     }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "azfw_diag" {
+  name                        = "monitoring"
+  target_resource_id          = azurerm_firewall.azure_firewall_instance.id
+  log_analytics_workspace_id  = var.sc_law_id
+
+  log {
+    category = "AzureFirewallApplicationRule"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+  log {
+    category = "AzureFirewallNetworkRule"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+  log {
+    category = "AzureFirewallDnsProxy"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+  
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = false
+    }
+  }
 }
 
 resource "azurerm_firewall_network_rule_collection" "private_aks" {

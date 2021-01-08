@@ -112,3 +112,6 @@ variable "jump_box_private_ip_addr" {}
 variable "jump_box_vm_size" {}
 variable "jump_box_admin_username" {}
 variable "jump_box_password" {}
+
+# Azure Firewall variables
+variable "sc_law_id" {}
