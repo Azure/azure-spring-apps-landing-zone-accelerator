@@ -29,7 +29,7 @@ hs_err_pid*
 # .tfstate files
 *.tfstate
 *.tfstate.*
-
+*.plan
 # Crash log files
 crash.log
 
