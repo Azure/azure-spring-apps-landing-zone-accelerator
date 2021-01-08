@@ -22,25 +22,12 @@ resource "azurerm_application_insights" "sc_app_insights" {
   application_type    = "web"
 }
 
-resource "azurerm_log_analytics_workspace" "sc_law" {
-  name                = "sc-law-${random_string.random.result}"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-}
 
-resource "random_string" "random" {
-  length = 8
-  upper = false
-  special = false
-
-}
 
 resource "azurerm_monitor_diagnostic_setting" "sc_diag" {
   name                        = "monitoring"
   target_resource_id          = azurerm_spring_cloud_service.sc.id
-  log_analytics_workspace_id  = azurerm_log_analytics_workspace.sc_law.id
+  log_analytics_workspace_id  = var.sc_law_id
 
   log {
     category = "ApplicationConsole"
