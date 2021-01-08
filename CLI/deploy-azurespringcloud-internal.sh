@@ -6,13 +6,14 @@ location='eastus' #location of Azure Spring Cloud Virtual Network
 hub_vnet_name='hub-vnet' #Hub Virtual Network Name
 hub_vnet_resource_group_name='hub-vnet-rg' #Hub Virtual Network Resource Group name
 hub_vnet_address_prefixes='10.9.0.0/16' #Hub Virtual Network Address Prefixes
-firewal_subnet_prefix='10.9.0.0/24' #Address prefix of 
-centralized_services_subnet_name='centralized-services-subnet'
+firewal_subnet_prefix='10.9.0.0/24' #Address prefix of FW subnet 
+centralized_services_subnet_name='centralized-services-subnet' #
 centralized_services_subnet_prefix='10.9.1.0/24'
 gateway_subnet_prefix='10.9.2.0/24'
 bastion_subnet_prefix='10.9.4.0/24'
 application_gateway_subnet_name='application-gateway-subnet'
 application_gateway_subnet_prefix='10.9.3.0/24'
+hub_vnet_jumpbox_nsg_name='hub-vnet-nsg'
 firewall_name='azfirewall' #Name of Azure firewall resource
 firewall_public_ip_name='azfirewall-pip2' #Azure firewall public ip resource name
 azure_key_vault_name='akv-'$randomstring #Azure Key vault unique name
@@ -36,12 +37,22 @@ read userupn
 admin_object_id=$(az ad user show --id $userupn --query objectId --output tsv)
 
 echo "Enter MySql Db admin password: "
-read password
-mysqldb_password=$password
+read mysqlpassword
+mysqldb_password=$mysqlpassword
+
+echo "Enter VM admin password: "
+read vmpassword
+vm_password=$vmpassword
 
 echo "create hub vnet rg"
 
 az group create --location ${location} --name ${hub_vnet_resource_group_name}
+
+echo create NSG for jump box VM
+az network nsg create \
+    --resource-group ${hub_vnet_resource_group_name} \
+    --name ${hub_vnet_jumpbox_nsg_name}
+echo Jumpbox NSG has been created
 
 echo create hub vnet
 
@@ -61,7 +72,8 @@ az network vnet subnet create \
     --name ${centralized_services_subnet_name} \
     --resource-group ${hub_vnet_resource_group_name}  \
     --vnet-name ${hub_vnet_name} \
-    --address-prefix ${centralized_services_subnet_prefix}
+    --address-prefix ${centralized_services_subnet_prefix} \
+    --network-security-group ${hub_vnet_jumpbox_nsg_name}
 
 az network vnet subnet create \
     --name 'GatewaySubnet' \
@@ -89,14 +101,17 @@ az network public-ip create --resource-group ${hub_vnet_resource_group_name} --n
 az network bastion create --resource-group ${hub_vnet_resource_group_name} --name azbastion --public-ip-address azbastion-pip --vnet-name ${hub_vnet_name} --location ${location}
 echo bastion creation finished
 
+
 echo create Jumpbox VM
 az vm create \
     --resource-group ${hub_vnet_resource_group_name} \
     --name jumpbox \
     --image win2019datacenter \
     --admin-username azureuser \
+    --admin-password $vm_password \
     --vnet-name ${hub_vnet_name} \
-    --subnet 
+    --subnet ${centralized_services_subnet_name} \
+    --public-ip-address ""
 
 echo create FW
 az network firewall create \
@@ -327,10 +342,11 @@ az mysql server create \
 	--admin-user mysqladmin \
 	--admin-password $mysqldb_password \
 	--sku-name GP_Gen5_2
-	--ssl-enforcement Disabled \
+	--ssl-enforcement DISABLED \
 	--backup-retention 7 \
 	--geo-redundant-backup Disabled \
-	--storage-size 51200 
+	--storage-size 51200 \
+    --public-network-access Disabled
 
 
 echo Getting app subnet id
