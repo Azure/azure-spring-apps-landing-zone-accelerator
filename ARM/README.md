@@ -44,12 +44,6 @@ Install one of the following sample applications:
     * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
     * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
 
-2. Connect to the virtual machine deployed into the resource group using Azure Bastion.
-
-3. From the virtual machine, browse to the private URL of the application e.g. https://petclinic-in-vnet-api-gateway.private.azuremicroservices.io
-
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-Internal.jpeg)
-
 ## Deploy Azure Application Gateway with WAF (optional)
 
 1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this lab, you can use a self signed certificate or one issued from an internal Certificate Authority. You will need to convert the certificate to a Base64 string value for the next step. The following will set the Base64 string value to a variable to be used as part of the deployment (replace the file name with your own).
