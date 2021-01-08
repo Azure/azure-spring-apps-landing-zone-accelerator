@@ -106,3 +106,7 @@ variable "jump_box_admin_username" {
 }
 variable "jump_box_password" {}
 
+variable "sc_cidr" {
+    type        = list
+    default     = ["10.4.0.0/16", "10.5.0.0/16", "10.3.0.1/16"]
+}
