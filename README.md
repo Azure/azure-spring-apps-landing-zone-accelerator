@@ -1,6 +1,7 @@
 # Azure Spring Cloud Lab
 
 ## Overview
+
 This ARM template creates a small lab in Azure that can be used for experimenting with [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) in a typical enterprise landing zone design for a regulated organization.  It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
 
 ![lab image](https://github.com/mattfeltonma/azure-labs/blob/master/azure-spring-cloud/images/lab.jpeg)
@@ -17,6 +18,7 @@ Additional features of the lab are:
 * Instance of Azure Database for MySQL deployed with a Private Endpoint.  This can be used to deploy the sample app described in this document.
 
 ## Prerequisites
+
 1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
 2. Run the two commands below to add the required extensions to Azure CLI.
@@ -24,7 +26,7 @@ Additional features of the lab are:
     `az extension add --name firewall`
 
     `az extension add --name spring-cloud`
-    
+
 3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to.
 
     `az account show --subscription mysubscription --query tenantId --output tsv`
