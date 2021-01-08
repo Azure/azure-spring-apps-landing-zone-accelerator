@@ -75,6 +75,7 @@ module "azure_firewall" {
     azurefw_name                = var.azurefw_name
     azurefw_vnet_name           = azurerm_virtual_network.hub.name
     azurefw_addr_prefix         = var.azurefw_addr_prefix
+    sc_law_id                   = var.sc_law_id
 }
 
 # Azure Bastion

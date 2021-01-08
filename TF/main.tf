@@ -34,7 +34,12 @@ resource "random_string" "random" {
   special = false
 
 }
-
+module "log_analytics" {
+  source                          = "./modules/log_analytics"
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  depends_on = [ azurerm_resource_group.sc_corp_rg]
+}
 
 module "spring_cloud" {
   source                          = "./modules/azure_spring_cloud"
@@ -44,6 +49,7 @@ module "spring_cloud" {
   service_runtime_subnet_id       = module.hub_spoke.sc_apps_subnetid
   hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
   spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
+  sc_law_id                       = module.log_analytics.log_analytics_id
   sc_resource_group_name          = var.sc_resource_group_name
   sc_service_name                 = "${var.sc_service_name}-${random_string.random.result}"
   azure_fw_private_ip             = module.hub_spoke.azure_firewall_private_ip
@@ -81,7 +87,7 @@ module "hub_spoke" {
     resource_group_name             = var.resource_group_name
     depends_on = [ azurerm_resource_group.sc_corp_rg ]
     location                        = var.location
-
+    sc_law_id                       = module.log_analytics.log_analytics_id
     hub_vnet_name                   = var.hub_vnet_name
     hub_vnet_addr_prefix            = var.hub_vnet_addr_prefix
     spoke_vnet_name                 = var.spoke_vnet_name
