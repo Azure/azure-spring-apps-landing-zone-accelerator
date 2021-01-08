@@ -45,7 +45,8 @@ Additional features of the lab are:
 
     `terraform apply springcloud.plan`
 
-## Post Installation
+## Post Deployment
+
 Install one of the following sample applications:
 * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
