@@ -28,7 +28,8 @@
 
     `az group create --name my-resource-group --location eastus`
 
-## Installation
+## Deployment
+
 1. Execute the template including the parameters of the tenant id from step 3, the object id from step 4, the object id from step 5, and a username for the administrator account on the virtual machine created and for the My SQL instance.
 
     `az deployment group create --resource-group my-resource-group --name initial --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/deploy.json" --parameters tenantId=<TENANT_ID>  keyVaultAdminObjectId=<KEY_VAULT_ADMIN_OBJECT_ID> springCloudPrincipalObjectId=<SPRING_CLOUD_SP_OBJECT_ID>`
@@ -37,8 +38,9 @@ You will be prompted to set a password.  This will be the password for the virtu
 
 2. Run the add-routes.sh bash script or the commands within it to set the default routes on the Spring Cloud subnets.
 
-## Post Installation
-1. Install one of the following sample applications:
+## Post Deployment
+
+Install one of the following sample applications:
     * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
     * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
 
