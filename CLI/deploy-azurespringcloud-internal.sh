@@ -27,9 +27,9 @@ azurespringcloud_service_runtime_subnet_name='service-runtime-subnet' #subnet na
 azurespringcloud_app_subnet_prefix='10.8.1.0/24' #Azure Spring Cloud app subnet prefix 
 azurespringcloud_app_subnet_name='apps-subnet' #Azure Spring Cloud app subnet 
 azure_spring_cloud_support_subnet_name='support-subnet' #Azure Spring Cloud support subnet name
-azure_spring_cloud_support_subnet_nsg=$azure_spring_cloud_support_subnet_name"-nsg"#Azure spring Cloud support subnet nsg
+azure_spring_cloud_support_subnet_nsg=$azure_spring_cloud_support_subnet_name'-nsg'#Azure spring Cloud support subnet nsg
 azure_spring_cloud_data_subnet_name='data-subnet' #azure Spring Cloud data subnet name
-azure_spring_cloud_data_subnet_nsg=$azure_spring_cloud_data_subnet_name"-nsg"#Azure spring Cloud support subnet nsg
+azure_spring_cloud_data_subnet_nsg=$azure_spring_cloud_data_subnet_name'-nsg'#Azure spring Cloud support subnet nsg
 azurespringcloud_data_subnet_prefix='10.8.2.0/24' #Azure Spring Cloud data subnet prefix
 azurespringcloud_support_subnet_prefix='10.8.3.0/24' #Azure Spring Cloud support subnet prefix
 azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Resource Group name
@@ -101,7 +101,7 @@ az network nsg rule create \
 az network nsg rule create \
     --resource-group ${hub_resource_group_name} \
     --nsg-name ${bastion_subnet_nsg} \
-    --name AllowHttpsInbound \
+    --name AllowAzureLoadbalancerInbound \
     --priority 120 \
     --source-address-prefixes '*' \
     --source-port-ranges '*' \
@@ -113,13 +113,65 @@ az network nsg rule create \
 az network nsg rule create \
     --resource-group ${hub_resource_group_name} \
     --nsg-name ${bastion_subnet_nsg} \
-    --name AllowHttpsInbound \
+    --name AllowBastionHostCommunication \
     --priority 130 \
     --source-address-prefixes VirtualNetwork \
     --source-port-ranges '*' \
     --destination-address-prefixes VirtualNetwork \
     --destination-port-ranges 8080 5701 \
     --access Allow \
+    --protocol '*'
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowRdpSshOutbound \
+    --priority 100 \
+    --source-address-prefixes '*' \
+    --source-port-ranges '*' \
+    --destination-address-prefixes VirtualNetwork \
+    --destination-port-ranges 3389 22 \
+    --access Allow \
+    --direction Outbound \
+    --protocol '*'
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowBastionHostCommunication \
+    --priority 110 \
+    --source-address-prefixes VirtualNetwork \
+    --source-port-ranges '*' \
+    --destination-address-prefixes VirtualNetwork \
+    --destination-port-ranges 8080 5701 \
+    --access Allow \
+    --direction Outbound \
+    --protocol '*'
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowAzureCloudOutbound \
+    --priority 120 \
+    --source-address-prefixes '*' \
+    --source-port-ranges '*' \
+    --destination-address-prefixes AzureCloud \
+    --destination-port-ranges 443 \
+    --access Allow \
+    --direction Outbound \
+    --protocol '*'
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowGetSessionInformation \
+    --priority 130 \
+    --source-address-prefixes '*' \
+    --source-port-ranges '*' \
+    --destination-address-prefixes Internet \
+    --destination-port-ranges 80 \
+    --access Allow \
+    --direction Outbound \
     --protocol '*'
 echo jump box VM, spring cloud support/data subnets and bastion subnet NSG has been created
 
@@ -160,8 +212,8 @@ az network vnet subnet create \
     --name AzureBastionSubnet \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${hub_vnet_name} \
-    --address-prefix ${bastion_subnet_prefix}
-
+    --address-prefix ${bastion_subnet_prefix} \
+    --network-security-group ${bastion_subnet_nsg}
 echo all subnets and vnet created
 
 echo create bastion in hub vnet
@@ -279,6 +331,7 @@ az network firewall application-rule create \
     --firewall-name ${firewall_name} \
     --name AllowAks \
     --description "Allow Access for Azure Kubernetes Service" \
+    --protocols https=443 \    
     --resource-group ${hub_resource_group_name} \
     --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
     --fqdn-tags "AzureKubernetesService" \
