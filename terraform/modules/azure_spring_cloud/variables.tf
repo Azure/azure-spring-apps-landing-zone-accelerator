@@ -21,3 +21,7 @@ variable "private_dns_a_record_a_record_ttl" {
   default = 3600
 }
 variable "sc_law_id" {}
+
+variable "sc_cidr" {}
+
+variable "app_insights_name" {}

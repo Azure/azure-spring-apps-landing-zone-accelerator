@@ -1,11 +1,11 @@
 # Jump Box TF Module
 # Subnet for jump_box
 resource "azurerm_subnet" "jump_box" {
-    name                        = "${var.jump_box_name}-subnet"
+    name                        = "jumphost-subnet"
     resource_group_name         = var.resource_group_name
     virtual_network_name        = var.jump_box_vnet_name
     address_prefixes            = [var.jump_box_addr_prefix]
-} 
+}
 
 # NIC for jump_box
 
@@ -25,9 +25,14 @@ resource "azurerm_network_interface" "jump_box" {
 # NSG for jump_box Subnet
 
 resource "azurerm_network_security_group" "jump_box" { 
-    name                        = "${var.jump_box_name}-nsg"
+    name                        = "jumphost-subnet-nsg"
     location                    = var.location
     resource_group_name         = var.resource_group_name
+}
+
+resource "azurerm_subnet_network_security_group_association" "jumpbox_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.jump_box.id 
+  network_security_group_id = azurerm_network_security_group.jump_box.id
 }
 
 # Virtual Machine for jump_box 
@@ -63,6 +68,11 @@ resource "azurerm_virtual_machine" "jump_box" {
   }
 
   os_profile_windows_config {
+  }
+
+  timeouts {
+      create = "60m"
+      delete = "2h"
   }
 
 }
