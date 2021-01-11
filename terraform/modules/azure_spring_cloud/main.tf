@@ -47,19 +47,6 @@ resource "azurerm_monitor_diagnostic_setting" "sc_diag" {
   }
 }
 
-# NSG for Azure Spring Cloud Subnet
-/*
-resource "azurerm_network_security_group" "spring_svc_nsg" { 
-    name                        = "spring-cloud-service-nsg"
-    location                    = var.location
-    resource_group_name         = var.resource_group_name
-}
-
-resource "azurerm_subnet_network_security_group_association" "spring_svc_nsg_assoc" {
-  subnet_id                 = var.service_runtime_subnet_id
-  network_security_group_id = azurerm_network_security_group.spring_svc_nsg.id
-}*/
-
 resource "azurerm_spring_cloud_service" "sc" {
   name                = var.sc_service_name
   resource_group_name = var.sc_resource_group_name
