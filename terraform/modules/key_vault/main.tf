@@ -54,16 +54,69 @@ resource "azurerm_key_vault" "sc_vault" {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions = [
+    certificate_permissions = [
+      "backup",
+      "create",
+      "delete",
+      "deleteissuers",
       "get",
+      "getissuers",
+      "import",
+      "list",
+      "listissuers",
+      "managecontacts",
+      "manageissuers",
+      "purge",
+      "recover",
+      "restore",
+      "setissuers",
+      "update"
+    ]
+
+    key_permissions = [
+      "list",
+      "encrypt",
+      "decrypt",
+      "wrapKey",
+      "unwrapKey",
+      "sign",
+      "verify",
+      "get",
+      "create",
+      "update",
+      "import",
+      "backup",
+      "restore",
+      "recover",
+      "delete",
+      "purge"
     ]
 
     secret_permissions = [
+      "list",
       "get",
+      "set",
+      "backup",
+      "restore",
+      "recover",
+      "purge",
+      "delete"
     ]
 
     storage_permissions = [
+      "backup",
+      "delete",
+      "deletesas",
       "get",
+      "getsas",
+      "listsas",
+      "purge",
+      "recover",
+      "regeneratekey",
+      "restore",
+      "set",
+      "setsas",
+      "update"
     ]
   }
 
