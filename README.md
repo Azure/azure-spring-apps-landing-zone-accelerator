@@ -1,6 +1,7 @@
 # Azure Spring Cloud Lab
 
 ## Overview
+
 This ARM template creates a small lab in Azure that can be used for experimenting with [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) in a typical enterprise landing zone design for a regulated organization.  It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
 
 ![lab image](https://github.com/mattfeltonma/azure-labs/blob/master/azure-spring-cloud/images/lab.jpeg)
@@ -15,58 +16,6 @@ Additional features of the lab are:
 * Log Analytics Workspace where Azure Spring Cloud, Azure Firewall, and the virtual machine deliver logs and metrics.
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage for applications deployed to Azure Spring Cloud
 * Instance of Azure Database for MySQL deployed with a Private Endpoint.  This can be used to deploy the sample app described in this document.
-
-## Prerequisites
-1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-
-2. Run the two commands below to add the required extensions to Azure CLI.
-
-    `az extension add --name firewall`
-
-    `az extension add --name spring-cloud`
-    
-3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to.
-
-    `az account show --subscription mysubscription --query tenantId --output tsv`
-
-4. Get the object id of the security principal (user, managed identity, service principal) that will have access to the Azure Key Vault instance.
-
-    `az ad user show --id someuser@sometenant.com --query objectId --output tsv`
-
-5. Get the object id of the Spring Cloud Resource Provider from your Azure AD tenant.
-
-    `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --output tsv`
-
-6. Create a resource group to deploy the resource to.
-
-    `az group create --name my-resource-group`
-
-## Installation
-1. Execute the template including the parameters of the tenant id from step 3, the object id from step 4, the object id from step 5, and a username for the administrator account on the virtual machine created and for the My SQL instance.
-
-    `az deployment group create --resource-group my-resource-group --name initial --template-file="/Users/mattfelton/OneDrive - Microsoft/Code/Azure Labs/azure-labs/azure-spring-cloud/deploy.json" --parameters tenantId <TENANT_ID>  keyVaultAdminObjectId <KEY_VAULT_ADMIN_OBJECT_ID> springCloudPrincipalObjectId <SPRING_CLOUD_SP_OBJECT_ID>`
-
-You will be prompted to set a password.  This will be the password for the virtual machine and the My SQL instance.
-
-2. Run the add-routes.sh bash script or the commands within it to set the default routes on the Spring Cloud subnets.
-
-## Post Installation
-Install one of the following sample applications:
-* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
-
-
-# Project
-
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
-
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
 
 ## Contributing
 
