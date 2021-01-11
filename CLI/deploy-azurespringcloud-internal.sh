@@ -11,6 +11,7 @@ centralized_services_subnet_name='centralized-services-subnet' #Hub Vnet central
 centralized_services_subnet_prefix='10.9.1.0/24' #Hub VNet centralized services subnet prefix
 gateway_subnet_prefix='10.9.2.0/24' #Hub Vnet Virtual network gateway subnet name
 bastion_subnet_prefix='10.9.4.0/24' #Hub VNet bastion prefix name
+bastion_subnet_nsg='bastion-nsg'
 application_gateway_subnet_name='application-gateway-subnet' #Hub Vnet application gateway subnet name
 application_gateway_subnet_prefix='10.9.3.0/24' #Hub Vnet application GW subnet prefix
 hub_vnet_jumpbox_nsg_name='hub-vnet-jumpbox-nsg' #NSG Name for Hub Vnet Jumpbox VM
@@ -26,7 +27,9 @@ azurespringcloud_service_runtime_subnet_name='service-runtime-subnet' #subnet na
 azurespringcloud_app_subnet_prefix='10.8.1.0/24' #Azure Spring Cloud app subnet prefix 
 azurespringcloud_app_subnet_name='apps-subnet' #Azure Spring Cloud app subnet 
 azure_spring_cloud_support_subnet_name='support-subnet' #Azure Spring Cloud support subnet name
+azure_spring_cloud_support_subnet_nsg=$azure_spring_cloud_support_subnet_name"-nsg"#Azure spring Cloud support subnet nsg
 azure_spring_cloud_data_subnet_name='data-subnet' #azure Spring Cloud data subnet name
+azure_spring_cloud_data_subnet_nsg=$azure_spring_cloud_data_subnet_name"-nsg"#Azure spring Cloud support subnet nsg
 azurespringcloud_data_subnet_prefix='10.8.2.0/24' #Azure Spring Cloud data subnet prefix
 azurespringcloud_support_subnet_prefix='10.8.3.0/24' #Azure Spring Cloud support subnet prefix
 azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Resource Group name
@@ -54,11 +57,71 @@ echo "create hub vnet rg"
 
 az group create --location ${location} --name ${hub_resource_group_name}
 
-echo create NSG for jump box VM
+echo create NSG for jump box VM, spring cloud support/data subnets and bastion subnet
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --name ${hub_vnet_jumpbox_nsg_name}
-echo Jumpbox NSG has been created
+
+az network nsg create \
+    --resource-group ${hub_resource_group_name} \
+    --name ${azure_spring_cloud_support_subnet_nsg}
+
+az network nsg create \
+    --resource-group ${hub_resource_group_name} \
+    --name ${azure_spring_cloud_data_subnet_nsg}
+
+az network nsg create \
+    --resource-group ${hub_resource_group_name} \
+    --name ${bastion_subnet_nsg}
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowHttpsInbound \
+    --priority 100 \
+    --source-address-prefixes '*' \
+    --source-port-ranges '*' \
+    --destination-address-prefixes Internet \
+    --destination-port-ranges 443 \
+    --access Allow \
+    --protocol Tcp
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowGatewayManagerInbound \
+    --priority 110 \
+    --source-address-prefixes '*' \
+    --source-port-ranges '*' \
+    --destination-address-prefixes GatewayManager \
+    --destination-port-ranges 443 \
+    --access Allow \
+    --protocol Tcp
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowHttpsInbound \
+    --priority 120 \
+    --source-address-prefixes '*' \
+    --source-port-ranges '*' \
+    --destination-address-prefixes AzureLoadBalancer \
+    --destination-port-ranges 443 \
+    --access Allow \
+    --protocol Tcp
+
+az network nsg rule create \
+    --resource-group ${hub_resource_group_name} \
+    --nsg-name ${bastion_subnet_nsg} \
+    --name AllowHttpsInbound \
+    --priority 130 \
+    --source-address-prefixes VirtualNetwork \
+    --source-port-ranges '*' \
+    --destination-address-prefixes VirtualNetwork \
+    --destination-port-ranges 8080 5701 \
+    --access Allow \
+    --protocol '*'
+echo jump box VM, spring cloud support/data subnets and bastion subnet NSG has been created
 
 echo create hub vnet
 
@@ -259,7 +322,7 @@ az network vnet subnet create  \
     --name ${azurespringcloud_service_runtime_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
-    --address-prefix ${azurespringcloud_service_runtime_subnet_prefix}
+    --address-prefix ${azurespringcloud_service_runtime_subnet_prefix} 
 
 #Create Azure Spring Cloud App Subnet
 az network vnet subnet create \
@@ -273,13 +336,15 @@ az network vnet subnet create \
     --name ${azure_spring_cloud_data_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
-    --address-prefix ${azurespringcloud_data_subnet_prefix}
+    --address-prefix ${azurespringcloud_data_subnet_prefix} \
+    --network-security-group ${azure_spring_cloud_data_subnet_nsg}
 
 az network vnet subnet create \
     --name ${azure_spring_cloud_support_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --address-prefix ${azurespringcloud_support_subnet_prefix} \
+    --network-security-group ${azure_spring_cloud_support_subnet_nsg}
     --disable-private-endpoint-network-policies true
 echo finished creating azure spring cloud subnets and vnet
 
