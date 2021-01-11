@@ -152,7 +152,7 @@ az network firewall network-rule create \
     --protocols UDP \
     --resource-group ${hub_resource_group_name} \
     --action Allow \
-    --destination-addresses "*" \
+    --destination-fqdns "ntp.ubuntu.com" \
     --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
     --priority 100
 
@@ -216,7 +216,6 @@ az network firewall application-rule create \
     --firewall-name ${firewall_name} \
     --name AllowAks \
     --description "Allow Access for Azure Kubernetes Service" \
-    --protocols https=443 \
     --resource-group ${hub_resource_group_name} \
     --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
     --fqdn-tags "AzureKubernetesService" \
@@ -238,7 +237,7 @@ az network firewall application-rule create \
     --firewall-name ${firewall_name} \
     --name UbuntuLibraries \
     --description "Required CRL Rules" \
-    --protocols https=443 \
+    --protocols http=80 \
     --resource-group ${hub_resource_group_name} \
     --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
     --target-fqdns  "crl.microsoft.com" "mscrl.microsoft.com" "crl3.digicert.com" "ocsp.digicert.com" \
