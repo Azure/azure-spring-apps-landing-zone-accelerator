@@ -370,7 +370,7 @@ az network private-endpoint dns-zone-group create \
 
 #Link Private DNS Zone to Azure Spring Cloud VNet
 az network private-dns link vnet create \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name link-to-${azurespringcloud_vnet_name} \
     --zone-name privatelink.vaultcore.azure.net \
     --virtual-network ${azurespringcloud_vnet_id} \
@@ -380,7 +380,7 @@ az network private-dns link vnet create \
 
 #Link Private DNS Zone to Hub VNet
 az network private-dns link vnet create \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name link-to-${hub_vnet_name} \
     --zone-name privatelink.vaultcore.azure.net \
     --virtual-network ${hub_vnet_id}\
@@ -486,14 +486,14 @@ echo creating private dns zone
 
 #Create Private DNS Zone for Azure Spring Cloud
 az network private-dns zone create \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name private.azuremicroservices.io
 
 echo creating link to Azure Spring Cloud Vnet
 
 #Link Private DNS Zone to Azure Spring Cloud VNet
 az network private-dns link vnet create \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name link-to-${azurespringcloud_vnet_name} \
     --zone-name private.azuremicroservices.io \
     --virtual-network ${azurespringcloud_vnet_id} \
@@ -503,7 +503,7 @@ echo creating link to Hub Vnet
 
 #Link Private DNS Zone to Hub VNet
 az network private-dns link vnet create \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name link-to-${hub_vnet_name} \
     --zone-name private.azuremicroservices.io \
     --virtual-network ${hub_vnet_id}\
@@ -519,7 +519,7 @@ azurespringcloud_internal_lb_private_ip=$(az network lb show --name kubernetes-i
 
 echo starting to add A record for ILB load balancer
 az network private-dns record-set a add-record \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --zone-name private.azuremicroservices.io \
     --record-set-name '*' \
     --ipv4-address ${azurespringcloud_internal_lb_private_ip}
