@@ -413,7 +413,7 @@ az network private-endpoint create \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${mysql_id} \
-    --group-id vault \
+    --group-id mysqlServer \
     --connection-name "mysql-private-link-connection"
 
 az network private-dns zone create \
@@ -428,6 +428,22 @@ az network private-endpoint dns-zone-group create \
     --private-dns-zone $mysql_dns_id \
     --zone-name privatelink.mysql.database.azure.com \
     --resource-group ${hub_resource_group_name}
+
+#Link Private DNS Zone to Azure Spring Cloud VNet
+az network private-dns link vnet create \
+    --resource-group ${hub_resource_group_name} \
+    --name link-to-${azurespringcloud_vnet_name} \
+    --zone-name privatelink.mysql.database.azure.com \
+    --virtual-network ${azurespringcloud_vnet_id} \
+    --registration-enabled false
+
+#Link Private DNS Zone to Hub VNet
+az network private-dns link vnet create \
+    --resource-group ${hub_resource_group_name} \
+    --name link-to-${hub_vnet_name} \
+    --zone-name privatelink.mysql.database.azure.com \
+    --virtual-network ${hub_vnet_id}\
+    --registration-enabled false
 echo MySql DB, Private endpoint and Private DNS Zone complete
 
 echo Getting app subnet id
