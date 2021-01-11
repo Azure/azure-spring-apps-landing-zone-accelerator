@@ -1,5 +1,5 @@
 resource "azurerm_log_analytics_workspace" "sc_law" {
-  name                = "sc-law-${random_string.random.result}"
+  name                = var.law_name
   location            = var.location
   resource_group_name = var.resource_group_name
   sku                 = "PerGB2018"
@@ -7,7 +7,7 @@ resource "azurerm_log_analytics_workspace" "sc_law" {
 }
 
 resource "random_string" "random" {
-  length = 8
+  length = 13
   upper = false
   special = false
 
