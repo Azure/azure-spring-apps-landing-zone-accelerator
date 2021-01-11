@@ -7,7 +7,7 @@ resource "azurerm_subnet" "azure_firewall" {
 } 
 
 resource "azurerm_public_ip" "azure_firewall" {
-    name                        = "azure_firewall_ip"
+    name                        = "azure-firewall-ip"
     location                    = var.location
     resource_group_name         = var.resource_group_name
     allocation_method           = "Static"

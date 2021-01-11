@@ -43,3 +43,7 @@ output "sc_apps_subnetid" {
 output "sc_support_subnetid" {
     value = azurerm_subnet.azuresbcloudsupport.id
 }
+
+output "sc_data_subnetid" {
+    value = azurerm_subnet.azuresbclouddata.id
+}

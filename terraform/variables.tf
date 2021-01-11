@@ -8,9 +8,12 @@ variable "location" {
     default = "East US 2"
 } 
 
-# my sql module
+# mysql module
 
-variable "my_sql_name" {}
+variable "mysql_server_name_prefix" {
+    type = string
+    default = "mysql"
+}
 variable "my_sql_admin" {}
 variable "my_sql_password" {}
 
@@ -22,11 +25,15 @@ variable "sc_resource_group_name" {
     default     = "sc-svc-rg"
 }
 
+variable "app_insights_prefix" {
+    type        = string
+    default     = "appi"
+}
 
-variable "sc_service_name" {
+variable "sc_prefix" {
     type        = string 
     description = "Spring Cloud Name"
-    default     = "sc"
+    default     = "spring"
 }
 
 # Key Vault module
@@ -34,14 +41,21 @@ variable "sc_service_name" {
 variable "keyvault_prefix" {
     type        = string 
     description = "Key Vault Prefix"
-    default     = "sckeyvault"
+    default     = "kv"
+}
+
+# LAW module
+
+variable law_prefix {
+    type       = string
+    default    = "la"
 }
 
 # Hub-spoke module 
 variable "hub_vnet_name" {
     type        = string 
     description = "Hub VNET name"
-    default     = "hub-vnet"
+    default     = "vnet-hub"
 }
 variable "hub_vnet_addr_prefix" {
     type        = string 
@@ -51,7 +65,7 @@ variable "hub_vnet_addr_prefix" {
 variable "spoke_vnet_name" {
     type        = string 
     description = "Spoke VNET name"
-    default     = "spoke-vnet"
+    default     = "vnet-spoke"
 }
 variable "spoke_vnet_addr_prefix" {
     type        = string 
@@ -60,18 +74,78 @@ variable "spoke_vnet_addr_prefix" {
 }
 variable "azurefw_name" {
     type        = string
-    default     = "corp-azurefw"
+    default     = "fwhub"
 }
 variable "azurefw_addr_prefix" {
     type        = string 
     description = "Azure Firewall VNET prefix"
     default     = "10.230.0.0/26"
 }
+
+# Hub Subnets
+
+variable "appgw-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "AppGatewaySubnet"
+}
+variable "appgw-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.230.3.0/24"
+}
+
+# Azure Spring Cloud Variables
+
+variable "springboot-service-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "sc-service-subnet"
+}
+variable "springboot-service-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.231.1.0/24"
+}
+variable "springboot-apps-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "sc-apps-subnet"
+}
+variable "springboot-apps-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.231.2.0/24"
+}
+
+variable "springboot-data-subnet-name" {
+    type        = string
+    description = "Spring Cloud Data Services Subnet"
+    default     = "sc-data-subnet"
+}
+variable "springboot-data-subnet-addr" {
+    type        = string
+    description = "Spring Cloud Data Services Subnet"
+    default     = "10.231.3.0/24"
+}
+
+variable "springboot-support-subnet-addr" {
+    type        = string
+    description = "Spring Cloud Private Link Subnet"
+    default     = "10.231.4.0/24"
+}
+
+variable "springboot-support-subnet-name" {
+    type        = string
+    description = "Spring Cloud Private Link Subnet Name"
+    default     = "sc-support-subnet"
+}
+
 # Azure Bastion module
 
 variable "azurebastion_name" {
     type        = string
-    default     = "corp-azure-bastion"
+    default     = "corp-bastion-svc"
 }
 variable "azurebastion_addr_prefix" {
     type        = string 
@@ -82,7 +156,7 @@ variable "azurebastion_addr_prefix" {
 # Jump box module
 variable "jump_box_name" {
     type        = string
-    default     = "corpjump01"
+    default     = "jumphostvm"
 }
 variable "jump_box_addr_prefix" {
     type        = string 
