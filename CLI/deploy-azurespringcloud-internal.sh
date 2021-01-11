@@ -38,6 +38,10 @@ echo "Enter full UPN of Key Vault Admin: "
 read userupn
 admin_object_id=$(az ad user show --id $userupn --query objectId --output tsv)
 
+echo "Enter MySql Db admin name: "
+read mysqladmin
+mysqldb_admin=$mysqladmin
+
 echo "Enter MySql Db admin password: "
 read mysqlpassword
 mysqldb_password=$mysqlpassword
@@ -391,7 +395,7 @@ az mysql server create \
 	--name ${azure_mysql_name} \
 	--resource-group ${hub_resource_group_name} \
 	--location ${location} \
-	--admin-user mysqladmin \
+	--admin-user $mysqldb_admin \
 	--admin-password $mysqldb_password \
 	--sku-name GP_Gen5_2
 	--ssl-enforcement Disabled \
