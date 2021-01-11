@@ -1,20 +1,6 @@
 
 data "azurerm_client_config" "current" {}
 
-resource "random_string" "number" {
-  length  = 6
-  upper   = false
-  lower   = false
-  number  = true
-  special = false
-}
-
-locals {
-
-  keyvault_name = join("",
-            [var.keyvault_prefix],
-            [random_string.number.result])
-}
 
 resource "azurerm_private_dns_zone" "keyvault_zone" {
   name                = "privatelink.vaultcore.azure.net"
@@ -35,8 +21,21 @@ resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
   virtual_network_id    = var.spoke_virtual_network_id
 }
 
+# NSG for keyvault subnet
+
+resource "azurerm_network_security_group" "support_svc_nsg" { 
+    name                        = "support-service-nsg"
+    location                    = var.location
+    resource_group_name         = var.resource_group_name
+}
+
+resource "azurerm_subnet_network_security_group_association" "support_svc_nsg_assoc" {
+  subnet_id                 = var.sc_support_subnetid
+  network_security_group_id = azurerm_network_security_group.support_svc_nsg.id
+}
+
 resource "azurerm_key_vault" "sc_vault" {
-  name                = local.keyvault_name
+  name                = var.keyvault_name
   location            = var.location
   resource_group_name = var.resource_group_name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -49,10 +48,23 @@ resource "azurerm_key_vault" "sc_vault" {
   network_acls {
     bypass         = "AzureServices"
     default_action = "Deny"
-    /*
-    ip_rules = [
-      "${chomp(data.http.myip.body)}/32"
-    ]*/
+ 
+  }
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    key_permissions = [
+      "get",
+    ]
+
+    secret_permissions = [
+      "get",
+    ]
+
+    storage_permissions = [
+      "get",
+    ]
   }
 
 }
