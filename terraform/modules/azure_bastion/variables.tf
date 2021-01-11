@@ -1,17 +1,5 @@
 variable "resource_group_name" {}
 variable "location" {}
-
-variable "azurebastion_name" {
-    type        = string
-    description = "azurebastion Name"
-}
-
-variable "azurebastion_vnet_name" {
-    type        = string
-    description = "VNet where the Azure Bastion will be deployed to."
-}
-
-variable "azurebastion_addr_prefix" {
-    type        = string
-    description = "Address prefix for Azure Bastion Subnet. Ex. 10.0.0.0/24"
-}
+variable "azurebastion_name" {}
+variable "azurebastion_vnet_name" {}
+variable "azurebastion_addr_prefix" {}
