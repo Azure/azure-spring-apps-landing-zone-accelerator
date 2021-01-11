@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #parameters
-randomstring=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 15 | head -n 1)
+randomstring=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 7 | head -n 1)
 location='eastus' #location of Azure Spring Cloud Virtual Network
 hub_vnet_name='hub-vnet' #Hub Virtual Network Name
 hub_resource_group_name='hub-rg' #Hub Virtual Network Resource Group name
@@ -376,8 +376,6 @@ az network private-dns link vnet create \
     --virtual-network ${azurespringcloud_vnet_id} \
     --registration-enabled false
 
-
-
 #Link Private DNS Zone to Hub VNet
 az network private-dns link vnet create \
     --resource-group ${hub_resource_group_name} \
@@ -391,17 +389,42 @@ echo finished creating azure spring cloud akv
 echo Creating mySQL Db
 az mysql server create \
 	--name ${azure_mysql_name} \
-	--resource-group ${azurespringcloud_resource_group_name} \
+	--resource-group ${hub_resource_group_name} \
 	--location ${location} \
 	--admin-user mysqladmin \
 	--admin-password $mysqldb_password \
 	--sku-name GP_Gen5_2
-	--ssl-enforcement DISABLED \
+	--ssl-enforcement Disabled \
 	--backup-retention 7 \
 	--geo-redundant-backup Disabled \
+    --minimal-tls-version TLS1_2 \
 	--storage-size 51200 \
     --public-network-access Disabled
 
+mysql_id=$(az mysql server show -g ${hub_resource_group_name} --name ${azure_mysql_name} --query id --output tsv)
+
+az network private-endpoint create \
+    --name ${azure_mysql_name}"-endpoint" \
+    --resource-group ${hub_resource_group_name} \
+    --vnet-name ${azurespringcloud_vnet_name} \
+    --subnet ${azure_spring_cloud_support_subnet_name} \
+    --private-connection-resource-id ${mysql_id} \
+    --group-id vault \
+    --connection-name "mysql-private-link-connection"
+
+az network private-dns zone create \
+    --resource-group ${hub_resource_group_name} \
+    --name privatelink.mysql.database.azure.com
+
+mysql_dns_id=$(az network private-dns zone show --resource-group ${hub_resource_group_name} --name privatelink.mysql.database.azure.com --query id --output tsv)
+
+az network private-endpoint dns-zone-group create \
+    --endpoint-name ${azure_mysql_name}"-endpoint" \
+    --name privatelink.mysql.database.azure.com \
+    --private-dns-zone $mysql_dns_id \
+    --zone-name privatelink.mysql.database.azure.com \
+    --resource-group ${hub_resource_group_name}
+echo MySql DB, Private endpoint and Private DNS Zone complete
 
 echo Getting app subnet id
 
