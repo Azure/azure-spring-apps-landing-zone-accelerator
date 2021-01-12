@@ -34,6 +34,7 @@ resource "azurerm_firewall" "azure_firewall_instance" {
       create = "60m"
       delete = "2h"
   }
+  depends_on = [ azurerm_public_ip.azure_firewall ]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "azfw_diag" {
