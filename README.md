@@ -22,8 +22,8 @@ Additional features of the lab are:
 
 There are two methods to deploy the architecture in the diagram documented in this repo.
 
-* [ARM Deployment](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/terraform-changes/ARM)
-* [Terraform Deployment](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/terraform-changes/terraform)
+* [ARM Deployment](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/wip/update-documentation/ARM)
+* [Terraform Deployment](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/wip/update-documentation/terraform)
 
 Both the ARM and Terraform scripts will deploy Azure Spring Cloud in a secure environment. Once the core infrastructure has been deployed, the Post Installation process can be followed to test sample applications.
 
