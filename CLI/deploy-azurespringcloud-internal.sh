@@ -27,9 +27,9 @@ azurespringcloud_service_runtime_subnet_name='service-runtime-subnet' #subnet na
 azurespringcloud_app_subnet_prefix='10.8.1.0/24' #Azure Spring Cloud app subnet prefix 
 azurespringcloud_app_subnet_name='apps-subnet' #Azure Spring Cloud app subnet 
 azure_spring_cloud_support_subnet_name='support-subnet' #Azure Spring Cloud support subnet name
-azure_spring_cloud_support_subnet_nsg=$azure_spring_cloud_support_subnet_name'-nsg'#Azure spring Cloud support subnet nsg
+azure_spring_cloud_support_subnet_nsg='data-nsg'#Azure spring Cloud support subnet nsg
 azure_spring_cloud_data_subnet_name='data-subnet' #azure Spring Cloud data subnet name
-azure_spring_cloud_data_subnet_nsg=$azure_spring_cloud_data_subnet_name'-nsg'#Azure spring Cloud support subnet nsg
+azure_spring_cloud_data_subnet_nsg='support-nsg'#Azure spring Cloud support subnet nsg
 azurespringcloud_data_subnet_prefix='10.8.2.0/24' #Azure Spring Cloud data subnet prefix
 azurespringcloud_support_subnet_prefix='10.8.3.0/24' #Azure Spring Cloud support subnet prefix
 azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Resource Group name
@@ -326,7 +326,7 @@ az network firewall application-rule create \
     --firewall-name ${firewall_name} \
     --name AllowAks \
     --description "Allow Access for Azure Kubernetes Service" \
-    --protocols https=443 \    
+    --protocols https=443 \
     --resource-group ${hub_resource_group_name} \
     --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
     --fqdn-tags "AzureKubernetesService" \
@@ -346,13 +346,13 @@ az network firewall application-rule create \
 az network firewall application-rule create \
     --collection-name MicrosoftCRLrules \
     --firewall-name ${firewall_name} \
-    --name UbuntuLibraries \
+    --name CRLLibraries \
     --description "Required CRL Rules" \
     --protocols http=80 \
     --resource-group ${hub_resource_group_name} \
     --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
     --target-fqdns  "crl.microsoft.com" "mscrl.microsoft.com" "crl3.digicert.com" "ocsp.digicert.com" \
-    --priority 101 \
+    --priority 110 \
     --action allow
 
 
@@ -401,7 +401,7 @@ az network vnet subnet create \
     --vnet-name ${azurespringcloud_vnet_name} \
     --address-prefix ${azurespringcloud_support_subnet_prefix} \
     --network-security-group ${azure_spring_cloud_support_subnet_nsg}
-    --disable-private-endpoint-network-policies true
+
 
 #Get Resource ID  for Azure Spring Cloud Vnet
 azurespringcloud_vnet_id=$(az network vnet show \
