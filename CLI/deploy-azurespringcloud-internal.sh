@@ -648,13 +648,19 @@ az spring-cloud create \
     --service-runtime-subnet ${service_runtime_subnet_id} \
     --app-subnet ${apps_subnet_id}
 
-# Creates diagnostic settings to send logs and metrics to Log Analytics Workspace
+# Gets LAW resource id and creates diagnostic settings to send logs and metrics to Log Analytics Workspace
+law_id=$(az monitor log-analytics workspace show \
+     --resource-group ${hub_resource_group_name} \
+     --workspace-name ${log_analytics_workspace_name} \
+     --query id --output tsv)
+
+
 az monitor diagnostic-settings create \
     --name "ToLAW" \
     --resource ${azurespringcloud_service} \
     --resource-group ${azurespringcloud_resourcegroup_name} \
     --resource-type Microsoft.AppPlatform/Spring \
-    --workspace ${log_analytics_workspace_name} \
+    --workspace ${law_id} \
     --logs '[
         {
             "category": "ApplicationConsole",
