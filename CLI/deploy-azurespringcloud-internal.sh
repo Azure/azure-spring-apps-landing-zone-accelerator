@@ -142,7 +142,7 @@ az network nsg rule create \
 az network nsg rule create \
     --resource-group ${hub_resource_group_name} \
     --nsg-name ${bastion_subnet_nsg} \
-    --name AllowBastionHostCommunication \
+    --name AllowBastionHostCommunicationOutbound \
     --priority 110 \
     --source-address-prefixes VirtualNetwork \
     --source-port-ranges '*' \
@@ -367,7 +367,7 @@ az monitor diagnostic-settings create \
     --name "ToLAW" \
     --resource ${firewall_name} \
     --resource-group ${hub_resource_group_name} \
-    --resource-type 'Microsoft.Network/azureFirewalls' \
+    --resource-type Microsoft.Network/azureFirewalls \
     --workspace ${log_analytics_workspace_name} \
     --logs '[
         {
@@ -653,7 +653,7 @@ az monitor diagnostic-settings create \
     --name "ToLAW" \
     --resource ${azurespringcloud_service} \
     --resource-group ${azurespringcloud_service_resourcegroup_name} \
-    --resource-type 'Microsoft.AppPlatform/Spring' \
+    --resource-type Microsoft.AppPlatform/Spring \
     --workspace ${log_analytics_workspace_name} \
     --logs '[
         {
