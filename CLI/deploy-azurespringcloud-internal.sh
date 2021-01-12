@@ -399,7 +399,8 @@ az network vnet subnet create \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --address-prefix ${azurespringcloud_support_subnet_prefix} \
-    --network-security-group ${azure_spring_cloud_support_subnet_nsg}
+    --network-security-group ${azure_spring_cloud_support_subnet_nsg} \
+    --disable-private-endpoint-network-policies true 
 
 
 #Get Resource ID  for Azure Spring Cloud Vnet
