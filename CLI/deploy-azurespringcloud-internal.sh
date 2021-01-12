@@ -110,7 +110,7 @@ az network nsg rule create \
 az network nsg rule create \
     --resource-group ${hub_resource_group_name} \
     --nsg-name ${bastion_subnet_nsg} \
-    --name AllowBastionHostCommunication \
+    --name AllowBastionHostCommunicationInbound \
     --priority 130 \
     --source-address-prefixes VirtualNetwork \
     --source-port-ranges '*' \
