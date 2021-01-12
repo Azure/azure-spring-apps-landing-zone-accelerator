@@ -1,6 +1,9 @@
 
 data "azurerm_client_config" "current" {}
 
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
+}
 
 resource "azurerm_private_dns_zone" "keyvault_zone" {
   name                = "privatelink.vaultcore.azure.net"
@@ -41,13 +44,17 @@ resource "azurerm_key_vault" "sc_vault" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "standard"
 
-  soft_delete_enabled        = true
   purge_protection_enabled   = false
   soft_delete_retention_days = 7
+
+  
 
   network_acls {
     bypass         = "AzureServices"
     default_action = "Deny"
+    ip_rules = [
+      "${chomp(data.http.myip.body)}/32"
+  ]
  
   }
   access_policy {
