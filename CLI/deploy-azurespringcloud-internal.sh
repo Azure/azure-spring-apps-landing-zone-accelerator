@@ -657,7 +657,7 @@ az monitor diagnostic-settings create \
     --workspace ${log_analytics_workspace_name} \
     --logs '[
         {
-            "category": "AzureFirewallApplicationRule",
+            "category": "ApplicationConsole",
             "enabled": true,
             "retentionPolicy": {
                 "enabled": false,
@@ -665,15 +665,7 @@ az monitor diagnostic-settings create \
                 }
         },
         {
-            "category": "AzureFirewallNetworkRule",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "AzureFirewallDnsProxy",
+            "category": "SystemLogs",
             "enabled": true,
             "retentionPolicy": {
                 "enabled": false,
@@ -683,7 +675,55 @@ az monitor diagnostic-settings create \
     ]' \
     --metrics '[
         {
-            "category": "AllMetrics",
+            "category": "Performance (Java)",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "Request (Java)",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "Error (Java)",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "Session (Java)",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "Performance (.NET)",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "Request (.NET)",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "Common",
             "enabled": true,
             "retentionPolicy": {
                 "enabled": false,
