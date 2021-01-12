@@ -27,9 +27,9 @@ azurespringcloud_service_runtime_subnet_name='service-runtime-subnet' #subnet na
 azurespringcloud_app_subnet_prefix='10.8.1.0/24' #Azure Spring Cloud app subnet prefix 
 azurespringcloud_app_subnet_name='apps-subnet' #Azure Spring Cloud app subnet 
 azure_spring_cloud_support_subnet_name='support-subnet' #Azure Spring Cloud support subnet name
-azure_spring_cloud_support_subnet_nsg='data-nsg'#Azure spring Cloud support subnet nsg
+azure_spring_cloud_support_subnet_nsg='support-nsg' #Azure spring Cloud support subnet nsg
 azure_spring_cloud_data_subnet_name='data-subnet' #azure Spring Cloud data subnet name
-azure_spring_cloud_data_subnet_nsg='support-nsg'#Azure spring Cloud support subnet nsg
+azure_spring_cloud_data_subnet_nsg='data-nsg' #Azure spring Cloud support subnet nsg
 azurespringcloud_data_subnet_prefix='10.8.2.0/24' #Azure Spring Cloud data subnet prefix
 azurespringcloud_support_subnet_prefix='10.8.3.0/24' #Azure Spring Cloud support subnet prefix
 azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Resource Group name
@@ -65,7 +65,6 @@ az group create --location ${location} --name ${hub_resource_group_name}
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --name ${hub_vnet_jumpbox_nsg_name}
-
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
@@ -561,7 +560,6 @@ az network private-dns link vnet create \
     --zone-name privatelink.mysql.database.azure.com \
     --virtual-network ${hub_vnet_id}\
     --registration-enabled false
-echo MySql DB, Private endpoint and Private DNS Zone complete
 
 
 #Gets id of Azure Spring Cloud apps subnet
