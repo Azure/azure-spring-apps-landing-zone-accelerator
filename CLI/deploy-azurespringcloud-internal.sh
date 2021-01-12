@@ -652,7 +652,7 @@ az spring-cloud create \
 az monitor diagnostic-settings create \
     --name "ToLAW" \
     --resource ${azurespringcloud_service} \
-    --resource-group ${azurespringcloud_service_resourcegroup_name} \
+    --resource-group ${azurespringcloud_resourcegroup_name} \
     --resource-type Microsoft.AppPlatform/Spring \
     --workspace ${log_analytics_workspace_name} \
     --logs '[
