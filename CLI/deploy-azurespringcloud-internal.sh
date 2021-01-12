@@ -4,7 +4,8 @@
 randomstring=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 7 | head -n 1)
 location='eastus' #location of Azure Spring Cloud Virtual Network
 hub_vnet_name='hub-vnet' #Hub Virtual Network Name
-hub_resource_group_name='hub-rg' #Hub Virtual Network Resource Group name
+hub_resource_group_name='hub-rg' #Hub Virtual Network Resource Group 
+log_analytics_workspace_name='law-'$randomstring #Name of Log Analytics Workspace used in script
 hub_vnet_address_prefixes='10.9.0.0/16' #Hub Virtual Network Address Prefixes
 firewal_subnet_prefix='10.9.0.0/24' #Address prefix of FW subnet 
 centralized_services_subnet_name='centralized-services-subnet' #Hub Vnet centralized services subnet
@@ -60,6 +61,13 @@ vm_password=$vmpassword
 
 # Creates Hub resource Group
 az group create --location ${location} --name ${hub_resource_group_name}
+
+# Creates Log Analytics Workspace 
+az monitor log-analytics workspace create \
+    --resource-group ${hub_resource_group_name} \
+    --workspace-name ${log_analytics_workspace_name} \
+    --location ${location} \
+    --sku PerGB2018
 
 # Creates NSG for jump box VM and Azure Bastion subnets
 az network nsg create \
@@ -354,6 +362,51 @@ az network firewall application-rule create \
     --priority 110 \
     --action allow
 
+# Creates Diagnostic Settings to send logs and metrics to Log Analytics Workspace
+az monitor diagnostic-settings create \
+    --name "ToLAW" \
+    --resource ${firewall_name} \
+    --resource-group ${hub_resource_group_name} \
+    --resource-type 'Microsoft.Network/azureFirewalls' \
+    --workspace ${log_analytics_workspace_name} \
+    --logs '[
+        {
+            "category": "AzureFirewallApplicationRule",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "AzureFirewallNetworkRule",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "AzureFirewallDnsProxy",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        }   
+    ]' \
+    --metrics '[
+        {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        }
+    ]'
+
+
 
 # Creates NSG for Azure Spring Cloud data and support subnets
 az network nsg create \
@@ -595,7 +648,49 @@ az spring-cloud create \
     --service-runtime-subnet ${service_runtime_subnet_id} \
     --app-subnet ${apps_subnet_id}
 
-
+# Creates diagnostic settings to send logs and metrics to Log Analytics Workspace
+az monitor diagnostic-settings create \
+    --name "ToLAW" \
+    --resource ${azurespringcloud_service} \
+    --resource-group ${azurespringcloud_service_resourcegroup_name} \
+    --resource-type 'Microsoft.AppPlatform/Spring' \
+    --workspace ${log_analytics_workspace_name} \
+    --logs '[
+        {
+            "category": "AzureFirewallApplicationRule",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "AzureFirewallNetworkRule",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        },
+        {
+            "category": "AzureFirewallDnsProxy",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        }   
+    ]' \
+    --metrics '[
+        {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+                "enabled": false,
+                "days": 0
+                }
+        }
+    ]'
 
 
 #Gets Azure Spring Cloud apps routetable and adds route to Azure Firewall
