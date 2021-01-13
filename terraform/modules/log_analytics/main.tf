@@ -5,10 +5,3 @@ resource "azurerm_log_analytics_workspace" "sc_law" {
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
-
-resource "random_string" "random" {
-  length = 13
-  upper = false
-  special = false
-
-}

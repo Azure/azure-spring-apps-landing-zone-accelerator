@@ -19,14 +19,7 @@ resource "azurerm_resource_group" "sc_corp_rg" {
     location                    = var.location
 
 }
-/*
-# SC Resource group 
-resource "azurerm_resource_group" "sc_spring_cloud_rg" {
-    name                        = var.sc_resource_group_name 
-    location                    = var.location
 
-}
-*/
 resource "random_string" "random" {
   length = 13
   upper = false
@@ -102,7 +95,7 @@ module "hub_spoke" {
     springboot-support-subnet-name  = var.springboot-support-subnet-name
     appgw-subnet-name               = var.appgw-subnet-name
     appgw-subnet-addr               = var.appgw-subnet-addr
-    azurefw_name                    = var.azurefw_name
+    azurefw_name                    = "${var.azurefw_name}-${random_string.random.result}"
     azurefw_addr_prefix             = var.azurefw_addr_prefix
 
     azurebastion_name               = var.azurebastion_name
@@ -114,5 +107,5 @@ module "hub_spoke" {
     jump_box_vm_size                    = var.jump_box_vm_size
     jump_box_admin_username             = var.jump_box_admin_username
     jump_box_password                   = var.jump_box_password
-    depends_on = [ azurerm_resource_group.sc_corp_rg ]
+    depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
