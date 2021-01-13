@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #parameters
-randomstring=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 7 | head -n 1)
+randomstring=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | fold -w 13 | head -n 1)
 location='eastus2' #location of Azure Spring Cloud Virtual Network
 hub_vnet_name='vnet-hub' #Hub Virtual Network Name
 hub_resource_group_name='sc-corp-rg' #Hub Virtual Network Resource Group 
