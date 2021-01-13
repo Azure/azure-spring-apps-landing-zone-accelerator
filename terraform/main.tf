@@ -19,14 +19,14 @@ resource "azurerm_resource_group" "sc_corp_rg" {
     location                    = var.location
 
 }
-
+/*
 # SC Resource group 
 resource "azurerm_resource_group" "sc_spring_cloud_rg" {
     name                        = var.sc_resource_group_name 
     location                    = var.location
 
 }
-
+*/
 resource "random_string" "random" {
   length = 13
   upper = false
@@ -51,11 +51,10 @@ module "spring_cloud" {
   hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
   spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
   sc_law_id                       = module.log_analytics.log_analytics_id
-  sc_resource_group_name          = var.sc_resource_group_name
   sc_service_name                 = "${var.sc_prefix}-${random_string.random.result}"
   app_insights_name               = "${var.app_insights_prefix}-${random_string.random.result}"
   azure_fw_private_ip             = module.hub_spoke.azure_firewall_private_ip
-  depends_on = [ azurerm_resource_group.sc_spring_cloud_rg ]
+  depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "my_sql" {
