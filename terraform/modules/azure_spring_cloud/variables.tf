@@ -5,7 +5,6 @@ variable "service_runtime_subnet_id" {}
 variable "hub_virtual_network_id" {}
 variable "azure_fw_private_ip" {}
 variable "spoke_virtual_network_id" {}
-variable "sc_resource_group_name" {}
 variable "sc_service_name" {}
 variable "internal_lb_svc_load_balancer_name" {
     type    = string
