@@ -1,0 +1,181 @@
+variable "resource_group_name" {
+    type        = string 
+    description = "Core Infrastructure Resource Group"
+    default     = "sc-corp-rg"
+}
+variable "location" {
+    type = string
+    default = "East US 2"
+} 
+
+# mysql module
+
+variable "mysql_server_name_prefix" {
+    type = string
+    default = "mysql"
+}
+variable "my_sql_admin" {}
+variable "my_sql_password" {}
+
+# Spring Cloud module
+
+
+variable "app_insights_prefix" {
+    type        = string
+    default     = "appi"
+}
+
+variable "sc_prefix" {
+    type        = string 
+    description = "Spring Cloud Name"
+    default     = "spring"
+}
+
+# Key Vault module
+
+variable "keyvault_prefix" {
+    type        = string 
+    description = "Key Vault Prefix"
+    default     = "kv"
+}
+
+# LAW module
+
+variable law_prefix {
+    type       = string
+    default    = "la"
+}
+
+# Hub-spoke module 
+variable "hub_vnet_name" {
+    type        = string 
+    description = "Hub VNET name"
+    default     = "vnet-hub"
+}
+variable "hub_vnet_addr_prefix" {
+    type        = string 
+    description = "Hub VNET prefix"
+    default     = "10.230.0.0/16"
+}
+variable "spoke_vnet_name" {
+    type        = string 
+    description = "Spoke VNET name"
+    default     = "vnet-spoke"
+}
+variable "spoke_vnet_addr_prefix" {
+    type        = string 
+    description = "Spoke VNET prefix"
+    default     = "10.231.0.0/16"
+}
+variable "azurefw_name" {
+    type        = string
+    default     = "fwhub"
+}
+variable "azurefw_addr_prefix" {
+    type        = string 
+    description = "Azure Firewall VNET prefix"
+    default     = "10.230.0.0/26"
+}
+
+# Hub Subnets
+
+variable "appgw-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "AppGatewaySubnet"
+}
+variable "appgw-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.230.3.0/24"
+}
+
+# Azure Spring Cloud Variables
+
+variable "springboot-service-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "sc-service-subnet"
+}
+variable "springboot-service-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.231.1.0/24"
+}
+variable "springboot-apps-subnet-name" {
+    type        = string
+    description = "Spring Cloud Service Subnet"
+    default     = "sc-apps-subnet"
+}
+variable "springboot-apps-subnet-addr" {
+    type        = string
+    description = "Spring Cloud CIDR Subnet"
+    default     = "10.231.2.0/24"
+}
+
+variable "springboot-data-subnet-name" {
+    type        = string
+    description = "Spring Cloud Data Services Subnet"
+    default     = "sc-data-subnet"
+}
+variable "springboot-data-subnet-addr" {
+    type        = string
+    description = "Spring Cloud Data Services Subnet"
+    default     = "10.231.3.0/24"
+}
+
+variable "springboot-support-subnet-addr" {
+    type        = string
+    description = "Spring Cloud Private Link Subnet"
+    default     = "10.231.4.0/24"
+}
+
+variable "springboot-support-subnet-name" {
+    type        = string
+    description = "Spring Cloud Private Link Subnet Name"
+    default     = "sc-support-subnet"
+}
+
+# Azure Bastion module
+
+variable "azurebastion_name" {
+    type        = string
+    default     = "corp-bastion-svc"
+}
+variable "azurebastion_addr_prefix" {
+    type        = string 
+    description = "Azure Bastion Address Prefix"
+    default     = "10.230.1.0/27"
+}
+
+# Jump box module
+variable "jump_box_name" {
+    type        = string
+    default     = "jumphostvm"
+}
+variable "jump_box_addr_prefix" {
+    type        = string 
+    description = "Azure Jump Host Address Prefix"
+    default     = "10.230.4.0/28"   
+}
+variable "jump_box_private_ip_addr" {
+    type        = string 
+    description = "Azure Jump Host Address"
+    default     = "10.230.4.5"
+}
+variable "jump_box_vm_size" {
+    type        = string 
+    description = "Azure Jump Host VM SKU"
+    default     = "Standard_DS3_v2"
+}
+variable "jump_box_admin_username" {
+    type        = string 
+    description = "Azure Admin Username"
+    default     = "azureuser"
+}
+variable "jump_box_password" {}
+
+variable "sc_cidr" {
+    type        = list
+    default     = ["10.4.0.0/16", "10.5.0.0/16", "10.3.0.1/16"]
+}
