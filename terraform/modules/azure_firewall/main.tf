@@ -75,6 +75,7 @@ resource "azurerm_monitor_diagnostic_setting" "azfw_diag" {
       enabled = false
     }
   }
+
 }
 
 resource "azurerm_firewall_network_rule_collection" "private_aks" {
