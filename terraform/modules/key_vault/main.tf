@@ -1,19 +1,8 @@
 
 data "azurerm_client_config" "current" {}
 
-resource "random_string" "number" {
-  length  = 6
-  upper   = false
-  lower   = false
-  number  = true
-  special = false
-}
-
-locals {
-
-  keyvault_name = join("",
-            [var.keyvault_prefix],
-            [random_string.number.result])
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
 }
 
 resource "azurerm_private_dns_zone" "keyvault_zone" {
@@ -35,24 +24,107 @@ resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
   virtual_network_id    = var.spoke_virtual_network_id
 }
 
+# NSG for keyvault subnet
+
+resource "azurerm_network_security_group" "support_svc_nsg" { 
+    name                        = "support-service-nsg"
+    location                    = var.location
+    resource_group_name         = var.resource_group_name
+}
+
+resource "azurerm_subnet_network_security_group_association" "support_svc_nsg_assoc" {
+  subnet_id                 = var.sc_support_subnetid
+  network_security_group_id = azurerm_network_security_group.support_svc_nsg.id
+}
+
 resource "azurerm_key_vault" "sc_vault" {
-  name                = local.keyvault_name
+  name                = var.keyvault_name
   location            = var.location
   resource_group_name = var.resource_group_name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "standard"
 
-  soft_delete_enabled        = true
   purge_protection_enabled   = false
   soft_delete_retention_days = 7
+
+  
 
   network_acls {
     bypass         = "AzureServices"
     default_action = "Deny"
-    /*
     ip_rules = [
       "${chomp(data.http.myip.body)}/32"
-    ]*/
+  ]
+ 
+  }
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    certificate_permissions = [
+      "backup",
+      "create",
+      "delete",
+      "deleteissuers",
+      "get",
+      "getissuers",
+      "import",
+      "list",
+      "listissuers",
+      "managecontacts",
+      "manageissuers",
+      "purge",
+      "recover",
+      "restore",
+      "setissuers",
+      "update"
+    ]
+
+    key_permissions = [
+      "list",
+      "encrypt",
+      "decrypt",
+      "wrapKey",
+      "unwrapKey",
+      "sign",
+      "verify",
+      "get",
+      "create",
+      "update",
+      "import",
+      "backup",
+      "restore",
+      "recover",
+      "delete",
+      "purge"
+    ]
+
+    secret_permissions = [
+      "list",
+      "get",
+      "set",
+      "backup",
+      "restore",
+      "recover",
+      "purge",
+      "delete"
+    ]
+
+    storage_permissions = [
+      "backup",
+      "delete",
+      "deletesas",
+      "get",
+      "getsas",
+      "listsas",
+      "purge",
+      "recover",
+      "regeneratekey",
+      "restore",
+      "set",
+      "setsas",
+      "update"
+    ]
   }
 
 }

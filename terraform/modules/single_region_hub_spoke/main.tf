@@ -22,6 +22,7 @@ resource "azurerm_virtual_network" "spoke" {
     dns_servers                 = [module.azure_firewall.ip]
 }
 
+# Spring Cloud Service Subnet
 resource "azurerm_subnet" "azuresbcloudsvc" {
   name                 = var.springboot-service-subnet-name
   resource_group_name = var.resource_group_name
@@ -29,6 +30,7 @@ resource "azurerm_subnet" "azuresbcloudsvc" {
   address_prefixes       = [var.springboot-service-subnet-addr]
 }
 
+# Spring Cloud Apps Subnet
 resource "azurerm_subnet" "azuresbcloudapps" {
   name                 = var.springboot-apps-subnet-name
   resource_group_name = var.resource_group_name
@@ -36,13 +38,16 @@ resource "azurerm_subnet" "azuresbcloudapps" {
   address_prefixes       = [var.springboot-apps-subnet-addr]
 }
 
+# Data Services Subnet
 resource "azurerm_subnet" "azuresbclouddata" {
   name                 = var.springboot-data-subnet-name
   resource_group_name = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.spoke.name
   address_prefixes       = [var.springboot-data-subnet-addr]
+  enforce_private_link_endpoint_network_policies = true
 }
 
+# Supported Services Subnet, e.g. keyvault
 resource "azurerm_subnet" "azuresbcloudsupport" {
   name                 = var.springboot-support-subnet-name
   resource_group_name = var.resource_group_name
@@ -75,6 +80,7 @@ module "azure_firewall" {
     azurefw_name                = var.azurefw_name
     azurefw_vnet_name           = azurerm_virtual_network.hub.name
     azurefw_addr_prefix         = var.azurefw_addr_prefix
+    sc_law_id                   = var.sc_law_id
 }
 
 # Azure Bastion
