@@ -19,11 +19,6 @@ variable "my_sql_password" {}
 
 # Spring Cloud module
 
-variable "sc_resource_group_name" {
-    type        = string 
-    description = "Spring Cloud Resource Group"
-    default     = "sc-svc-rg"
-}
 
 variable "app_insights_prefix" {
     type        = string

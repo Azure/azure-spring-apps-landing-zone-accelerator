@@ -48,8 +48,8 @@ resource "azurerm_monitor_diagnostic_setting" "sc_diag" {
 }
 
 resource "azurerm_spring_cloud_service" "sc" {
-  name                = var.sc_service_name
-  resource_group_name = var.sc_resource_group_name
+  name                = var.sc_service_name 
+  resource_group_name = var.resource_group_name
   location            = var.location
   
   network {
