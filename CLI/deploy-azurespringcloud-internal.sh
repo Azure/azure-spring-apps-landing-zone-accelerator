@@ -2,40 +2,42 @@
 
 #parameters
 randomstring=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 7 | head -n 1)
-location='eastus' #location of Azure Spring Cloud Virtual Network
-hub_vnet_name='hub-vnet' #Hub Virtual Network Name
-hub_resource_group_name='hub-rg' #Hub Virtual Network Resource Group 
+location='eastus2' #location of Azure Spring Cloud Virtual Network
+hub_vnet_name='vnet-hub' #Hub Virtual Network Name
+hub_resource_group_name='sc-corp-rg' #Hub Virtual Network Resource Group 
 log_analytics_workspace_name='law-'$randomstring #Name of Log Analytics Workspace used in script
 hub_vnet_address_prefixes='10.9.0.0/16' #Hub Virtual Network Address Prefixes
 firewal_subnet_prefix='10.9.0.0/24' #Address prefix of FW subnet 
-centralized_services_subnet_name='centralized-services-subnet' #Hub Vnet centralized services subnet
-centralized_services_subnet_prefix='10.9.1.0/24' #Hub VNet centralized services subnet prefix
+jump_host_subnet_name='jumphost-subnet' #Hub Vnet jumphost subnet
+jump_host_subnet_prefix='10.9.1.0/24' #Hub VNet jumphost subnet prefix
 gateway_subnet_prefix='10.9.2.0/24' #Hub Vnet Virtual network gateway subnet name
 bastion_subnet_prefix='10.9.4.0/24' #Hub VNet bastion prefix name
 bastion_subnet_nsg='bastion-nsg'
 application_gateway_subnet_name='application-gateway-subnet' #Hub Vnet application gateway subnet name
 application_gateway_subnet_prefix='10.9.3.0/24' #Hub Vnet application GW subnet prefix
 hub_vnet_jumpbox_nsg_name='hub-vnet-jumpbox-nsg' #NSG Name for Hub Vnet Jumpbox VM
-firewall_name='azfirewall' #Name of Azure firewall resource
-firewall_public_ip_name='azfirewall-pip' #Azure firewall public ip resource name
+firewall_name='azfirewall'$randomstring #Name of Azure firewall resource
+firewall_public_ip_name='azure-firewall-ip' #Azure firewall public ip resource name
+azure_bastion_ip_name='azure-bastion-ip' #Name of Azure Bastion public IP resource
+azure_bastion_name='corp-bastion-svc' #Name of Azure Bastion service
 azure_key_vault_name='akv-'$randomstring #Azure Key vault unique name
 azure_mysql_name='mysql-'$randomstring #Azure MySql unique name 
 azurespringcloud_vnet_resource_group_name='azurespringcloud-spoke-vnet-rg' #parameter for Azure Spring Cloud Virtual network resource group name
-azurespringcloud_vnet_name='azurespringcloud-spoke-vnet' #parameter for Azure Spring Cloud Vnet name
+azurespringcloud_vnet_name='vnet-spoke' #parameter for Azure Spring Cloud Vnet name
 azurespringcloud_vnet_address_prefixes='10.8.0.0/16' #address prefix of Azure Spring Cloud Virtual Network
 azurespringcloud_service_runtime_subnet_prefix='10.8.0.0/24' #subnet prefix of Azure Spring Cloud service runtime subnet
-azurespringcloud_service_runtime_subnet_name='service-runtime-subnet' #subnet name of Azure Spring Cloud runtime subnet
+azurespringcloud_service_runtime_subnet_name='sc-service-subnet' #subnet name of Azure Spring Cloud runtime subnet
 azurespringcloud_app_subnet_prefix='10.8.1.0/24' #Azure Spring Cloud app subnet prefix 
-azurespringcloud_app_subnet_name='apps-subnet' #Azure Spring Cloud app subnet 
-azure_spring_cloud_support_subnet_name='support-subnet' #Azure Spring Cloud support subnet name
-azure_spring_cloud_support_subnet_nsg='support-nsg' #Azure spring Cloud support subnet nsg
-azure_spring_cloud_data_subnet_name='data-subnet' #azure Spring Cloud data subnet name
-azure_spring_cloud_data_subnet_nsg='data-nsg' #Azure spring Cloud support subnet nsg
+azurespringcloud_app_subnet_name='sc-apps-subnet' #Azure Spring Cloud app subnet 
+azure_spring_cloud_support_subnet_name='sc-support-subnet' #Azure Spring Cloud support subnet name
+azure_spring_cloud_support_subnet_nsg='support-service-nsg' #Azure spring Cloud support subnet nsg
+azure_spring_cloud_data_subnet_name='sc-data-subnet' #azure Spring Cloud data subnet name
+azure_spring_cloud_data_subnet_nsg='data-service-nsg' #Azure spring Cloud support subnet nsg
 azurespringcloud_data_subnet_prefix='10.8.2.0/24' #Azure Spring Cloud data subnet prefix
 azurespringcloud_support_subnet_prefix='10.8.3.0/24' #Azure Spring Cloud support subnet prefix
 azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Resource Group name
-azurespringcloud_service='azspringcloud-'$randomstring #Name of unique Spring Cloud resource
-azurespringcloud_service_runtime_resource_group_name=$azurespringcloud_service'-service-runtime-rg' #Name of Azure Spring Cloud service runtime resource group	
+azurespringcloud_service='spring-'$randomstring #Name of unique Spring Cloud resource
+azurespringcloud_service_runtime_resource_group_name=$azurespringcloud_service'-runtime-rg' #Name of Azure Spring Cloud service runtime resource group	
 azurespringcloud_app_resource_group_name=$azurespringcloud_service'-apps-rg' #Name of Azure Spring Cloud apps resource group
 
 echo "Enter full UPN of Key Vault Admin: "
@@ -192,10 +194,10 @@ az network vnet subnet create \
     --address-prefix ${firewal_subnet_prefix}
 
 az network vnet subnet create \
-    --name ${centralized_services_subnet_name} \
+    --name ${jump_host_subnet_name} \
     --resource-group ${hub_resource_group_name}  \
     --vnet-name ${hub_vnet_name} \
-    --address-prefix ${centralized_services_subnet_prefix} \
+    --address-prefix ${jump_host_subnet_prefix} \
     --network-security-group ${hub_vnet_jumpbox_nsg_name}
 
 az network vnet subnet create \
@@ -219,20 +221,20 @@ az network vnet subnet create \
 
 
 # Creates public IP and Azure Bastion in hub Vnet
-az network public-ip create --resource-group ${hub_resource_group_name} --name azbastion-pip --sku Standard --location ${location}
+az network public-ip create --resource-group ${hub_resource_group_name} --name ${azure_bastion_ip_name} --sku Standard --location ${location}
 
-az network bastion create --resource-group ${hub_resource_group_name} --name azbastion --public-ip-address azbastion-pip --vnet-name ${hub_vnet_name} --location ${location}
+az network bastion create --resource-group ${hub_resource_group_name} --name ${azure_bastion_name} --public-ip-address ${azure_bastion_ip_name} --vnet-name ${hub_vnet_name} --location ${location}
 
 
 # creates Jumpbox VM
 az vm create \
     --resource-group ${hub_resource_group_name} \
-    --name jumpbox \
+    --name jumphostvm \
     --image win2019datacenter \
     --admin-username $vm_admin \
     --admin-password $vm_password \
     --vnet-name ${hub_vnet_name} \
-    --subnet ${centralized_services_subnet_name} \
+    --subnet ${jump_host_subnet_name} \
     --public-ip-address "" \
     --nsg ""
 
@@ -633,14 +635,13 @@ service_runtime_subnet_id=$(az network vnet subnet show \
     --query id --output tsv)
 
 
-#Creates Azure Spring Cloud resource group
-az group create --location ${location} --name ${azurespringcloud_resource_group_name}
+
 
 
 # Creates Azure Spring Cloud instance
 az spring-cloud create \
     --name ${azurespringcloud_service} \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --location ${location} \
     --app-network-resource-group ${azurespringcloud_app_resource_group_name} \
     --service-runtime-network-resource-group ${azurespringcloud_service_runtime_resource_group_name} \
@@ -655,7 +656,7 @@ law_id=$(az monitor log-analytics workspace show --resource-group ${hub_resource
 az monitor diagnostic-settings create \
     --name "ToLAW" \
     --resource ${azurespringcloud_service} \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --resource-type Microsoft.AppPlatform/Spring \
     --workspace ${law_id} \
     --logs '[
@@ -738,7 +739,7 @@ az monitor diagnostic-settings create \
 
 #Gets Azure Spring Cloud apps routetable and adds route to Azure Firewall
 azurespringcloud_app_resourcegroup_name=$(az spring-cloud show \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name ${azurespringcloud_service} \
     --query 'properties.networkProfile.appNetworkResourceGroup' --output tsv )
 
@@ -759,7 +760,7 @@ az network route-table route create \
 
 #Gets Azure Spring Cloud service runtime routetable and adds route to Azure Firewall
 azurespringcloud_service_resourcegroup_name=$(az spring-cloud show \
-    --resource-group ${azurespringcloud_resource_group_name} \
+    --resource-group ${hub_resource_group_name} \
     --name ${azurespringcloud_service} \
     --query 'properties.networkProfile.serviceRuntimeNetworkResourceGroup' --out tsv )
 
