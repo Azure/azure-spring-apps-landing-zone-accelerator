@@ -7,12 +7,14 @@ resource "azurerm_subnet" "azure_firewall" {
 } 
 
 resource "azurerm_public_ip" "azure_firewall" {
-    name                        = "azure_firewall_ip"
+    name                        = "azure-firewall-ip"
     location                    = var.location
     resource_group_name         = var.resource_group_name
     allocation_method           = "Static"
     sku                         = "Standard"
 }
+
+
 
 resource "azurerm_firewall" "azure_firewall_instance" { 
     name                        = var.azurefw_name
@@ -27,6 +29,53 @@ resource "azurerm_firewall" "azure_firewall_instance" {
         subnet_id               = azurerm_subnet.azure_firewall.id 
         public_ip_address_id    = azurerm_public_ip.azure_firewall.id
     }
+
+    timeouts {
+      create = "60m"
+      delete = "2h"
+  }
+  depends_on = [ azurerm_public_ip.azure_firewall ]
+}
+
+resource "azurerm_monitor_diagnostic_setting" "azfw_diag" {
+  name                        = "monitoring"
+  target_resource_id          = azurerm_firewall.azure_firewall_instance.id
+  log_analytics_workspace_id  = var.sc_law_id
+
+  log {
+    category = "AzureFirewallApplicationRule"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+  log {
+    category = "AzureFirewallNetworkRule"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+  log {
+    category = "AzureFirewallDnsProxy"
+    enabled  = true
+
+    retention_policy {
+      enabled = false
+    }
+  }
+  
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      enabled = false
+    }
+  }
+
 }
 
 resource "azurerm_firewall_network_rule_collection" "private_aks" {

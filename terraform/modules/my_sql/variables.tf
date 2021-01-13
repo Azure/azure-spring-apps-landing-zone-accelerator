@@ -5,4 +5,4 @@ variable "my_sql_admin" {}
 variable "my_sql_password" {}
 variable "spoke_virtual_network_id" {}
 variable "hub_virtual_network_id" {}
-variable "sc_support_subnetid" {}
+variable "sc_data_subnetid" {}
