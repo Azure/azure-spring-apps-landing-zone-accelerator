@@ -567,8 +567,7 @@ az mysql server create \
 	--location ${location} \
 	--admin-user $mysqldb_admin \
 	--admin-password $mysqldb_password \
-	--sku-name GP_Gen5_2
-	--ssl-enforcement Disabled \
+	--sku-name GP_Gen5_2 \
 	--backup-retention 7 \
 	--geo-redundant-backup Disabled \
     --minimal-tls-version TLS1_2 \
@@ -614,7 +613,7 @@ az network private-dns link vnet create \
     --resource-group ${hub_resource_group_name} \
     --name link-to-${hub_vnet_name} \
     --zone-name privatelink.mysql.database.azure.com \
-    --virtual-network ${hub_vnet_id}\
+    --virtual-network ${hub_vnet_id} \
     --registration-enabled false
 
 
