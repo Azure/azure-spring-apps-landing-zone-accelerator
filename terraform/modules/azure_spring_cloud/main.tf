@@ -99,3 +99,37 @@ resource "azurerm_private_dns_a_record" "a_record" {
   ttl                 = var.private_dns_a_record_a_record_ttl
   records             = [data.azurerm_lb.svc_load_balancer.frontend_ip_configuration[0].private_ip_address]
 }
+
+data "azurerm_resources" "route_table_apps" {
+  type = "Microsoft.Network/routeTables"
+  resource_group_name           = "${var.sc_service_name}-apps-rg"
+  depends_on = [azurerm_spring_cloud_service.sc]
+}
+
+resource "azurerm_route" "default_egress_apps" {
+  name                          = "default" 
+  route_table_name              = data.azurerm_resources.route_table_apps.resources[0].name
+
+  resource_group_name           = "${var.sc_service_name}-apps-rg"
+  address_prefix              = "0.0.0.0/0"
+  next_hop_type               = "VirtualAppliance"
+  next_hop_in_ip_address      =  var.azure_fw_private_ip
+  
+}
+
+data "azurerm_resources" "route_table_runtime" {
+  type = "Microsoft.Network/routeTables"
+  resource_group_name           = "${var.sc_service_name}-runtime-rg"
+  depends_on = [azurerm_spring_cloud_service.sc]
+}
+
+resource "azurerm_route" "default_egress_runtime" {
+  name                          = "default" 
+  route_table_name              = data.azurerm_resources.route_table_runtime.resources[0].name
+
+  resource_group_name           = "${var.sc_service_name}-runtime-rg"
+  address_prefix              = "0.0.0.0/0"
+  next_hop_type               = "VirtualAppliance"
+  next_hop_in_ip_address      =  var.azure_fw_private_ip
+  
+}
