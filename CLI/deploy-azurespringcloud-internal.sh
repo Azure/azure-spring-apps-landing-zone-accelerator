@@ -743,7 +743,7 @@ azurespringcloud_app_resourcegroup_name=$(az spring-cloud show \
     --query 'properties.networkProfile.appNetworkResourceGroup' --output tsv )
 
 azurespringcloud_app_routetable_name=$(az network route-table list \
-    --resource-group ${azurespringcloud_app_resourcegroup_name} \
+    --resource-group $azurespringcloud_app_resourcegroup_name \
     --query [].name --output tsv)
 
 az network route-table route create \
@@ -764,7 +764,7 @@ azurespringcloud_service_resourcegroup_name=$(az spring-cloud show \
     --query 'properties.networkProfile.serviceRuntimeNetworkResourceGroup' --out tsv )
 
 azurespringcloud_service_routetable_name=$(az network route-table list \
-    --resource-group ${azurespringcloud_service_resourcegroup_name} \
+    --resource-group $azurespringcloud_service_resourcegroup_name \
     --query [].name --out tsv)
 
 az network route-table route create \
