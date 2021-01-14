@@ -15,7 +15,10 @@ variable "mysql_server_name_prefix" {
     default = "mysql"
 }
 variable "my_sql_admin" {}
-variable "my_sql_password" {}
+variable "my_sql_password" {
+    type = string
+    sensitive   = true
+}
 
 # Spring Cloud module
 
@@ -173,7 +176,10 @@ variable "jump_box_admin_username" {
     description = "Azure Admin Username"
     default     = "azureuser"
 }
-variable "jump_box_password" {}
+variable "jump_box_password" {
+    sensitive   = true
+    type        = string 
+}
 
 variable "sc_cidr" {
     type        = list
