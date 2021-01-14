@@ -2,11 +2,11 @@
 
 ## Overview
 
-This repository contains instructions for creating a small lab in Azure that can be used for experimenting with [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) in a typical enterprise landing zone design for a regulated organization.  It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
+This repository contains instructions for creating an [Azure Spring Cloud](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-overview) quickstart environment that can be used for experimenting with Spring Boot microservice applications in a typical enterprise landing zone design for a regulated organization. It uses a [hub and spoke architecture](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and North/South traffic (traffic between the Internet and resources in the hub or spoke) is routed through and mediated with an instance of Azure Firewall.  
 
 ![lab image](https://github.com/mattfeltonma/azure-labs/blob/master/azure-spring-cloud/images/lab.jpeg)
 
-Additional features of the lab are:
+Additional features of this quickstart are:
 
 * Azure Spring Cloud is deployed using [vnet-injection](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network) to allow for mediation inbound and outbound traffic to the Spring Cloud Instance and deployed applications.
 * The Azure Firewall instance has been configured to write its logs to a Log Analytics Workspace.  You can leverage [these Kusto queries](https://docs.microsoft.com/en-us/azure/firewall/log-analytics-samples) to analyze Azure Firewall log data written to Log Analytics.
@@ -26,18 +26,6 @@ There are two methods to deploy the architecture in the diagram documented in th
 * [Terraform Deployment](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/terraform)
 
 Both the ARM and Terraform scripts will deploy Azure Spring Cloud in a secure environment. Once the core infrastructure has been deployed, the Post Installation process can be followed to test sample applications.
-
-# Project
-
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
-
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
 
 ## Contributing
 
