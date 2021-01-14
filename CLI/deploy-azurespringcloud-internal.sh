@@ -85,9 +85,9 @@ az network nsg rule create \
     --nsg-name ${bastion_subnet_nsg} \
     --name AllowHttpsInbound \
     --priority 100 \
-    --source-address-prefixes '*' \
+    --source-address-prefixes Internet \
     --source-port-ranges '*' \
-    --destination-address-prefixes Internet \
+    --destination-address-prefixes '*' \
     --destination-port-ranges 443 \
     --access Allow \
     --protocol Tcp
@@ -97,9 +97,9 @@ az network nsg rule create \
     --nsg-name ${bastion_subnet_nsg} \
     --name AllowGatewayManagerInbound \
     --priority 110 \
-    --source-address-prefixes '*' \
+    --source-address-prefixes GatewayManager \
     --source-port-ranges '*' \
-    --destination-address-prefixes GatewayManager \
+    --destination-address-prefixes '*' \
     --destination-port-ranges 443 \
     --access Allow \
     --protocol Tcp
@@ -109,9 +109,9 @@ az network nsg rule create \
     --nsg-name ${bastion_subnet_nsg} \
     --name AllowAzureLoadbalancerInbound \
     --priority 120 \
-    --source-address-prefixes '*' \
+    --source-address-prefixes AzureLoadBalancer \
     --source-port-ranges '*' \
-    --destination-address-prefixes AzureLoadBalancer \
+    --destination-address-prefixes '*' \
     --destination-port-ranges 443 \
     --access Allow \
     --protocol Tcp
