@@ -743,13 +743,13 @@ azurespringcloud_app_resourcegroup_name=$(az spring-cloud show \
     --name ${azurespringcloud_service} \
     --query 'properties.networkProfile.appNetworkResourceGroup' --output tsv )
 
-azurepringcloud_app_routetable_name=$(az network route-table list \
+azurespringcloud_app_routetable_name=$(az network route-table list \
     --resource-group ${azurespringcloud_app_resourcegroup_name} \
     --query [].name --output tsv)
 
 az network route-table route create \
     --resource-group ${azurespringcloud_app_resourcegroup_name} \
-    --route-table-name ${azurepringcloud_app_routetable_name} \
+    --route-table-name ${azurespringcloud_app_routetable_name} \
     --name default \
     --address-prefix 0.0.0.0/0 \
     --next-hop-type VirtualAppliance \
@@ -764,13 +764,13 @@ azurespringcloud_service_resourcegroup_name=$(az spring-cloud show \
     --name ${azurespringcloud_service} \
     --query 'properties.networkProfile.serviceRuntimeNetworkResourceGroup' --out tsv )
 
-azurepringcloud_service_routetable_name=$(az network route-table list \
+azurespringcloud_service_routetable_name=$(az network route-table list \
     --resource-group ${azurespringcloud_service_resourcegroup_name} \
     --query [].name --out tsv)
 
 az network route-table route create \
     --resource-group ${azurespringcloud_service_resourcegroup_name} \
-    --route-table-name ${azurepringcloud_service_routetable_name} \
+    --route-table-name ${azurespringcloud_service_routetable_name} \
     --name default \
     --address-prefix 0.0.0.0/0 \
     --next-hop-type VirtualAppliance \
