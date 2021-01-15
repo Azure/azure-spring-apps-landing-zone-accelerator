@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-1. The ARM deployment has been tested with the following REST API versions
+1. The ARM deployment has been tested with the following REST API versions:
    * [Microsoft.Network/networkSecurityGroup - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/networksecuritygroups)
    * [Microsoft.Network/virtualNetworks - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/virtualnetworks)
    * [Microsoft.Network/privateEndpoints - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/privateendpoints)
