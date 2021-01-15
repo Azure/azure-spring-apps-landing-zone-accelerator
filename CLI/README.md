@@ -12,8 +12,10 @@
 
     `az extension add --name spring-cloud`
 
+3. The script has been tested using `Azure CLI version 2.17.1`
 
 ## Deployment
+
 
 1. Run `az login`
 
@@ -21,6 +23,7 @@
 
 3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted on screen to enter a valid UPN for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
 
+4. If deployed into the East US 2 Azure region you will need to manually add a route to the Azure Firewall private IP address due to a known bug.  
 
 ## Post Deployment
 
