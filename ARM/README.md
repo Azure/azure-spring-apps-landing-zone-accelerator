@@ -1,4 +1,4 @@
-# Azure Spring Cloud Lab
+# Azure Spring Cloud Quickstart
 
 ## Overview
 
@@ -8,10 +8,12 @@
 
 2. Run the two commands below to add the required extensions to Azure CLI.
 
+
     `az extension add --name azure-firewall`  
 (Note: The azure-firewall extension was added with Azure CLI version 2.15.0. If you have an older Azure CLI version, please upgrade to 2.15.0 or later versions)
 
     `az extension add --name spring-cloud`
+
 
 3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to. This will be used for the tenantId parameter of the template.
 
