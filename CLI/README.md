@@ -23,7 +23,7 @@
 
 3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted on screen to enter a valid UPN for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
 
-4. If deployed into the East US 2 Azure region you will need to manually add a route to the Azure Firewall private IP address due to a known bug.  
+4. If deployed into the East US 2 Azure region you will need to manually add a default Azure Firewall internet route to the Azure Spring Cloud app and service resource group route tables.  Each resource group contains a single route table that will need 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address.
 
 ## Post Deployment
 
