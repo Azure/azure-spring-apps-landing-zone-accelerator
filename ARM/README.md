@@ -4,32 +4,13 @@
 
 ## Prerequisites
 
-1. The ARM deployment has been tested with the following REST API versions:
-   * [Microsoft.Network/networkSecurityGroup - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/networksecuritygroups)
-   * [Microsoft.Network/virtualNetworks - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/virtualnetworks)
-   * [Microsoft.Network/privateEndpoints - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/privateendpoints)
-   * [Microsoft.Network/publicIpAddresses - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/publicipaddresses)
-   * [Microsoft.Network/azureFirewalls - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/azurefirewalls)
-   * [Microsoft.Network/routeTables - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/routetables)
-   * [Microsoft.Network/bastionHosts - 2020-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2020-05-01/bastionhosts)
-   * [Microsoft.Network/privateDnsZones - 2018-09-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2018-09-01/privatednszones)
-   * [Microsoft.Resources/deployments - 2019-10-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.resources/2019-10-01/deployments)
-   * [Microsoft.OperationalInsights/workspaces - 2015-11-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2015-11-01-preview/workspaces)
-   * [Microsoft.Network/azureFirewalls/providers/diagnosticSettings - 2017-05-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2017-05-01-preview/diagnosticsettings)
-   * [Microsoft.AppPlatform/Spring/providers/diagnosticSettings - 2017-05-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2017-05-01-preview/diagnosticsettings)
-   * Microsoft.AppPlatform/Spring - 2020-07-01
-   * [Microsoft.Insights/components - 2015-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2015-05-01/components)
-   * [Microsoft.Authorization/roleAssignments - 2020-04-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.authorization/2020-04-01-preview/roleassignments)
-   * [Microsoft.KeyVault/vaults - 2019-09-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/2019-09-01/vaults)
-   
 1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
 2. Run the two commands below to add the required extensions to Azure CLI.
 
-(Note: The azure-firewall extension was added with Azure CLI version 2.15.0. If you have an older Azure CLI version, please upgrade to 2.15.0 or later versions)
+    `az extension add --name firewall`
 
-    az extension add --name azure-firewall
-    az extension add --name spring-cloud
+    `az extension add --name spring-cloud`
 
 3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to. This will be used for the tenantId parameter of the template.
 
