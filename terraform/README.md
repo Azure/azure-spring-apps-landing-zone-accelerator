@@ -6,7 +6,11 @@
 
 **Note:** *You must have owner privileges on the target subscription. This script will automatically assign the Azure Spring Cloud Resource Provider Owner rights on the created VNET.*
 
-1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html) - This script was built using version *0.14.4*
+1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html)
+
+    **Note:** This script was tested using the following terraform version:
+    https://registry.terraform.io/providers/hashicorp/azurerm/2.42.0
+    Earlier and later versions will need to be independently tested and verified.
 
 2. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 

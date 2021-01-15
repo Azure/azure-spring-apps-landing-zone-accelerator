@@ -103,7 +103,7 @@ resource "azurerm_private_dns_a_record" "a_record" {
 data "azurerm_resources" "route_table_apps" {
   type = "Microsoft.Network/routeTables"
   resource_group_name           = "${var.sc_service_name}-apps-rg"
-  depends_on = [azurerm_spring_cloud_service.sc]
+  depends_on = [time_sleep.wait_90_seconds]
 }
 
 resource "azurerm_route" "default_egress_apps" {
@@ -117,10 +117,17 @@ resource "azurerm_route" "default_egress_apps" {
   
 }
 
+resource "time_sleep" "wait_90_seconds" {
+  depends_on = [azurerm_spring_cloud_service.sc]
+
+  create_duration = "90s"
+}
+
+
 data "azurerm_resources" "route_table_runtime" {
   type = "Microsoft.Network/routeTables"
   resource_group_name           = "${var.sc_service_name}-runtime-rg"
-  depends_on = [azurerm_spring_cloud_service.sc]
+  depends_on = [time_sleep.wait_90_seconds]
 }
 
 resource "azurerm_route" "default_egress_runtime" {
