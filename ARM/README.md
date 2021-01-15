@@ -17,7 +17,7 @@
    * [Microsoft.OperationalInsights/workspaces - 2015-11-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2015-11-01-preview/workspaces)
    * [Microsoft.Network/azureFirewalls/providers/diagnosticSettings - 2017-05-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2017-05-01-preview/diagnosticsettings)
    * [Microsoft.AppPlatform/Spring/providers/diagnosticSettings - 2017-05-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2017-05-01-preview/diagnosticsettings)
-   * [Microsoft.AppPlatform/Spring - 2020-07-01]
+   * Microsoft.AppPlatform/Spring - 2020-07-01
    * [Microsoft.Insights/components - 2015-05-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/2015-05-01/components)
    * [Microsoft.Authorization/roleAssignments - 2020-04-01-preview](https://docs.microsoft.com/en-us/azure/templates/microsoft.authorization/2020-04-01-preview/roleassignments)
    * [Microsoft.KeyVault/vaults - 2019-09-01](https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/2019-09-01/vaults)
