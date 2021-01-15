@@ -1,4 +1,4 @@
-# Azure Spring Cloud Lab
+# Azure Spring Cloud Quickstart
 
 ## Overview
 
