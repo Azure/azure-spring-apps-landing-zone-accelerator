@@ -19,7 +19,7 @@
 
 2. Run `az account set --subscription {your subscription name}`
 
-3. Execute the deploy-azurespringcloud-internal.sh Bash script.  You will be prompted on screen to enter a valid UPN for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
+3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted on screen to enter a valid UPN for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
 
 
 ## Post Deployment
@@ -42,7 +42,7 @@ Install one of the following sample applications:
 
 4. From a browser that isn't in the quick start virtual network, browse to https://<publicIPofAppGW>. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/Az-CLI/images/Petclinic-External.jpeg)
 
 ## Additional Notes
 
