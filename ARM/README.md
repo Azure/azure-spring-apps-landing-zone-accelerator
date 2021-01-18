@@ -8,7 +8,7 @@
 
 2. Run the two commands below to add the required extensions to Azure CLI.
 
-    `az extension add --name firewall`
+    `az extension add --name azure-firewall`
 
     `az extension add --name spring-cloud`
 
