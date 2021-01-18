@@ -24,7 +24,7 @@ spoke) is filtered with Network Security Groups and North/South traffic (traffic
 Internet and resources in the hub or spoke) is routed through and mediated with an instance of 
 Azure Firewall.  
 
-![lab image](https://github.com/mattfeltonma/azure-labs/blob/master/azure-spring-cloud/images/lab.jpeg)
+![lab image](images/lab.jpeg)
 
 Additional features of this quickstart are:
 
@@ -61,7 +61,7 @@ ARM, Terraform and CLI scripts will deploy Azure Spring Cloud in a secure enviro
 infrastructure has been deployed, the Post Installation process can be followed to test sample 
 applications.
 
-## Build your solutions and monitor them today!
+## Build your solutions today!
 
 Azure Spring Cloud abstracts away the complexity of infrastructure management and Spring Cloud 
 middleware management, so you can focus on building your business logic and let Azure take care 
@@ -73,7 +73,7 @@ you can provision Azure Spring Cloud, create applications, deploy, and scale Spr
 We would love to hear how you are building impactful solutions using Azure Spring Cloud. 
 Get started today – deploy Spring applications to Azure Spring Cloud using this quickstart!
 
-Resources
+### Resources
 * Learn using an [MS Learn module](https://docs.microsoft.com/en-us/learn/modules/azure-spring-cloud-workshop/)
  or [self-paced workshop](https://github.com/microsoft/azure-spring-cloud-training) on GitHub
 * Learn [more](https://docs.microsoft.com/en-us/azure/spring-cloud/) about implementing solutions on Azure Spring Cloud
