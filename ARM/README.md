@@ -26,7 +26,7 @@
 
 2. Run the two commands below to add the required extensions to Azure CLI.
 
-    ```az extension add --name firewall
+    ```az extension add --name azure-firewall
     az extension add --name spring-cloud```
 
 3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to. This will be used for the tenantId parameter of the template.
