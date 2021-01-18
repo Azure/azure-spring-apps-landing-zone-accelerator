@@ -55,3 +55,15 @@ Where xxxxxxxx is a random generated number for your specific deployment.
 Install one of the following sample applications:
 * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+
+## Cleaning up
+
+Unless you plan to perform additional tasks with the Azure resources from the quickstart (such 
+as post deployment steps above), it is important to destroy the resources that you created 
+to avoid the cost of keeping them provisioned.
+
+The easiest way to do this is to call `terraform destroy`.
+
+```azurecli
+terraform destroy
+```
