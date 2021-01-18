@@ -1,4 +1,4 @@
-# Azure Spring Cloud Quick Start
+# Azure CLI Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
@@ -28,8 +28,8 @@
 ## Post Deployment
 
 Install one of the following sample applications:
-    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-    * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
@@ -45,7 +45,7 @@ Install one of the following sample applications:
 
 4. From a browser that isn't in the quick start virtual network, browse to https://<publicIPofAppGW>. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/Az-CLI/images/Petclinic-External.jpeg)
+![lab image](./images/Petclinic-External.jpeg)
 
 ## Additional Notes
 
