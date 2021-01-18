@@ -1,4 +1,4 @@
-# Azure Spring Cloud Quickstart
+# ARM Template Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
@@ -41,8 +41,8 @@ You will be prompted to set a password.  This will be the password for the virtu
 ## Post Deployment
 
 Install one of the following sample applications:
-    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-    * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
