@@ -47,7 +47,7 @@ logs and metrics.
 for applications deployed to Azure Spring Cloud
 * Instance of Azure Database for MySQL deployed with a Private Endpoint.  This can be used to deploy 
 the sample app described in this document.
-* Instance of Azure Bastion for connection to the Windows Server 2016 jumphost.
+* Instance of Azure Bastion for connection to the Windows Server 2016 virtual machine running in the hub virtual network.
 
 ## Deployment Process
 
