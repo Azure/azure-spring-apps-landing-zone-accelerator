@@ -1,4 +1,4 @@
-# Azure Spring Cloud Quickstart
+# Terraform Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
