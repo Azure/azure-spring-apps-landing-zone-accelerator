@@ -1,4 +1,4 @@
-# Azure Spring Cloud Quick Start
+# Azure CLI Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
@@ -33,8 +33,8 @@
 ## Post Deployment
 
 Install one of the following sample applications:
-    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-    * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
@@ -50,7 +50,7 @@ Install one of the following sample applications:
 
 4. From a browser that isn't in the quick start virtual network, browse to https://<publicIPofAppGW>. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/Az-CLI/images/Petclinic-External.jpeg)
+![lab image](./images/Petclinic-External.jpeg)
 
 
 ## Clean up Resources 
@@ -64,3 +64,15 @@ If the Azure Spring Cloud environment is no longer needed, all resources can be 
 This quick start deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
 
 Azure Application Gateway can also retrieve TLS certificates from Azure Key Vault. Fore more information see https://docs.microsoft.com/en-us/azure/application-gateway/key-vault-certs 
+
+## Cleaning up
+
+Unless you plan to perform additional tasks with the Azure resources from the quickstart (such 
+as post deployment steps above), it is important to destroy the resources that you created 
+to avoid the cost of keeping them provisioned.
+
+The easiest way to do this is to call `az group delete`.
+
+```azurecli
+az group delete --name sc-corp-rg --yes --no-wait
+```

@@ -1,4 +1,4 @@
-# Azure Spring Cloud Quickstart
+# Terraform Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
@@ -6,7 +6,11 @@
 
 **Note:** *You must have owner privileges on the target subscription. This script will automatically assign the Azure Spring Cloud Resource Provider Owner rights on the created VNET.*
 
-1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html) - This script was built using version *0.14.4*
+1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html)
+
+    **Note:** This script was tested using the following terraform version:
+    https://registry.terraform.io/providers/hashicorp/azurerm/2.42.0
+    Earlier and later versions will need to be independently tested and verified.
 
 2. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
@@ -51,3 +55,15 @@ Where xxxxxxxx is a random generated number for your specific deployment.
 Install one of the following sample applications:
 * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+
+## Cleaning up
+
+Unless you plan to perform additional tasks with the Azure resources from the quickstart (such 
+as post deployment steps above), it is important to destroy the resources that you created 
+to avoid the cost of keeping them provisioned.
+
+The easiest way to do this is to call `terraform destroy`.
+
+```azurecli
+terraform destroy
+```
