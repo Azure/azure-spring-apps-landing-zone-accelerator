@@ -49,7 +49,7 @@ read mysqladmin
 mysqldb_admin=$mysqladmin
 
 echo "Enter MySql Db admin password: "
-read mysqlpassword
+read -s mysqlpassword
 mysqldb_password=$mysqlpassword
 
 echo "Enter Jumpbox VM admin name: "
@@ -57,7 +57,7 @@ read vmadmin
 vm_admin=$vmadmin
 
 echo "Enter Jumpbox VM admin password: "
-read vmpassword
+read -s vmpassword 
 vm_password=$vmpassword
 
 
