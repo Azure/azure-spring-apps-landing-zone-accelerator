@@ -52,3 +52,15 @@ Install one of the following sample applications:
 This quick start deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
 
 Azure Application Gateway can also retrieve TLS certificates from Azure Key Vault. Fore more information see https://docs.microsoft.com/en-us/azure/application-gateway/key-vault-certs 
+
+## Cleaning up
+
+Unless you plan to perform additional tasks with the Azure resources from the quickstart (such 
+as post deployment steps above), it is important to destroy the resources that you created 
+to avoid the cost of keeping them provisioned.
+
+The easiest way to do this is to call `az group delete`.
+
+```azurecli
+az group delete --name sc-corp-rg --yes --no-wait
+```
