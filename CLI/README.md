@@ -53,12 +53,6 @@ Install one of the following sample applications:
 ![lab image](./images/Petclinic-External.jpeg)
 
 
-## Clean up Resources 
-
-If the Azure Spring Cloud environment is no longer needed, all resources can be deleted.  This can be achieved using the Azure CLI or directly from the Azure portal.  
-
-1. To delete all resources provisioned in the script, run `az group delete --resource-group sc-corp --yes` **Note** If you have modified the script to use a different resource group name then you will need to use that resource group name in the above example.  
-
 ## Additional Notes
 
 This quick start deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
