@@ -42,13 +42,13 @@ variable "azurebastion_name" {}
 variable "azurebastion_addr_prefix" {}
 
 
-# Jump box module
-variable "jump_box_name" {}
-variable "jump_box_addr_prefix" {}
-variable "jump_box_private_ip_addr" {}
-variable "jump_box_vm_size" {}
-variable "jump_box_admin_username" {}
-variable "jump_box_password" {}
+# Jump host module
+variable "jump_host_name" {}
+variable "jump_host_addr_prefix" {}
+variable "jump_host_private_ip_addr" {}
+variable "jump_host_vm_size" {}
+variable "jump_host_admin_username" {}
+variable "jump_host_password" {}
 
 # Azure Firewall variables
 variable "sc_law_id" {}

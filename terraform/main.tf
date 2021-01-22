@@ -28,15 +28,15 @@ resource "random_string" "random" {
 }
 module "log_analytics" {
   source                          = "./modules/log_analytics"
-  resource_group_name             = var.resource_group_name
+  resource_group_name             = azurerm_resource_group.sc_corp_rg.name
   location                        = var.location
   law_name               = "${var.law_prefix}-${random_string.random.result}"
-  depends_on = [ azurerm_resource_group.sc_corp_rg]
+  //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "spring_cloud" {
   source                          = "./modules/azure_spring_cloud"
-  resource_group_name             = var.resource_group_name
+  resource_group_name             = azurerm_resource_group.sc_corp_rg.name
   location                        = var.location
   sc_cidr                         = var.sc_cidr
   app_subnet_id                   = module.hub_spoke.sc_rt_subnetid
@@ -47,12 +47,12 @@ module "spring_cloud" {
   sc_service_name                 = "${var.sc_prefix}-${random_string.random.result}"
   app_insights_name               = "${var.app_insights_prefix}-${random_string.random.result}"
   azure_fw_private_ip             = module.hub_spoke.azure_firewall_private_ip
-  depends_on = [ azurerm_resource_group.sc_corp_rg]
+  //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "my_sql" {
   source                          = "./modules/my_sql"
-  resource_group_name             = var.resource_group_name
+  resource_group_name             = azurerm_resource_group.sc_corp_rg.name
   location                        = var.location
   my_sql_name                     = "${var.mysql_server_name_prefix}-${random_string.random.result}"
   my_sql_password                 = var.my_sql_password
@@ -60,7 +60,7 @@ module "my_sql" {
   sc_data_subnetid                = module.hub_spoke.sc_data_subnetid
   hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
   spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
-  depends_on = [ azurerm_resource_group.sc_corp_rg]
+  //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "keyvault" {
@@ -72,13 +72,13 @@ module "keyvault" {
     sc_support_subnetid             = module.hub_spoke.sc_support_subnetid
     hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
     spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
-    depends_on = [ azurerm_resource_group.sc_corp_rg]
+    //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 # Hub-Spoke VNET, Azure Bastion, Azure Firewall Using DNS Proxy
 module "hub_spoke" { 
     source                          = "./modules/single_region_hub_spoke"
-    resource_group_name             = var.resource_group_name    
+    resource_group_name             = azurerm_resource_group.sc_corp_rg.name  
     location                        = var.location
     sc_law_id                       = module.log_analytics.log_analytics_id
     hub_vnet_name                   = var.hub_vnet_name
@@ -101,11 +101,11 @@ module "hub_spoke" {
     azurebastion_name               = var.azurebastion_name
     azurebastion_addr_prefix        = var.azurebastion_addr_prefix
 
-    jump_box_name                       = var.jump_box_name
-    jump_box_addr_prefix                = var.jump_box_addr_prefix
-    jump_box_private_ip_addr            = var.jump_box_private_ip_addr
-    jump_box_vm_size                    = var.jump_box_vm_size
-    jump_box_admin_username             = var.jump_box_admin_username
-    jump_box_password                   = var.jump_box_password
-    depends_on = [ azurerm_resource_group.sc_corp_rg]
+    jump_host_name                       = var.jump_host_name
+    jump_host_addr_prefix                = var.jump_host_addr_prefix
+    jump_host_private_ip_addr            = var.jump_host_private_ip_addr
+    jump_host_vm_size                    = var.jump_host_vm_size
+    jump_host_admin_username             = var.jump_host_admin_username
+    jump_host_password                   = var.jump_host_password
+    //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }

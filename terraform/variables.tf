@@ -5,7 +5,7 @@ variable "resource_group_name" {
 }
 variable "location" {
     type = string
-    default = "East US 2"
+    default = "East US"
 } 
 
 # mysql module
@@ -151,32 +151,32 @@ variable "azurebastion_addr_prefix" {
     default     = "10.230.1.0/27"
 }
 
-# Jump box module
-variable "jump_box_name" {
+# Jump host module
+variable "jump_host_name" {
     type        = string
     default     = "jumphostvm"
 }
-variable "jump_box_addr_prefix" {
+variable "jump_host_addr_prefix" {
     type        = string 
     description = "Azure Jump Host Address Prefix"
     default     = "10.230.4.0/28"   
 }
-variable "jump_box_private_ip_addr" {
+variable "jump_host_private_ip_addr" {
     type        = string 
     description = "Azure Jump Host Address"
     default     = "10.230.4.5"
 }
-variable "jump_box_vm_size" {
+variable "jump_host_vm_size" {
     type        = string 
     description = "Azure Jump Host VM SKU"
     default     = "Standard_DS3_v2"
 }
-variable "jump_box_admin_username" {
+variable "jump_host_admin_username" {
     type        = string 
     description = "Azure Admin Username"
     default     = "azureuser"
 }
-variable "jump_box_password" {
+variable "jump_host_password" {
     sensitive   = true
     type        = string 
 }
