@@ -2,7 +2,7 @@
 
 #parameters
 randomstring=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | fold -w 13 | head -n 1)
-location='eastus2' #location of Azure Spring Cloud Virtual Network
+#location='eastus' #location of Azure Spring Cloud Virtual Network
 hub_vnet_name='vnet-hub' #Hub Virtual Network Name
 hub_resource_group_name='sc-corp-rg' #Hub Virtual Network Resource Group 
 log_analytics_workspace_name='law-'$randomstring #Name of Log Analytics Workspace used in script
@@ -15,7 +15,7 @@ bastion_subnet_prefix='10.9.4.0/24' #Hub VNet bastion prefix name
 bastion_subnet_nsg='bastion-nsg'
 application_gateway_subnet_name='application-gateway-subnet' #Hub Vnet application gateway subnet name
 application_gateway_subnet_prefix='10.9.3.0/24' #Hub Vnet application GW subnet prefix
-hub_vnet_jumpbox_nsg_name='jumphost-subnet-nsg' #NSG Name for Hub Vnet Jumpbox VM
+hub_vnet_jumphost_nsg_name='jumphost-subnet-nsg' #NSG Name for Hub Vnet jumphost VM
 firewall_name='azfirewall-'$randomstring #Name of Azure firewall resource
 firewall_public_ip_name='azure-firewall-ip' #Azure firewall public ip resource name
 azure_bastion_ip_name='azure-bastion-ip' #Name of Azure Bastion public IP resource
@@ -44,20 +44,24 @@ echo "Enter full UPN of Key Vault Admin: "
 read userupn
 admin_object_id=$(az ad user show --id $userupn --query objectId --output tsv)
 
+echo "Enter an Azure region for resource deployment: "
+read region
+location=$region
+
 echo "Enter MySql Db admin name: "
 read mysqladmin
 mysqldb_admin=$mysqladmin
 
 echo "Enter MySql Db admin password: "
-read mysqlpassword
+read -s mysqlpassword
 mysqldb_password=$mysqlpassword
 
-echo "Enter Jumpbox VM admin name: "
+echo "Enter Jumphost VM admin name: "
 read vmadmin
 vm_admin=$vmadmin
 
-echo "Enter Jumpbox VM admin password: "
-read vmpassword
+echo "Enter Jumphost VM admin password: "
+read -s vmpassword 
 vm_password=$vmpassword
 
 
@@ -74,7 +78,7 @@ az monitor log-analytics workspace create \
 # Creates NSG for jump box VM and Azure Bastion subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
-    --name ${hub_vnet_jumpbox_nsg_name}
+    --name ${hub_vnet_jumphost_nsg_name}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
@@ -198,7 +202,7 @@ az network vnet subnet create \
     --resource-group ${hub_resource_group_name}  \
     --vnet-name ${hub_vnet_name} \
     --address-prefix ${jump_host_subnet_prefix} \
-    --network-security-group ${hub_vnet_jumpbox_nsg_name}
+    --network-security-group ${hub_vnet_jumphost_nsg_name}
 
 az network vnet subnet create \
     --name 'GatewaySubnet' \
@@ -226,11 +230,12 @@ az network public-ip create --resource-group ${hub_resource_group_name} --name $
 az network bastion create --resource-group ${hub_resource_group_name} --name ${azure_bastion_name} --public-ip-address ${azure_bastion_ip_name} --vnet-name ${hub_vnet_name} --location ${location}
 
 
-# creates Jumpbox VM
+# creates Jumphost VM
 az vm create \
     --resource-group ${hub_resource_group_name} \
     --name jumphostvm \
-    --image win2019datacenter \
+    --image MicrosoftWindowsDesktop:Windows-10:20h1-pro:latest \
+    --size Standard_DS3_v2 \
     --admin-username $vm_admin \
     --admin-password $vm_password \
     --vnet-name ${hub_vnet_name} \

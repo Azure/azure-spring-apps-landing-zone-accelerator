@@ -8,7 +8,7 @@
 
 2. Run the two commands below to add the required extensions to Azure CLI.
 
-    `az extension add --name firewall`
+    `az extension add --name azure-firewall`
 
     `az extension add --name spring-cloud`
 
@@ -21,7 +21,7 @@
 
 2. Run `az account set --subscription {your subscription name}`
 
-3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted on screen to enter a valid UPN for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
+3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted on screen to enter a valid User Principal Name for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
 
 4. If deployed into the East US 2 Azure region you will need to manually add a default Azure Firewall internet route to the Azure Spring Cloud app and service resource group route tables.  Each resource group contains a single route table that will need 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address.
 
@@ -46,6 +46,7 @@ Install one of the following sample applications:
 4. From a browser that isn't in the quick start virtual network, browse to https://<publicIPofAppGW>. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
 ![lab image](./images/Petclinic-External.jpeg)
+
 
 ## Additional Notes
 
