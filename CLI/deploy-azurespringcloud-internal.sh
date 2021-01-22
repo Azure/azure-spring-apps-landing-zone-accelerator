@@ -2,7 +2,7 @@
 
 #parameters
 randomstring=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | fold -w 13 | head -n 1)
-location='eastus' #location of Azure Spring Cloud Virtual Network
+#location='eastus' #location of Azure Spring Cloud Virtual Network
 hub_vnet_name='vnet-hub' #Hub Virtual Network Name
 hub_resource_group_name='sc-corp-rg' #Hub Virtual Network Resource Group 
 log_analytics_workspace_name='law-'$randomstring #Name of Log Analytics Workspace used in script
@@ -43,6 +43,10 @@ azurespringcloud_app_resource_group_name=$azurespringcloud_service'-apps-rg' #Na
 echo "Enter full UPN of Key Vault Admin: "
 read userupn
 admin_object_id=$(az ad user show --id $userupn --query objectId --output tsv)
+
+echo "Enter an Azure region for resource deployment: "
+read region
+location=$region
 
 echo "Enter MySql Db admin name: "
 read mysqladmin
@@ -230,7 +234,8 @@ az network bastion create --resource-group ${hub_resource_group_name} --name ${a
 az vm create \
     --resource-group ${hub_resource_group_name} \
     --name jumphostvm \
-    --image win2019datacenter \
+    --image MicrosoftWindowsDesktop:Windows-10:20h1-pro:latest \
+    --size Standard_DS3_v2 \
     --admin-username $vm_admin \
     --admin-password $vm_password \
     --vnet-name ${hub_vnet_name} \
