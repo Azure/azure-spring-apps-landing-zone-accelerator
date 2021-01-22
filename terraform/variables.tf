@@ -174,7 +174,6 @@ variable "jump_host_vm_size" {
 variable "jump_host_admin_username" {
     type        = string 
     description = "Azure Admin Username"
-    default     = "azureuser"
 }
 variable "jump_host_password" {
     sensitive   = true
