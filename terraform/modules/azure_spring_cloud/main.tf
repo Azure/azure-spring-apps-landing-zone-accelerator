@@ -113,16 +113,13 @@ resource "azurerm_route" "default_egress_apps" {
   resource_group_name           = "${var.sc_service_name}-apps-rg"
   address_prefix              = "0.0.0.0/0"
   next_hop_type               = "VirtualAppliance"
-  next_hop_in_ip_address      =  var.azure_fw_private_ip
-  
+  next_hop_in_ip_address      =  var.azure_fw_private_ip  
 }
 
 resource "time_sleep" "wait_600_seconds" {
   depends_on = [azurerm_spring_cloud_service.sc]
-
   create_duration = "600s"
 }
-
 
 data "azurerm_resources" "route_table_runtime" {
   type = "Microsoft.Network/routeTables"
@@ -137,6 +134,5 @@ resource "azurerm_route" "default_egress_runtime" {
   resource_group_name           = "${var.sc_service_name}-runtime-rg"
   address_prefix              = "0.0.0.0/0"
   next_hop_type               = "VirtualAppliance"
-  next_hop_in_ip_address      =  var.azure_fw_private_ip
-  
+  next_hop_in_ip_address      =  var.azure_fw_private_ip  
 }
