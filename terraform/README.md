@@ -40,7 +40,7 @@
 
     ```azurecli
     terraform plan -out=springcloud.plan
-    ````
+    ```
     
     - [Azure Virtual Machine](https://azure.microsoft.com/en-us/services/virtual-machines/) administrator name and password
         - [Password syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
@@ -56,7 +56,7 @@
 
     ```azurecli
     terraform apply springcloud.plan
-    ````
+    ```
 
 5. For each of the two route tables above, add the default route 0.0.0.0/0 with the Azure Firewall private IP as the Next Hop address.
 
