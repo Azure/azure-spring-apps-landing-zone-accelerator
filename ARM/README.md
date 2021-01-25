@@ -52,8 +52,8 @@ Install one of the following sample applications:
 ## Deploy Azure Application Gateway with WAF (optional)
 
 Here you will have 2 options: 
-- Option 1: User a Public Azure Application gateway for direct ingress. 
-- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule on Azure Firewall).
+- Option 1: Use a public Azure Application gateway for direct ingress. 
+- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
 
 1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority. You will need to convert the certificate to a Base64 string value for the next step. The following will set the Base64 string value to a variable to be used as part of the deployment (replace the file name with your own).
 
