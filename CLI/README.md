@@ -6,7 +6,7 @@
 
 1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
-2. Run the two commands below to add the required extensions to Azure CLI.
+2. Run the two commands below to add the required extensions to Azure CLI if they are not installed already
 
     `az extension add --name azure-firewall`
 
@@ -17,13 +17,26 @@
 ## Deployment
 
 
-1. Run `az login`
+1. Run `az login` to log into Azure
 
-2. Run `az account set --subscription {your subscription name}`
+2. Run `az account set --subscription {your subscription name}` to set your default subscription
 
-3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted on screen to enter a valid User Principal Name for Azure Key Vault access, MySQL administrator name, MySQL Administrator password, a jumphost VM administrator name, and a jumphost VM administrator password.  Other resource names are parameters in the script and can be edited before execution.
+3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted at the start of the script to enter:
 
-4. If deployed into the East US 2 Azure region you will need to manually add a default Azure Firewall internet route to the Azure Spring Cloud app and service resource group route tables.  Each resource group contains a single route table that will need 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address.
+    - User Principal Name for [Azure Key Vault access policies](https://docs.microsoft.com/en-us/azure/key-vault/general/secure-your-key-vault)
+    
+    - [Azure Virtual Machine](https://azure.microsoft.com/en-us/services/virtual-machines/) administrator name and password
+        - [Password syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
+        - [Administrator syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm)
+
+    - [Azure database for MySQL](https://azure.microsoft.com/en-us/services/mysql/) administrator and password
+        - [Password syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+        - [Administrator syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+
+    - A valid Azure Region where resources are deployed
+        - Run `az account list-locations -o table --query "[].name"` command to find list of available regions.
+
+**Note:** Due to a known caching issue in East US 2 region, default routes need to be added to Azure Spring Cloud route tables manually.  Azure Spring Cloud apps and service runtime resource groups contain a single route table where a 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address is needed.
 
 ## Post Deployment
 
