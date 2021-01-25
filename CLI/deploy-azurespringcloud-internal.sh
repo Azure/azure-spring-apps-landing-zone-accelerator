@@ -508,7 +508,7 @@ az network vnet peering create \
 az keyvault create --name ${azure_key_vault_name} \
 	--resource-group ${hub_resource_group_name} \
 	--location ${location} \
-	--no-self-perms \
+	--no-self-perms false \
     --default-action Deny \
     --enabled-for-deployment true \
     --bypass AzureServices
