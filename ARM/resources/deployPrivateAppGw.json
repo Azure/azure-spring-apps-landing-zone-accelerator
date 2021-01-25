@@ -1,5 +1,5 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "applicationGatewayName": {
@@ -44,7 +44,8 @@
     "appGWPublicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses/', parameters('appGWPublicIpAddressName'))]",
     "appGWSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('hubVnetName'), variables('appGatewaySubnetName'))]",
     "applicationGatewayId": "[resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName'))]",
-    "location": "[resourceGroup().location]"    
+    "location": "[resourceGroup().location]",
+    "appGWPrivateIPAddress": "10.0.3.10"    
   },
   "resources": [
     {
@@ -79,6 +80,16 @@
               "PublicIPAddress": {
                 "id": "[variables('appGWPublicIPRef')]"
               }
+            }
+          },
+          {
+            "name": "appGwPrivateFrontendIp",
+            "properties": {
+              "subnet": {
+                "id": "[variables('appGWsubnetRef')]"
+              },
+              "privateIPAddress": "[variables('appGWPrivateIPAddress')]",
+              "privateIPAllocationMethod": "Static"
             }
           }
         ],
@@ -128,7 +139,7 @@
             "name": "myapp-listener-https",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
+                "id": "[concat(variables('applicationGatewayId'), '/frontendIPConfigurations/appGwPrivateFrontendIp')]"
               },
               "frontendPort": {
                 "id": "[concat(variables('applicationGatewayId'), '/frontendPorts/port_443')]"

@@ -2,20 +2,20 @@
 
 
 ## Overview
-When you deploy an application to an Azure Spring cloud environment, it will publish the application using the domain suffix azuremicroservices.io or private.azuremicroservice.io when injected into a VNet. A custom domain allows you to utilize your own custom domain suffix for your Azure Spring Cloud application endpoint.
+When you deploy an application to an Azure Spring cloud environment, it will publish the application using the domain suffix azuremicroservices.io or private.azuremicroservice.io when injected into a VNet. A custom domain allows you to utilize your own custom domain for your Azure Spring Cloud application endpoint.
 
 ## Prerequisites
 
-1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
 
-2. One of the following Quickstarts deployed: [ARM](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/ARM) or [Terraform](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/terraform)
+2. One of the following Quickstarts deployed: [ARM](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/ARM) or [Terraform](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/terraform).
 
-3. An SSL/TLS certificate file with private key in PFX or PEM format for the custom domain
+3. An SSL/TLS certificate file with private key in PFX or PEM format for the custom domain.
 
 ## Configuration
 
 1. Create a bash script with environmental variables by making a copy of the [setup-env-variables-custom-domain.sh](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/custom-domain/setup-env-variables-custom-domain.sh) file. Modify the values of the variables.
-   Then, set the environment
+   Then, set the environment.
 
 ```bash
     source setup-env-variables-custom-domain.sh
@@ -29,7 +29,7 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
     for IP in "${MGMT_IPS[@]}"; do az keyvault network-rule add --resource-group ${RESOURCE_GROUP} --name ${VAULT_NAME} --ip-address "$IP"; done`
 ```
 
-3. Set your default Azure Spring Cloud resource group name and cluster name:
+3. Set your default Azure Spring Cloud resource group name and cluster name.
 
 ```bash
     az configure --defaults \
@@ -40,15 +40,35 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
 
 4. Use either the [configure-custom-domain.sh](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/custom-domain/configure-custom-domain.sh) script provided in this repo **OR** run the individual commands within the script file. Make sure to run on the Virtual Machine running inside the Virtual Network
 
-Create a new Azure Private DNS Zone for the custom domain
+5. Create a new Azure Private DNS Zone for the custom domain. 
 
 ```bash
-    
+   az network private-dns zone create -g ${RESOURCE_GROUP} \
+   -n ${DOMAIN_SUFFIX}
 ```
 
-5. FINISH THIS - Add a dns record for the custom host name pointing to the Vnet Injection Endpoint of the Azure Spring Cloud Service
+6. Link the Private DNS Zone to the Hub virtual network:
 
-6. Log into the virtual machine running in the virtual network and test the custom domain.
+```bash
+    az network private-dns link vnet create --resource-group ${RESOURCE_GROUP} \
+    --name custom-domain-hub-link \
+    --zone-name ${DOMAIN_SUFFIX} \
+    --virtual-network vnet-hub \
+    -e false
+```
+
+7. Add a new A record for the application within the new DNS Zone. Replace yourIPAddress with your Azure Spring Cloud endpoint private IP. You can get the IP address of your spring cloud VNet injection endpoint from the Azure Portal.
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/images/vnetinjection.jpeg)
+
+```bash
+    az network private-dns record-set a add-record --resource-group ${RESOURCE_GROUP} \
+    --record-set-name ${DOMAIN_HOSTNAME} \
+    --zone-name ${DOMAIN_SUFFIX} \
+    --ipv4-address '<yourIPAddress>'
+```
+
+8. Log into the virtual machine running in the virtual network and test the custom domain from a browser.
 
 ## Additional Notes
 
