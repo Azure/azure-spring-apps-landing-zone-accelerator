@@ -32,9 +32,25 @@
 
 3. Run the following command to plan the terraform deployment
 
+  **Note:** Terraform will prompt you for the following variables: 
+    - Jumphost administrator username
+    - Jumphost administrator password
+    - MySQL Db administrator username
+    - MySQL Db administrator password
+
     ```azurecli
     terraform plan -out=springcloud.plan
     ````
+    
+    - [Azure Virtual Machine](https://azure.microsoft.com/en-us/services/virtual-machines/) administrator name and password
+        - [Password syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
+        - [Administrator syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm)
+
+    - [Azure database for MySQL](https://azure.microsoft.com/en-us/services/mysql/) administrator and password
+        - [Password syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+        - [Administrator syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+
+
 
 4. Finally, deploy the terraform Spring Cloud using the following command.
 
