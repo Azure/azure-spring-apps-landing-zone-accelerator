@@ -69,9 +69,9 @@ Here you will have 2 options:
     az deployment group create --resource-group my-resource-group --name appGW --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPublicAppGw.json" --parameters https_data=${HTTPSDATA}
 ```
 
-3. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address
+2. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address
 
-4. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
+3. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
@@ -86,7 +86,7 @@ Here you will have 2 options:
     --parameters https_data=${HTTPSDATA}
 ```
 
-3. Once deployed, add a DNAT rule on the Azure Firewall using the following command, replacing "destination-addresses" with the Public IP address of your Azure Firewall instance:
+2. Once deployed, add a DNAT rule on the Azure Firewall using the following command, replacing "destination-addresses" with the Public IP address of your Azure Firewall instance:
 
 ```bash
     az network firewall nat-rule create --resource-group my-resource-group /
@@ -100,7 +100,7 @@ Here you will have 2 options:
     --translated-port "443"
 ```
 
-1. look for the Azure Firewall in the Resource Group and note the Public IP address used in the springCloudIngress DNAT Rule. 
+3. look for the Azure Firewall in the Resource Group and note the Public IP address used in the springCloudIngress DNAT Rule. 
 
 4. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
