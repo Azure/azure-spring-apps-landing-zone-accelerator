@@ -40,9 +40,6 @@ azurespringcloud_service='spring-'$randomstring #Name of unique Spring Cloud res
 azurespringcloud_service_runtime_resource_group_name=$azurespringcloud_service'-runtime-rg' #Name of Azure Spring Cloud service runtime resource group	
 azurespringcloud_app_resource_group_name=$azurespringcloud_service'-apps-rg' #Name of Azure Spring Cloud apps resource group
 
-echo "Enter full User Principal Name of Key Vault Admin: "
-read userupn
-admin_object_id=$(az ad user show --id $userupn --query objectId --output tsv)
 
 echo "Enter an Azure region for resource deployment: "
 read region
@@ -508,7 +505,7 @@ az network vnet peering create \
 az keyvault create --name ${azure_key_vault_name} \
 	--resource-group ${hub_resource_group_name} \
 	--location ${location} \
-	--no-self-perms \
+	--no-self-perms false \
     --default-action Deny \
     --enabled-for-deployment true \
     --bypass AzureServices
