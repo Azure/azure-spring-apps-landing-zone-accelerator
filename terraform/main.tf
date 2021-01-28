@@ -31,7 +31,6 @@ module "log_analytics" {
   resource_group_name             = azurerm_resource_group.sc_corp_rg.name
   location                        = var.location
   law_name               = "${var.law_prefix}-${random_string.random.result}"
-  //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "spring_cloud" {
@@ -47,7 +46,6 @@ module "spring_cloud" {
   sc_service_name                 = "${var.sc_prefix}-${random_string.random.result}"
   app_insights_name               = "${var.app_insights_prefix}-${random_string.random.result}"
   azure_fw_private_ip             = module.hub_spoke.azure_firewall_private_ip
-  //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "my_sql" {
@@ -60,7 +58,6 @@ module "my_sql" {
   sc_data_subnetid                = module.hub_spoke.sc_data_subnetid
   hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
   spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
-  //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 module "keyvault" {
@@ -72,7 +69,6 @@ module "keyvault" {
     sc_support_subnetid             = module.hub_spoke.sc_support_subnetid
     hub_virtual_network_id          = module.hub_spoke.hub_vnet_id
     spoke_virtual_network_id        = module.hub_spoke.spoke_vnet_id
-    //depends_on = [ azurerm_resource_group.sc_corp_rg]
 }
 
 # Hub-Spoke VNET, Azure Bastion, Azure Firewall Using DNS Proxy
@@ -106,6 +102,5 @@ module "hub_spoke" {
     jump_host_private_ip_addr            = var.jump_host_private_ip_addr
     jump_host_vm_size                    = var.jump_host_vm_size
     jump_host_admin_username             = var.jump_host_admin_username
-    jump_host_password                   = var.jump_host_password
-    //depends_on = [ azurerm_resource_group.sc_corp_rg]
+    jump_host_password                   = var.jump_host_password 
 }
