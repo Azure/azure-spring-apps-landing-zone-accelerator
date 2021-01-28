@@ -1,7 +1,7 @@
 #!/bin/bash
-ARG=`az spring-cloud list --resource-group $1 --query '[0].properties.networkProfile.appNetworkResourceGroup' -o tsv`
-RRG=`az spring-cloud list --resource-group $1 --query '[0].properties.networkProfile.serviceRuntimeNetworkResourceGroup' -o tsv`
-AZFIP=`az network firewall list --resource-group $1 --query '[0].ipConfigurations[0].privateIpAddress' -o tsv`
+ARG=`az spring-cloud list --resource-group ${RESOURCE_GROUP} --query '[0].properties.networkProfile.appNetworkResourceGroup' -o tsv`
+RRG=`az spring-cloud list --resource-group ${RESOURCE_GROUP} --query '[0].properties.networkProfile.serviceRuntimeNetworkResourceGroup' -o tsv`
+AZFIP=`az network firewall list --resource-group ${RESOURCE_GROUP} --query '[0].ipConfigurations[0].privateIpAddress' -o tsv`
 
 for RG in $ARG $RRG
 do
