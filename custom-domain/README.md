@@ -26,7 +26,7 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
 ```bash
     export MGMT_IPS=(20.53.123.160 52.143.241.210 40.65.234.114 52.142.20.14 20.54.40.121 40.80.210.49 52.253.84.152 20.49.137.168 40.74.8.134 51.143.48.243)  
 
-    for IP in "${MGMT_IPS[@]}"; do az keyvault network-rule add --resource-group ${RESOURCE_GROUP} --name ${VAULT_NAME} --ip-address "$IP"; done`
+    for IP in "${MGMT_IPS[@]}"; do az keyvault network-rule add --resource-group ${RESOURCE_GROUP} --name ${VAULT_NAME} --ip-address "$IP"; done
 ```
 
 3. Set your default Azure Spring Cloud resource group name and cluster name.
@@ -68,7 +68,15 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
     --ipv4-address '<yourIPAddress>'
 ```
 
-8. Log into the virtual machine running in the virtual network and test the custom domain from a browser.
+8. connect to the jump VM running in the virtual network and test the custom domain from a browser.
+
+9. Clear the Azure CLI defaults using the following.
+
+```bash
+    az configure --defaults location='' \
+    group='' \
+    spring-cloud=''
+```
 
 ## Additional Notes
 

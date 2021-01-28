@@ -58,7 +58,7 @@ variable "hub_vnet_name" {
 variable "hub_vnet_addr_prefix" {
     type        = string 
     description = "Hub VNET prefix"
-    default     = "10.230.0.0/16"
+    default     = "10.0.0.0/16"
 }
 variable "spoke_vnet_name" {
     type        = string 
@@ -68,7 +68,7 @@ variable "spoke_vnet_name" {
 variable "spoke_vnet_addr_prefix" {
     type        = string 
     description = "Spoke VNET prefix"
-    default     = "10.231.0.0/16"
+    default     = "10.1.0.0/16"
 }
 variable "azurefw_name" {
     type        = string
@@ -77,7 +77,7 @@ variable "azurefw_name" {
 variable "azurefw_addr_prefix" {
     type        = string 
     description = "Azure Firewall VNET prefix"
-    default     = "10.230.0.0/26"
+    default     = "10.0.1.0/24"
 }
 
 # Hub Subnets
@@ -85,12 +85,12 @@ variable "azurefw_addr_prefix" {
 variable "appgw-subnet-name" {
     type        = string
     description = "Spring Cloud Service Subnet"
-    default     = "AppGatewaySubnet"
+    default     = "snet-agw"
 }
 variable "appgw-subnet-addr" {
     type        = string
     description = "Spring Cloud CIDR Subnet"
-    default     = "10.230.3.0/24"
+    default     = "10.0.3.0/24"
 }
 
 # Azure Spring Cloud Variables
@@ -98,45 +98,45 @@ variable "appgw-subnet-addr" {
 variable "springboot-service-subnet-name" {
     type        = string
     description = "Spring Cloud Service Subnet"
-    default     = "sc-service-subnet"
+    default     = "snet-runtime"
 }
 variable "springboot-service-subnet-addr" {
     type        = string
     description = "Spring Cloud CIDR Subnet"
-    default     = "10.231.1.0/24"
+    default     = "10.1.0.0/24"
 }
 variable "springboot-apps-subnet-name" {
     type        = string
     description = "Spring Cloud Service Subnet"
-    default     = "sc-apps-subnet"
+    default     = "snet-app"
 }
 variable "springboot-apps-subnet-addr" {
     type        = string
     description = "Spring Cloud CIDR Subnet"
-    default     = "10.231.2.0/24"
+    default     = "10.1.1.0/24"
 }
 
 variable "springboot-data-subnet-name" {
     type        = string
     description = "Spring Cloud Data Services Subnet"
-    default     = "sc-data-subnet"
+    default     = "snet-data"
 }
 variable "springboot-data-subnet-addr" {
     type        = string
     description = "Spring Cloud Data Services Subnet"
-    default     = "10.231.3.0/24"
+    default     = "10.1.3.0/24"
 }
 
 variable "springboot-support-subnet-addr" {
     type        = string
     description = "Spring Cloud Private Link Subnet"
-    default     = "10.231.4.0/24"
+    default     = "10.1.2.0/24"
 }
 
 variable "springboot-support-subnet-name" {
     type        = string
     description = "Spring Cloud Private Link Subnet Name"
-    default     = "sc-support-subnet"
+    default     = "snet-support"
 }
 
 # Azure Bastion module
@@ -148,7 +148,7 @@ variable "azurebastion_name" {
 variable "azurebastion_addr_prefix" {
     type        = string 
     description = "Azure Bastion Address Prefix"
-    default     = "10.230.1.0/27"
+    default     = "10.0.2.0/24"
 }
 
 # Jump host module
@@ -159,12 +159,12 @@ variable "jump_host_name" {
 variable "jump_host_addr_prefix" {
     type        = string 
     description = "Azure Jump Host Address Prefix"
-    default     = "10.230.4.0/28"   
+    default     = "10.0.4.0/24"   
 }
 variable "jump_host_private_ip_addr" {
     type        = string 
     description = "Azure Jump Host Address"
-    default     = "10.230.4.5"
+    default     = "10.0.4.5"
 }
 variable "jump_host_vm_size" {
     type        = string 
@@ -182,5 +182,5 @@ variable "jump_host_password" {
 
 variable "sc_cidr" {
     type        = list
-    default     = ["10.4.0.0/16", "10.5.0.0/16", "10.3.0.1/16"]
+    default     = ["10.3.0.0/16", "10.4.0.0/16", "10.5.0.1/16"]
 }
