@@ -18,53 +18,117 @@
 
 1. Login to Azure and select the target subscription.
 
-    ```azurecli
-    az login
+```bash
+  az login
 
-    az account set --subscription "Your Subscription Name"
-    ```
+  az account set --subscription "Your Subscription Name"
+```
 
 2. Run the following command to initialize the terraform modules.
 
-    ```azurecli
-    terraform init
-    ```
+```bash
+  terraform init
+```
 
 3. Run the following command to plan the terraform deployment
 
-  **Note:** Terraform will prompt you for the following variables: 
+  **Note:** Terraform will prompt you for the following variables:  
     - Jumphost administrator username
     - Jumphost administrator password
     - MySQL Db administrator username
     - MySQL Db administrator password
 
-    ```azurecli
-    terraform plan -out=springcloud.plan
-    ```
-    
-    - [Azure Virtual Machine](https://azure.microsoft.com/en-us/services/virtual-machines/) administrator name and password
-        - [Password syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
-        - [Administrator syntax](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm)
+  *    Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
 
-    - [Azure database for MySQL](https://azure.microsoft.com/en-us/services/mysql/) administrator and password
-        - [Password syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
-        - [Administrator syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+  *    Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 
-
+```bash
+  terraform plan -out=springcloud.plan
+```
 
 4. Finally, deploy the terraform Spring Cloud using the following command.
 
-    ```azurecli
-    terraform apply springcloud.plan
-    ```
+```bash
+  terraform apply springcloud.plan
+```
 
 5. For each of the two route tables above, add the default route 0.0.0.0/0 with the Azure Firewall private IP as the Next Hop address.
 
 ## Post Deployment
 
 Install one of the following sample applications:
+* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
 * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices)
+
+## Deploy Azure Application Gateway with WAF (optional)
+
+Here you will have 2 options:
+- Option 1: Use a public Azure Application gateway for direct ingress.
+- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
+
+1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
+
+### Option 1 - Public Application Gateway
+
+1. Change the directory to to deployPublicAppGW
+
+```bash
+    cd deployPublicAppGW
+```
+
+2. copy the SSL/TLS certificate PFX file to this directory.
+
+3. Run the following command to initialize the terraform.
+
+```bash
+    terraform init
+```
+
+4. Run the following command to plan the terraform deployment.
+
+```bash
+    terraform plan -out=appgwpublic.plan
+```
+
+When prompted enter the values for the variables.
+
+5. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
+
+6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+
+### Option 2 - Private Application Gateway behind Azure Firewall (DNAT)
+
+1. Change the directory to to deployPrivateAppGW
+
+```bash
+    cd deployPrivateAppGW
+```
+
+2. copy the SSL/TLS certificate PFX file to this directory.
+
+3. Run the following command to initialize the terraform.
+
+```bash
+    terraform init
+```
+
+4. Run the following command to plan the terraform deployment.
+
+```bash
+    terraform plan -out=appgwprivate.plan
+```
+
+When prompted enter the values for the variables.
+
+5. Locate the Public IP of your Azure Firewall.
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/terraform/images/azfwpip.jpeg)
+
+6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
 ## Cleaning up
 
@@ -72,16 +136,17 @@ Unless you plan to perform additional tasks with the Azure resources from the qu
 as post deployment steps above), it is important to destroy the resources that you created 
 to avoid the cost of keeping them provisioned.
 
-The easiest way to do this is to call `terraform destroy`.
+The easiest way to do this is to call `terraform destroy`. Do this in both directories.
 
-```azurecli
+```bash
 terraform destroy
 ```
+
 ## Known Issues
 
 There is an existing ARM caching issue which causes the terraform default route update to fail. This issue is common when selecting East US 2. A 10 minute delay added to minimize the occurrence of this problem. The error message that appears is documented below:
 
-```azurecli
+```bash
 Error: Invalid index
 
   on modules/azure_spring_cloud/main.tf line 111, in resource "azurerm_route" "default_egress_apps":
@@ -106,7 +171,7 @@ If you encounter this error, there are two options to correct this:
 
 * **Option 1**: Comment or  the terraform route table update code under the **azure_spring_cloud** module.
 
-```azurecli
+```bash
 data "azurerm_resources" "route_table_apps" {
   type = "Microsoft.Network/routeTables"
   resource_group_name           = "${var.sc_service_name}-apps-rg"
@@ -144,13 +209,19 @@ resource "azurerm_route" "default_egress_runtime" {
   next_hop_in_ip_address      =  var.azure_fw_private_ip  
 }
 ```
+
 Once this section is commented out/removed, the Azure Firewall default internet route be manually added to both the Spring Cloud Apps and Spring Cloud Service route tables. Within each of the apps and runtime resource groups, there should be a route table that has the following naming pattern:
 
-```azurecli
+```bash
 aks-agentpool-xxxxxxxx-routetable
 ```
+
 Where xxxxxxxx is a random generated number for your specific deployment.
 
 * **Option 2:** Wait for the Azure ARM cache to refresh and re-run the terraform apply script. The refresh time can vary depending on the selected region.
 
 [Azure Resource Explorer](https://resources.azure.com) can be used to confirm that the route tables have been cached. You can navigate to Subscription Name -> ResourceGroups and find the two resource groups automatically created for the Spring Cloud runtime resource group and Spring Cloud apps resource group.
+
+## Additional Notes
+
+You can use a custom domain suffix for your Azure Spring Cloud application instead of the default .private.azuremicrososervices.io domain suffix. See the [custom-domain](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/) section of this repo.
