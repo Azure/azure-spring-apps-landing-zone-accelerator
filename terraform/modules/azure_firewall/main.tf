@@ -256,3 +256,107 @@ resource "azurerm_firewall_application_rule_collection" "microsoft_crl" {
     }
   }
 }
+
+resource "azurerm_firewall_application_rule_collection" "BlobStorage_rules" {
+  name                = "Microsoft_Blob_rules"
+  azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
+  resource_group_name = var.resource_group_name
+  priority            = 500
+  action              = "Allow"
+
+  rule {
+    name = "Blob Storage Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [      
+       
+       "*.blob.core.windows.net"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
+
+resource "azurerm_firewall_application_rule_collection" "database_clamav_rules" {
+  name                = "database_clamav_rules"
+  azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
+  resource_group_name = var.resource_group_name
+  priority            = 550
+  action              = "Allow"
+
+  rule {
+    name = "Database Clamav Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [      
+       
+       "database.clamav.net"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
+
+resource "azurerm_firewall_application_rule_collection" "Github_rules" {
+  name                = "Github_rules"
+  azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
+  resource_group_name = var.resource_group_name
+  priority            = 600
+  action              = "Allow"
+
+  rule {
+    name = "GitHub Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [      
+       
+       "github.com"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
+
+resource "azurerm_firewall_application_rule_collection" "Microsoft_Metrics_rules" {
+  name                = "Microsoft_Metric_rules"
+  azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
+  resource_group_name = var.resource_group_name
+  priority            = 650
+  action              = "Allow"
+
+  rule {
+    name = "Microsoft Metric Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [      
+       
+       "*.prod.microsoftmetrics.com"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
