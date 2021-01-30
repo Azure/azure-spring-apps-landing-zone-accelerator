@@ -40,7 +40,7 @@ of Azure Firewall.
 * A single Windows Server 2016 Virtual Machine the hub Virtual Network for testing access to 
 applications deployed into the Azure Spring Cloud instance.  This virtual machine is configured 
 with the Microsoft Monitoring Agent and is integrated with the Log Analytics Workspace. This VM is 
-not exposed to the internet and is only accessible via Azure Bastion.
+not exposed to the internet and is only accessible via Azure Bastion. [Both are missing from above drawing]
 * Log Analytics Workspace where Azure Spring Cloud, Azure Firewall, and the virtual machine deliver 
 logs and metrics.
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage 
