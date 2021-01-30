@@ -24,7 +24,7 @@ spoke) is filtered with Network Security Groups and North/South traffic (traffic
 Internet and resources in the hub or spoke) is routed through and mediated with an instance of 
 Azure Firewall.  
 
-![lab image](images/lab.jpeg)
+![lab image](images/architecture-private.svg)
 
 Additional features of this quickstart are:
 
