@@ -82,6 +82,7 @@ Get started today – deploy Spring applications to Azure Spring Cloud using thi
 [Spring Cloud](https://docs.microsoft.com/en-us/azure/developer/java/migration/migrate-spring-cloud-to-azure-spring-cloud) and 
 [Tomcat applications](https://aka.ms/migrate-tomcat-to-azure-spring-cloud-service) to Azure Spring Cloud
 * Wire Spring applications to [interact with Azure services](https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/).
+* Using the [Azure Spring Cloud extension for VS Code](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-azurespringcloud) to quickly create, manage and deploy apps to an Azure Spring Cloud instance.
 
 ## Contributing
 
