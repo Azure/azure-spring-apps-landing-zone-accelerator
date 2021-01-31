@@ -40,7 +40,8 @@ of Azure Firewall.
 * A single Windows Server 2016 Virtual Machine the hub Virtual Network for testing access to 
 applications deployed into the Azure Spring Cloud instance.  This virtual machine is configured 
 with the Microsoft Monitoring Agent and is integrated with the Log Analytics Workspace. This VM is 
-not exposed to the internet and is only accessible via Azure Bastion. [Both are missing from above drawing]
+not exposed to the internet and is only accessible via Azure Bastion (for brevity, both the VM and Azure
+Bastion are not shown in the diagram).
 * Log Analytics Workspace where Azure Spring Cloud, Azure Firewall, and the virtual machine deliver 
 logs and metrics.
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage 
@@ -82,7 +83,7 @@ Get started today – deploy Spring applications to Azure Spring Cloud using thi
 [Spring Cloud](https://docs.microsoft.com/en-us/azure/developer/java/migration/migrate-spring-cloud-to-azure-spring-cloud) and 
 [Tomcat applications](https://aka.ms/migrate-tomcat-to-azure-spring-cloud-service) to Azure Spring Cloud
 * Wire Spring applications to [interact with Azure services](https://docs.microsoft.com/en-us/azure/developer/java/spring-framework/).
-* Using the [Azure Spring Cloud extension for VS Code](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-azurespringcloud) to quickly create, manage and deploy apps to an Azure Spring Cloud instance.
+* Use the [Azure Spring Cloud extension for VS Code](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-azurespringcloud) to quickly create, manage and deploy apps to an Azure Spring Cloud instance.
 
 ## Contributing
 
