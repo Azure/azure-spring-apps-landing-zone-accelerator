@@ -47,9 +47,9 @@ resource "azurerm_virtual_machine" "jump_host" {
   vm_size               = var.jump_host_vm_size
 
   storage_image_reference {
-    publisher = "MicrosoftWindowsDesktop"
-    offer     = "Windows-10"
-    sku       = "19h2-pro-g2"
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter"
     version   = "latest"
   }
 
@@ -64,15 +64,30 @@ resource "azurerm_virtual_machine" "jump_host" {
     computer_name      = var.jump_host_name
     admin_username     = var.jump_host_admin_username
     admin_password     = var.jump_host_password
-
   }
 
   os_profile_windows_config {
+    #provision_vm_agent = true
   }
+
 
   timeouts {
       create = "60m"
       delete = "2h"
   }
-
 }
+
+#resource "azurerm_virtual_machine_extension" "Installdependancies" {
+#    name                    = "${var.jump_host_name}-vmext"
+#    virtual_machine_id = azurerm_virtual_machine.jump_host.id
+#    publisher            = "Microsoft.Azure.Extensions"
+#    type                 = "CustomScript"
+#    type_handler_version = "2.5.0"
+#
+#  settings = <<SETTINGS
+#    {
+#        "script": "SW5zdGFsbC1Nb2R1bGUgY0Nob2NvIC1NYXhpbXVtVmVyc2lvbiAyLjQuMS4wIC1Db25maXJtIC0KSW5zdGFsbC1Nb2R1bGUgQ29tcHV0ZXJNYW5hZ2VtZW50ZHNjIC1Db25maXJtClNldC1Mb2NhdGlvbiBjOlwK"
+#    }
+#SETTINGS
+#
+#}
