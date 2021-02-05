@@ -6,6 +6,7 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 Install-Module cChoco -MaximumVersion 2.4.1.0 -force
 Install-Module ComputerManagementdsc
+copy DeveloperWorkstation_Config.ps1 -destination C:\
 Set-Location c:\
 ./DeveloperWorkstation_Config.ps1
 Stop-Transcript
