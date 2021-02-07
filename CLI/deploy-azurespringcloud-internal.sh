@@ -231,7 +231,7 @@ az network bastion create --resource-group ${hub_resource_group_name} --name ${a
 az vm create \
     --resource-group ${hub_resource_group_name} \
     --name jumphostvm \
-    --image MicrosoftWindowsDesktop:Windows-10:20h1-pro:latest \
+    --image MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest \
     --size Standard_DS3_v2 \
     --admin-username $vm_admin \
     --admin-password $vm_password \
