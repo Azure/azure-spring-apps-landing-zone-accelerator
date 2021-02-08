@@ -16,4 +16,5 @@ choco install maven -y --no-progress
 choco install azure-cli -y --no-progress
 choco install mysql-cli -y --no-progress
 choco install jq -y --no-progress
+choco install git -y --no-progress
 Stop-Transcript

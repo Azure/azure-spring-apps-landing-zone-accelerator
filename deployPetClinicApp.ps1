@@ -13,7 +13,7 @@ az extension add --name spring-cloud
 
 #Create directory for github code
 Set-Location c:\
-#mkdir source-code
+mkdir source-code
 cd c:\source-code
 
 #Clone GitHub Repo
