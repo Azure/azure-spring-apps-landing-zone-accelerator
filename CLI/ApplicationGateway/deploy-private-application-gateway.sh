@@ -22,12 +22,13 @@ fw_name=$fwname
 az network public-ip create --resource-group ApplicationGateway --name appgw-pip --sku Standard --location eastus
 
 
+
 az network application-gateway create \
   --name  $appgw_name \
   --location eastus \
   --resource-group sc-corp-rg \
-  --vnet-name /subscriptions/52c8334e-33c1-4df4-bba5-859bf96b7377/resourceGroups/VirtualNetworks/providers/Microsoft.Network/virtualNetworks/Hub-Vnet \
-  --subnet /subscriptions/52c8334e-33c1-4df4-bba5-859bf96b7377/resourceGroups/VirtualNetworks/providers/Microsoft.Network/virtualNetworks/Hub-Vnet/subnets/appgw \
+  --vnet-name vnet-hub \
+  --subnet application-gateway-subnet \
   --frontend-port appGatewayFrontendport \
   --capacity 2 \
   --sku WAF_V2 \
