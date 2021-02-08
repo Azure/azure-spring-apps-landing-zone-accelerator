@@ -18,17 +18,12 @@ configuration DeveloperWorkstation
             ExecutionPolicyScope = 'LocalMachine'
             ExecutionPolicy      = 'RemoteSigned'
         }
-
-        cChocoInstaller InstallChoco
-        {
-            InstallDir = "C:\choco"
-        }
         
         cChocoPackageInstaller installAzureDataStudio
         {
             Name                 = 'azure-data-studio'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller installAzureDataStudioExt2
         {
@@ -40,13 +35,13 @@ configuration DeveloperWorkstation
         {
             Name                 = 'azcoyp10'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller vscode
         {
             Name                 = 'vscode'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller vscodemssql
         {
@@ -64,37 +59,37 @@ configuration DeveloperWorkstation
         {
             Name                 = 'git'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller wsl2
         {
             Name                 = 'wsl2'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller zulu8
         {
             Name                 = 'zulu8'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller maven
         {
             Name                 = 'maven'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller azurecli
         {
             Name                 = 'azure-cli'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         cChocoPackageInstaller mysqlcli
         {
             Name                 = 'mysql-cli'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         File SourceCodeDir
         {
@@ -106,7 +101,7 @@ configuration DeveloperWorkstation
         {
             Name                 = 'jq'
             Ensure               = 'Present'
-            DependsOn            = '[cChocoInstaller]installChoco'
+            DependsOn            = '[PowerShellExecutionPolicy]ExecutionPolicy'
         }
         IEEnhancedSecurityConfiguration 'DisableIeSecurityForAdmin'
         {
