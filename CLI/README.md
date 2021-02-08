@@ -45,19 +45,36 @@ Install one of the following sample applications:
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
-1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quick start, you can use a self signed certificate or one issued from an internal Certificate Authority. You will need to convert the certificate to a Base64 string value for the next step. The following will set the Base64 string value to a variable to be used as part of the deployment (replace the file name with your own).
+Here you will have 2 options:
+- Option 1: Use a public Azure Application gateway for direct ingress.
+- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
 
-    `export HTTPSDATA=$(base64 -w 0 nameofcertificatefile.pfx)`
+1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
-2. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
+### Option 1 - Public Application Gateway
 
-    `az deployment group create --resource-group my-resource-group --name appGW --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployAppGw.json" --parameters https_data=${HTTPSDATA}`
+1. Change the directory to to deployPublicAppGW
 
-3. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address
+```bash
+    cd PublicApplicationGateway
+```
 
-4. From a browser that isn't in the quick start virtual network, browse to https://<publicIPofAppGW>. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
+2. Copy the SSL/TLS certificate PFX file to this directory.
 
-![lab image](./images/Petclinic-External.jpeg)
+3. Run the following script to deploy Application Gateway
+
+```bash
+    deploy-public-application-gateway.sh
+```
+
+When prompted enter the values for the variables.
+
+5. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
+
+6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+
 
 
 ## Additional Notes
