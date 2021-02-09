@@ -680,55 +680,7 @@ az monitor diagnostic-settings create \
     ]' \
     --metrics '[
         {
-            "category": "Performance (Java)",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "Request (Java)",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "Error (Java)",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "Session (Java)",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "Performance (.NET)",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "Request (.NET)",
-            "enabled": true,
-            "retentionPolicy": {
-                "enabled": false,
-                "days": 0
-                }
-        },
-        {
-            "category": "Common",
+            "category": "AllMetrics",
             "enabled": true,
             "retentionPolicy": {
                 "enabled": false,
@@ -817,4 +769,3 @@ az network private-dns record-set a add-record \
     --zone-name private.azuremicroservices.io \
     --record-set-name '*' \
     --ipv4-address ${azurespringcloud_internal_lb_private_ip}
-
