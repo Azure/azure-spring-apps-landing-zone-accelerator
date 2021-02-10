@@ -69,6 +69,10 @@ mysql -h"$MYSQL_SERVER_FULL_NAME" -u"$MYSQL_SERVER_ADMIN_LOGIN_NAME" `
      -p"$MYSQL_SERVER_ADMIN_PASSWORD" `
      -e  "CREATE DATABASE petclinic;CREATE USER 'root' IDENTIFIED BY 'petclinic';GRANT ALL PRIVILEGES ON petclinic.* TO 'root';"
 
+mysql -h"$MYSQL_SERVER_FULL_NAME" -u"$MYSQL_SERVER_ADMIN_LOGIN_NAME" `
+     -p"$MYSQL_SERVER_ADMIN_PASSWORD" `
+     -e  "CALL mysql.az_load_timezone();"
+
 az mysql server configuration set --name time_zone `
   --resource-group $RESOURCE_GROUP `
   --server $MYSQL_SERVER_NAME --value "US/Eastern"
