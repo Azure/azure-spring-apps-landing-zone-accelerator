@@ -1371,7 +1371,7 @@
                 },
                 "templateLink": {
 
-                    "uri": "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deploy-vm-2016.json",
+                    "uri": "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deploy-vm-2019.json",
 
                     "contentVersion": "1.0.0.0"
                 }
