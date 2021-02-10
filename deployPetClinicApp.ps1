@@ -19,7 +19,7 @@ cd c:\source-code
 #Clone GitHub Repo
 git clone https://github.com/azure-samples/spring-petclinic-microservices
 cd spring-petclinic-microservices
-mvn clean package -DskipTests -Denv=cloud
+C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3\bin\mvn clean package -DskipTests -Denv=cloud
 
 # ==== Service and App Instances ====
 $API_GATEWAY='api-gateway'
