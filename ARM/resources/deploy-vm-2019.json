@@ -208,35 +208,34 @@
                         "typeHandlerVersion": "1.4",
                         "autoUpgradeMinorVersion": true
                     }
+                },
+                {
+                    "type": "extensions",
+                    "name": "Microsoft.Azure.customScriptVmExt",
+                    "apiVersion": "2019-07-01",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "CustomScriptExtension",
+                        "typeHandlerVersion": "1.9",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "fileUris": [
+                                "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1",
+                                "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/deployPetClinicApp.ps1"
+                            ]
+                        },
+                        "protectedSettings": {
+                            "commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""
+                        }   
+                    }
                 }
             ]
-        },
-        {
-            "name": "windowsVM1/customScriptVmExt",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-07-01",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "customScript for Jump VM - Install Spring Dependancies"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', 'windowsVM1')]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.9",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1"
-                    ]
-                },
-                "protectedSettings": {
-                    "commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""
-                }
-            }
         }
+        
     ],
     "outputs": {
         "vmPrivateIpAddress": {
