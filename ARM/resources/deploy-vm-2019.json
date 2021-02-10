@@ -98,7 +98,6 @@
         "subnetRef": "[resourceId(parameters('vnetSubscriptionId'),parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets',parameters('vnetName'),parameters('subnetName'))]"
     },
     "resources": [
-        /* Create network interface */
         {
             "name": "[variables('nicName')]",
             "type": "Microsoft.Network/networkInterfaces",
@@ -118,7 +117,6 @@
                 ]
             }
         },
-        /* Create VM */
         {
             "name": "[parameters('vmName')]",
             "type": "Microsoft.Compute/virtualMachines",
@@ -171,7 +169,6 @@
                     }
                 }
             },
-            /* Install Microsoft Monitoring Agent extension */
             "resources": [
                 {
                     "type": "extensions",
