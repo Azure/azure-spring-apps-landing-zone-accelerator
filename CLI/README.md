@@ -32,7 +32,7 @@
         - [Administrator syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
 
     - A valid Azure Region where resources are deployed
-        - Run `https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
+        - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
         - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
 
 **Note:** Due to a known caching issue in East US 2 region, default routes need to be added to Azure Spring Cloud route tables manually.  Azure Spring Cloud apps and service runtime resource groups contain a single route table where a 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address is needed.
