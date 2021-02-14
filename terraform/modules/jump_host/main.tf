@@ -100,4 +100,3 @@ resource "azurerm_virtual_machine_extension" "Installdependancies" {
 SETTINGS
 
 }
- 
