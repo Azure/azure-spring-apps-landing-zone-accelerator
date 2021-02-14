@@ -52,14 +52,14 @@ resource "azurerm_virtual_machine" "jump_host" {
     sku       = "2019-Datacenter"
     version   = "latest"
  }
-
+ 
   storage_os_disk {
     name              = "${var.jump_host_name}-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
-
+ 
   os_profile {
     computer_name      = var.jump_host_name
     admin_username     = var.jump_host_admin_username
@@ -69,7 +69,7 @@ resource "azurerm_virtual_machine" "jump_host" {
   os_profile_windows_config {
     provision_vm_agent = true
   }
-
+ 
 
   timeouts {
       create = "60m"
@@ -100,3 +100,4 @@ resource "azurerm_virtual_machine_extension" "Installdependancies" {
 SETTINGS
 
 }
+ 
