@@ -360,3 +360,55 @@ resource "azurerm_firewall_application_rule_collection" "Microsoft_Metrics_rules
     }
   }
 }
+
+resource "azurerm_firewall_application_rule_collection" "AKS_acs_rules" {
+  name                = "AKS_acs_rules"
+  azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
+  resource_group_name = var.resource_group_name
+  priority            = 700
+  action              = "Allow"
+
+  rule {
+    name = "AKS acs Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [      
+       
+       "acs-mirror.azureedge.net"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
+
+resource "azurerm_firewall_application_rule_collection" "Microsoft_Login_rules" {
+  name                = "Microsoft_Login_rules"
+  azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
+  resource_group_name = var.resource_group_name
+  priority            = 750
+  action              = "Allow"
+
+  rule {
+    name = "Microsoft Login Rules"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [      
+       
+       "login.microsoftonline.com"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
+}
