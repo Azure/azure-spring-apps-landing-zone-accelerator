@@ -6,25 +6,29 @@
 
 1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
-2. Run the two commands below to add the required extensions to Azure CLI.
+2. Run the following command to register the Azure Spring Cloud Resource Provider.
+
+    `az provider register --namespace 'Microsoft.AppPlatform'`
+
+3. Run the two commands below to add the required extensions to Azure CLI.
 
     `az extension add --name azure-firewall`
 
     `az extension add --name spring-cloud`
 
-3. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to. This will be used for the tenantId parameter of the template.
+4. Record your tenant id of the Azure AD instance associated with the subscription you will be deploying to. This will be used for the tenantId parameter of the template.
 
     `az account show --subscription mysubscription --query tenantId --output tsv`
 
-4. Get the object id of the security principal (user, managed identity, service principal) that will have access to the Azure Key Vault instance. This will be used for the keyVaultAdminObjectId parameter of the template.
+5. Get the object id of the security principal (user, managed identity, service principal) that will have access to the Azure Key Vault instance. This will be used for the keyVaultAdminObjectId parameter of the template.
 
     `az ad user show --id someuser@sometenant.com --query objectId --output tsv`
 
-5. Get the object id of the Spring Cloud Resource Provider from your Azure AD tenant. This will be used for the springCloudPrincipalObjectId parameter of the template.
+6. Get the object id of the Spring Cloud Resource Provider from your Azure AD tenant. This will be used for the springCloudPrincipalObjectId parameter of the template.
 
     `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query objectId --output tsv`
 
-6. Create a resource group to deploy the resource to.
+7. Create a resource group to deploy the resource to.
 
 ```bash
     export RESOURCE_GROUP=my-resource-group

@@ -11,7 +11,7 @@ export CERT_PASSWORD=password # customize this - Password for certificate file
 export KV_CERT_NAME=app-domain-com # customize this - Name of certificate added to Key Vault
 
 # === Azure Spring Cloud ===
-
+export ASCDM_ID=$(az ad sp show --id 03b39d0f-4213-4864-a245-b1476ec03169 --query objectId --output tsv)
 export SPRING_CERT_NAME=app-domain-com # customize this - Name of certificate to Azure Spring Cloud
 export DOMAIN_NAME=app.domain.com # customize this - Name of custom domain name for app
 export DOMAIN_SUFFIX=${DOMAIN_NAME#*.}
