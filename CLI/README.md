@@ -1,3 +1,4 @@
+
 # Azure CLI Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
@@ -32,7 +33,7 @@
         - [Administrator syntax](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
 
     - A valid Azure Region where resources are deployed
-        - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
+        - Run `https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
         - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
 
 **Note:** Due to a known caching issue in East US 2 region, default routes need to be added to Azure Spring Cloud route tables manually.  Azure Spring Cloud apps and service runtime resource groups contain a single route table where a 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address is needed.
@@ -66,12 +67,29 @@ Here you will have 2 options:
 ```bash
     deploy-public-application-gateway.sh
 ```
+4. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
 
-When prompted enter the values for the variables.
+5. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway. 
 
-5. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
-6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
+### Option 2 - Private Application Gateway behind Azure Firewall (DNAT)
+
+1. Change the directory to to deployPrivateAppGW
+
+```bash
+    cd PrivateApplicationGateway
+```
+
+2. Copy the SSL/TLS certificate PFX file to this directory.
+
+3. Run the following script to deploy Application Gateway
+
+```bash
+    deploy-private-application-gateway.sh
+```
+
+4. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 

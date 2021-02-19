@@ -70,15 +70,15 @@ fw_pub_id="$(az network firewall ip-config list -g sc-corp-rg -f $fw_name --quer
 fw_pub_ip="$(az network public-ip show --ids $fw_pub_id --query "ipAddress" -o tsv)"
 
 az network firewall nat-rule create \
-    --collection-name SpringCloudIngressDNAT \
+    --collection-name "SpringCloudIngressDNAT" \
     --destination-ports 443 \
     --firewall-name $fw_name \
-    --name SpringCloudIngressDNAT \
-    --protocols TCP \
+    --name "SpringCloudIngressDNAT" \
+    --protocols "TCP" \
     --translated-port 443 \
-    --translated-address '10.9.3.10/32' \
-    --action DNAT \
-    --resource-group sc-corp-rg \
+    --translated-address "10.9.3.10" \
+    --action "Dnat" \
+    --resource-group "sc-corp-rg" \
     --destination-addresses $fw_pub_ip \
-    --source-addresses * \
+    --source-addresses "*" \
     --priority 100
