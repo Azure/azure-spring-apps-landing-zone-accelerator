@@ -39,7 +39,9 @@
 
 ## Deployment
 
-1. Execute the template including the parameters of the tenant id from step 3, the object id from step 4, the object id from step 5. This will take about 30 minutes to deploy.
+1. Execute the template including the parameters of the tenant id from step 4, the object id from step 5, the object id from step 6. This will take about 30 minutes to deploy.
+   *    Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
+   *    Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 
 ```bash
     az deployment group create --resource-group ${RESOURCE_GROUP} \
