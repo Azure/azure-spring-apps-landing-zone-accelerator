@@ -7,7 +7,7 @@ export RESOURCE_GROUP=resource-group-name # customize this - RG that contains Ke
 export VAULT_NAME=key-vault-resource-name # customize this - Existing Key Vault resource name
 export VAULT_URI=https://${VAULT_NAME}.vault.azure.net/ 
 export CERT_FILE=app_domain_com.pfx # customize this - File name or path to PFX/PEM file with private key
-export CERT_PASSWORD=password # customize this - Password for certificate file
+export CERT_PASSWORD='password' # customize this - Password for certificate file
 export KV_CERT_NAME=app-domain-com # customize this - Name of certificate added to Key Vault
 
 # === Azure Spring Cloud ===
