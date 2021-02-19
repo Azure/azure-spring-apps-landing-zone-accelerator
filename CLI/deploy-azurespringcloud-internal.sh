@@ -647,6 +647,7 @@ az spring-cloud create \
     --app-network-resource-group ${azurespringcloud_app_resource_group_name} \
     --service-runtime-network-resource-group ${azurespringcloud_service_runtime_resource_group_name} \
     --vnet ${azurespringcloud_vnet_id} \
+    --reserved-cidr-range 10.0.0.0/16,10.1.0.0/16,10.2.0.1/16 \
     --service-runtime-subnet ${service_runtime_subnet_id} \
     --app-subnet ${apps_subnet_id}
 
