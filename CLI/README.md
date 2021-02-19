@@ -67,6 +67,8 @@ Here you will have 2 options:
 ```bash
     deploy-public-application-gateway.sh
 ```
+**Note:** You will prompted to enter Azure Application Gateway name, name of PFX certificate, password of PFX certificate, and Azure Firewall name.
+
 4. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
 
 5. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway. 
@@ -88,6 +90,7 @@ Here you will have 2 options:
 ```bash
     deploy-private-application-gateway.sh
 ```
+**Note:** You will prompted to enter Azure Application Gateway name, name of PFX certificate, password of PFX certificate, and Azure Firewall name.
 
 4. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
