@@ -240,6 +240,7 @@ az vm create \
     --public-ip-address "" \
     --nsg ""
 
+
 # creates Azure Firewall instance, public IP and Azure Firewall IP Configuration
 az network firewall create \
     --name ${firewall_name} \
@@ -410,6 +411,15 @@ az monitor diagnostic-settings create \
         }
     ]'
 
+
+# Creates custom script extension for jumphost VM 
+az vm extension set \
+    --name CustomScriptExtension \
+    --publisher Microsoft.Compute \
+    --vm-name jumphostvm \
+    --resource-group ${hub_resource_group_name} \
+    --protected-settings '{"commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""}' \
+    --settings {"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/deployPetClinicApp.ps1"]}
 
 
 # Creates NSG for Azure Spring Cloud data and support subnets
