@@ -413,7 +413,7 @@ az monitor diagnostic-settings create \
 
 
 # Creates custom script extension for jumphost VM 
-az vm extension set \
+az vm extension set  \
     --name CustomScriptExtension \
     --publisher Microsoft.Compute \
     --vm-name jumphostvm \
