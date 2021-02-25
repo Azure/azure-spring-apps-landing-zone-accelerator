@@ -247,7 +247,7 @@ az vm extension set \
     --vm-name jumphostvm \
     --resource-group ${hub_resource_group_name} \
     --protected-settings '{"commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""}' \
-    --settings {"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/deployPetClinicApp.ps1"]}
+    --settings '{"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/deployPetClinicApp.ps1"]}'
 
 # creates Azure Firewall instance, public IP and Azure Firewall IP Configuration
 az network firewall create \
