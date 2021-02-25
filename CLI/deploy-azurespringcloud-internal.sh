@@ -240,6 +240,15 @@ az vm create \
     --public-ip-address "" \
     --nsg ""
 
+# Creates custom script extension for jumphost VM 
+az vm extension set \
+    --name CustomScriptExtension \
+    --publisher Microsoft.Compute \
+    --vm-name jumphostvm \
+    --resource-group ${hub_resource_group_name} \
+    --protected-settings '{"commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""}' \
+    --settings '{"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/deployPetClinicApp.ps1"]}'
+
 # creates Azure Firewall instance, public IP and Azure Firewall IP Configuration
 az network firewall create \
     --name ${firewall_name} \
@@ -511,11 +520,11 @@ az keyvault create --name ${azure_key_vault_name} \
     --bypass AzureServices
 
 
-az keyvault set-policy --name ${azure_key_vault_name} \
-	--object-id $admin_object_id  \
-	--key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey \
-	--secret-permissions backup delete get list purge recover restore set \
-	--certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update
+#az keyvault set-policy --name ${azure_key_vault_name} \
+	#--object-id $admin_object_id  \
+	#--key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey \
+	#--secret-permissions backup delete get list purge recover restore set \
+	#--certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update
 
 
 akv_id=$(az keyvault show -g ${hub_resource_group_name} --name ${azure_key_vault_name} --query id --output tsv)
