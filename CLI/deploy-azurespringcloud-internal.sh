@@ -39,6 +39,8 @@ azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Res
 azurespringcloud_service='spring-'$randomstring #Name of unique Spring Cloud resource
 azurespringcloud_service_runtime_resource_group_name=$azurespringcloud_service'-runtime-rg' #Name of Azure Spring Cloud service runtime resource group	
 azurespringcloud_app_resource_group_name=$azurespringcloud_service'-apps-rg' #Name of Azure Spring Cloud apps resource group
+azurespringcloud_service_subnet_route_table_name='sc-service-subnet-routetable' #Azure Spring Cloud service subnet routetable name
+azurespringcloud_app_subnet_route_table_name='sc-app-subnet-routetable' #Azure Spring Cloud app subnet routetable name
 
 
 echo "Enter an Azure region for resource deployment: "
@@ -504,6 +506,56 @@ az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --name ${azure_spring_cloud_data_subnet_nsg}
 
+
+#Creates routetables and default route to be used with Azure Spring Cloud
+az network route-table create \
+    --name ${azurespringcloud_service_subnet_route_table_name} \
+    --resource-group ${hub_resource_group_name}
+
+az network route-table route create \
+    --resource-group ${hub_resource_group_name} \
+    --route-table-name ${azurespringcloud_service_subnet_route_table_name} \
+    --name default \
+    --address-prefix 0.0.0.0/0 \
+    --next-hop-type VirtualAppliance \
+    --next-hop-ip-address ${firewall_private_ip}
+
+az network route-table create \
+    --name ${azurespringcloud_app_subnet_route_table_name} \
+    --resource-group ${hub_resource_group_name}
+
+az network route-table route create \
+    --resource-group ${hub_resource_group_name} \
+    --route-table-name ${azurespringcloud_app_subnet_route_table_name} \
+    --name default \
+    --address-prefix 0.0.0.0/0 \
+    --next-hop-type VirtualAppliance \
+    --next-hop-ip-address ${firewall_private_ip}
+
+app_rt_id=$(az network route-table show \
+    --resource-group ${hub_resource_group_name} \
+    --name ${azurespringcloud_app_subnet_route_table_name} \
+    --query id --output tsv )
+
+service_rt_id=$(az network route-table show \
+    --resource-group ${hub_resource_group_name} \
+    --name ${azurespringcloud_service_subnet_route_table_name} \
+    --query id --output tsv )
+
+
+#Grant Azure Spring Cloud Resoure Provider Owner role to route tables
+az role assignment create \
+    --role "Owner" \
+    --scope ${service_rt_id} \
+    --assignee e8de9221-a19c-4c81-b814-fd37c6caf9d2
+
+az role assignment create \
+    --role "Owner" \
+    --scope ${app_rt_id} \
+    --assignee e8de9221-a19c-4c81-b814-fd37c6caf9d2
+
+
+
 #Creates Azure Spring Cloud spoke Vnet and subnets
 az network vnet create \
     --name ${azurespringcloud_vnet_name} \
@@ -517,14 +569,17 @@ az network vnet subnet create  \
     --name ${azurespringcloud_service_runtime_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
-    --address-prefix ${azurespringcloud_service_runtime_subnet_prefix} 
+    --address-prefix ${azurespringcloud_service_runtime_subnet_prefix} \
+    --route-table ${service_rt_id}
+
 
 
 az network vnet subnet create \
     --name ${azurespringcloud_app_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
-    --address-prefix ${azurespringcloud_app_subnet_prefix}
+    --address-prefix ${azurespringcloud_app_subnet_prefix} \
+    --route-table ${app_rt_id}
 
 
 az network vnet subnet create \
