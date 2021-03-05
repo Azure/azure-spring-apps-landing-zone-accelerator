@@ -375,6 +375,80 @@ az network firewall application-rule create \
     --priority 110 \
     --action allow
 
+az network firewall application-rule create \
+    --collection-name Microsoft_Blob \
+    --firewall-name ${firewall_name} \
+    --name Blob_rules \
+    --description "Required Azure Storage Rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "*.blob.core.windows.net" \
+    --priority 120 \
+    --action allow
+
+az network firewall application-rule create \
+    --collection-name database_clamav_rule \
+    --firewall-name ${firewall_name} \
+    --name database_clamav_rules \
+    --description "Required database clamav rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "database.clamav.net" \
+    --priority 130 \
+    --action allow
+
+az network firewall application-rule create \
+    --collection-name Github_rules \
+    --firewall-name ${firewall_name} \
+    --name Github_Rules \
+    --description "Required Github rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "github.com" \
+    --priority 140 \
+    --action allow
+
+az network firewall application-rule create \
+    --collection-name Microsoft_Metric_rules \
+    --firewall-name ${firewall_name} \
+    --name Microsoft_metrics \
+    --description "Required metric rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "*.prod.microsoftmetrics.com" \
+    --priority 150 \
+    --action allow
+
+
+az network firewall application-rule create \
+    --collection-name AKS_ACS_rules \
+    --firewall-name ${firewall_name} \
+    --name AKS_acs_rules \
+    --description "Required AKS acs rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "acs-mirror.azureedge.net" \
+    --priority 160 \
+    --action allow
+
+
+az network firewall application-rule create \
+    --collection-name Microsoft_Login_Rules \
+    --firewall-name ${firewall_name} \
+    --name AKS_acs_rules \
+    --description "Required login rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "login.microsoftonline.com" \
+    --priority 170 \
+    --action allow
+
 # Creates Diagnostic Settings to send logs and metrics to Log Analytics Workspace
 az monitor diagnostic-settings create \
     --name "ToLAW" \
@@ -583,7 +657,8 @@ az mysql server create \
 	--geo-redundant-backup Disabled \
     --minimal-tls-version TLS1_2 \
 	--storage-size 51200 \
-    --public-network-access Disabled
+    --public-network-access Disabled \
+    --ssl-enforcement Disabled
 
 mysql_id=$(az mysql server show -g ${hub_resource_group_name} --name ${azure_mysql_name} --query id --output tsv)
 
