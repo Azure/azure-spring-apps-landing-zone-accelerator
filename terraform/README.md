@@ -142,85 +142,9 @@ The easiest way to do this is to call `terraform destroy`. Do this in both direc
 terraform destroy
 ```
 
-## Known Issues
+## Change Log
 
-There is an existing ARM caching issue which causes the terraform default route update to fail. This issue is common when selecting East US 2. A 10 minute delay added to minimize the occurrence of this problem. The error message that appears is documented below:
-
-```bash
-Error: Invalid index
-
-  on modules/azure_spring_cloud/main.tf line 111, in resource "azurerm_route" "default_egress_apps":
- 111:   route_table_name              = data.azurerm_resources.route_table_apps.resources[0].name
-    |----------------
-    | data.azurerm_resources.route_table_apps.resources is empty list of object
-
-The given key does not identify an element in this collection value.
-
-
-Error: Invalid index
-
-  on modules/azure_spring_cloud/main.tf line 135, in resource "azurerm_route" "default_egress_runtime":
- 135:   route_table_name              = data.azurerm_resources.route_table_runtime.resources[0].name
-    |----------------
-    | data.azurerm_resources.route_table_runtime.resources is empty list of object
-
-The given key does not identify an element in this collection value.
-```
-
-If you encounter this error, there are two options to correct this:
-
-* **Option 1**: Comment or  the terraform route table update code under the **azure_spring_cloud** module.
-
-```bash
-data "azurerm_resources" "route_table_apps" {
-  type = "Microsoft.Network/routeTables"
-  resource_group_name           = "${var.sc_service_name}-apps-rg"
-  depends_on = [time_sleep.wait_600_seconds]
-}
-
-resource "azurerm_route" "default_egress_apps" {
-  name                          = "default" 
-  route_table_name              = data.azurerm_resources.route_table_apps.resources[0].name
-
-  resource_group_name           = "${var.sc_service_name}-apps-rg"
-  address_prefix              = "0.0.0.0/0"
-  next_hop_type               = "VirtualAppliance"
-  next_hop_in_ip_address      =  var.azure_fw_private_ip  
-}
-
-resource "time_sleep" "wait_600_seconds" {
-  depends_on = [azurerm_spring_cloud_service.sc]
-  create_duration = "600s"
-}
-
-data "azurerm_resources" "route_table_runtime" {
-  type = "Microsoft.Network/routeTables"
-  resource_group_name           = "${var.sc_service_name}-runtime-rg"
-  depends_on = [time_sleep.wait_600_seconds]
-}
-
-resource "azurerm_route" "default_egress_runtime" {
-  name                          = "default" 
-  route_table_name              = data.azurerm_resources.route_table_runtime.resources[0].name
-
-  resource_group_name           = "${var.sc_service_name}-runtime-rg"
-  address_prefix              = "0.0.0.0/0"
-  next_hop_type               = "VirtualAppliance"
-  next_hop_in_ip_address      =  var.azure_fw_private_ip  
-}
-```
-
-Once this section is commented out/removed, the Azure Firewall default internet route be manually added to both the Spring Cloud Apps and Spring Cloud Service route tables. Within each of the apps and runtime resource groups, there should be a route table that has the following naming pattern:
-
-```bash
-aks-agentpool-xxxxxxxx-routetable
-```
-
-Where xxxxxxxx is a random generated number for your specific deployment.
-
-* **Option 2:** Wait for the Azure ARM cache to refresh and re-run the terraform apply script. The refresh time can vary depending on the selected region.
-
-[Azure Resource Explorer](https://resources.azure.com) can be used to confirm that the route tables have been cached. You can navigate to Subscription Name -> ResourceGroups and find the two resource groups automatically created for the Spring Cloud runtime resource group and Spring Cloud apps resource group.
+**3-5-21** - Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table)
 
 ## Additional Notes
 
