@@ -47,3 +47,10 @@ output "sc_support_subnetid" {
 output "sc_data_subnetid" {
     value = azurerm_subnet.azuresbclouddata.id
 }
+
+output "sc_default_apps_route" {
+   value = azurerm_route_table.default_apps_route.id
+}
+output "sc_default_runtime_route" {
+   value = azurerm_route_table.default_runtime_route.id
+}
