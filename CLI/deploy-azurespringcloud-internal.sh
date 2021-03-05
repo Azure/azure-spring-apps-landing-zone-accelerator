@@ -710,7 +710,6 @@ az mysql server create \
 	--sku-name GP_Gen5_2 \
 	--backup-retention 7 \
 	--geo-redundant-backup Disabled \
-    --minimal-tls-version TLS1_2 \
 	--storage-size 51200 \
     --public-network-access Disabled \
     --ssl-enforcement Disabled
@@ -828,48 +827,6 @@ az monitor diagnostic-settings create \
                 }
         }
     ]'
-
-
-#Gets Azure Spring Cloud apps routetable and adds route to Azure Firewall
-azurespringcloud_app_resourcegroup_name=$(az spring-cloud show \
-    --resource-group ${hub_resource_group_name} \
-    --name ${azurespringcloud_service} \
-    --query 'properties.networkProfile.appNetworkResourceGroup' --output tsv )
-
-azurespringcloud_app_routetable_name=$(az network route-table list \
-    --resource-group $azurespringcloud_app_resourcegroup_name \
-    --query [].name --output tsv)
-
-az network route-table route create \
-    --resource-group ${azurespringcloud_app_resourcegroup_name} \
-    --route-table-name ${azurespringcloud_app_routetable_name} \
-    --name default \
-    --address-prefix 0.0.0.0/0 \
-    --next-hop-type VirtualAppliance \
-    --next-hop-ip-address ${firewall_private_ip}
-
-
-
-
-#Gets Azure Spring Cloud service runtime routetable and adds route to Azure Firewall
-azurespringcloud_service_resourcegroup_name=$(az spring-cloud show \
-    --resource-group ${hub_resource_group_name} \
-    --name ${azurespringcloud_service} \
-    --query 'properties.networkProfile.serviceRuntimeNetworkResourceGroup' --out tsv )
-
-azurespringcloud_service_routetable_name=$(az network route-table list \
-    --resource-group $azurespringcloud_service_resourcegroup_name \
-    --query [].name --out tsv)
-
-az network route-table route create \
-    --resource-group ${azurespringcloud_service_resourcegroup_name} \
-    --route-table-name ${azurespringcloud_service_routetable_name} \
-    --name default \
-    --address-prefix 0.0.0.0/0 \
-    --next-hop-type VirtualAppliance \
-    --next-hop-ip-address ${firewall_private_ip}
-
-
 
 
 
