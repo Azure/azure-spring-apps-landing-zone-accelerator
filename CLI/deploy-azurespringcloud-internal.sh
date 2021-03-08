@@ -515,6 +515,7 @@ az network nsg create \
 #Creates routetables and default route to be used with Azure Spring Cloud
 az network route-table create \
     --name ${azurespringcloud_service_subnet_route_table_name} \
+    --location ${location} \
     --resource-group ${hub_resource_group_name}
 
 az network route-table route create \
@@ -527,6 +528,7 @@ az network route-table route create \
 
 az network route-table create \
     --name ${azurespringcloud_app_subnet_route_table_name} \
+    --location ${location} \
     --resource-group ${hub_resource_group_name}
 
 az network route-table route create \
@@ -666,6 +668,7 @@ akv_id=$(az keyvault show -g ${hub_resource_group_name} --name ${azure_key_vault
 az network private-endpoint create \
     --name ${azure_key_vault_name}"-endpoint" \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${akv_id} \
@@ -724,6 +727,7 @@ mysql_id=$(az mysql server show -g ${hub_resource_group_name} --name ${azure_mys
 az network private-endpoint create \
     --name ${azure_mysql_name}"-endpoint" \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${mysql_id} \
