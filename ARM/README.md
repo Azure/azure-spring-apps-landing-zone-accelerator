@@ -128,6 +128,9 @@ Here you will have 2 options:
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
+## Change Log
+3-8-21 - Added Network Security Groups to spoke app and runtime subnets. Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table).
+
 ## Additional Notes
 
 You can use a custom domain suffix for your Azure Spring Cloud application instead of the default .private.azuremicrososervices.io domain suffix. See the [custom-domain](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/) section of this repo.
