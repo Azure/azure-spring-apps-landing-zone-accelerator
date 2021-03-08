@@ -52,8 +52,6 @@
   terraform apply springcloud.plan
 ```
 
-5. For each of the two route tables above, add the default route 0.0.0.0/0 with the Azure Firewall private IP as the Next Hop address.
-
 ## Post Deployment
 
 Install one of the following sample applications:
