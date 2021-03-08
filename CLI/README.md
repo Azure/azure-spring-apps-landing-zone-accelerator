@@ -36,7 +36,6 @@
         - Run `https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
         - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
 
-**Note:** Due to a known caching issue in East US 2 region, default routes need to be added to Azure Spring Cloud route tables manually.  Azure Spring Cloud apps and service runtime resource groups contain a single route table where a 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address is needed.
 
 ## Post Deployment
 
@@ -115,3 +114,8 @@ The easiest way to do this is to call `az group delete`.
 ```azurecli
 az group delete --name sc-corp-rg --yes --no-wait
 ```
+
+## Change Log
+
+* **03-05-21:** Update script to support bring your own route table [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table), add additional firewall rules and update MySQL Server TLS/SSL enforcement
+* **03-08-21:** Fix typoes in README
