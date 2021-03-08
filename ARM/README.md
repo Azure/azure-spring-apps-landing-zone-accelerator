@@ -39,7 +39,7 @@
 
 ## Deployment
 
-1. Execute the template including the parameters of the tenant id from step 4, the object id from step 5, the object id from step 6. This will take about 30 minutes to deploy.
+Execute the template including the parameters of the tenant id from step 4, the object id from step 5, the object id from step 6. This will take about 30 minutes to deploy.
    *    Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
    *    Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 
@@ -51,8 +51,6 @@
 ```
 
 You will be prompted to set a username and password.  This will be the username and password for the virtual machine and the MySQL instance.
-
-2. Run the add-routes.sh bash script or the commands within it to set the default routes on the Spring Cloud subnets. This will set the UDR to send egress traffic from Azure Spring Cloud through Azure Firewall. Currently, this step needs to be completed post deployment. Custom UDR support at time of Spring Cloud deployment is on the roadmap.
 
 ## Post Deployment
 
@@ -129,6 +127,9 @@ Here you will have 2 options:
 3. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+
+## Change Log
+3-8-21 - Added Network Security Groups to spoke app and runtime subnets. Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table).
 
 ## Additional Notes
 

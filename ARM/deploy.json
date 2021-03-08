@@ -41,10 +41,24 @@
                 "environment": "lab"
             }
         },
-        "roleGuidName": {
+        "roleGuidVnetName": {
             "type": "string",
             "metadata": {
-                "description": "A new GUID used to identify the role assignment"
+                "description": "A new GUID used to identify the role assignment for the virtual network"
+            },
+            "defaultValue": "[newGuid()]"
+        },
+        "roleGuidRuntimeRouteTableName": {
+            "type": "string",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment for the route table"
+            },
+            "defaultValue": "[newGuid()]"
+        },
+        "roleGuidAppRouteTableName": {
+            "type": "string",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment for the route table"
             },
             "defaultValue": "[newGuid()]"
         }
@@ -132,11 +146,15 @@
         "hubRouteTable": "rt-hub",
         "hubVmName": "vm01",
         "hubToSpokePeeringName": "peerhubtospoke",
+        "spokeRuntimeRouteTable": "rt-spokeruntime",
+        "spokeAppRouteTable": "rt-spokeapp",
         "spokeToHubPeeringName": "peerspoketohub",
         "laWorkspaceName": "[concat('la-',uniqueString(subscription().id, resourceGroup().id))]",
         "keyVaultName": "[concat('kv-',uniqueString(subscription().id, resourceGroup().id))]",
         "mysqlServerName": "[concat('mysql-',uniqueString(resourceGroup().id))]",
         "nsgHubShared": "nsg-hubshared",
+        "nsgSpokeRuntime": "nsg-spokeruntime",
+        "nsgSpokeApp": "nsg-spokeapp",
         "appInsightsName": "[concat('appi-', uniqueString(subscription().id, resourceGroup().id))]",
         "springCloudInstanceName": "[concat('spring-', uniqueString(subscription().id, resourceGroup().id))]",
         "ownerDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
@@ -152,12 +170,32 @@
         "msSqlPrivateZoneLinkName": "[concat(variables('msSqlPrivateDnsZone'), '-link')]",
         "deployDnsARecord": "deploy-springDnsRecord",
         "deployRouteAssign": "deploy-routeAssign",
-        "deployDnsSettings": "deploy-dnsSettings"
+        "deployDnsSpokeRouteSettings": "deploy-dnsSettings"
     },
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[variables('nsgHubShared')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('nsgSpokeApp')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('nsgSpokeRuntime')]",
             "apiVersion": "[variables('networkApiVersion')]",
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
@@ -211,7 +249,7 @@
                     {
                         "name": "[variables('appGatewaySubnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('hubAppGatewayCidr')]"                            
+                            "addressPrefix": "[variables('hubAppGatewayCidr')]"
                         }
                     }
                 ],
@@ -227,6 +265,8 @@
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
             "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeApp'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeRuntime'))]"
             ],
             "properties": {
                 "addressSpace": {
@@ -238,13 +278,19 @@
                     {
                         "name": "[variables('runtimeSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]"
+                            "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeRuntime'))]"
+                            }
                         }
                     },
                     {
                         "name": "[variables('appSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('spokeAppSubnetCidr')]"
+                            "addressPrefix": "[variables('spokeAppSubnetCidr')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeApp'))]"
+                            }
                         }
                     },
                     {
@@ -270,7 +316,7 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "[variables('azureRbacApiVersion')]",
-            "name": "[parameters('roleGuidName')]",
+            "name": "[parameters('roleGuidVnetName')]",
             "scope": "[concat('Microsoft.Network/virtualNetworks', '/', variables('spokeVnetName'))]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]"
@@ -288,7 +334,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
                 "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]",
-                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidName'))]"
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidVnetName'))]"
             ],
             "properties": {
                 "allowVirtualNetworkAccess": "true",
@@ -307,7 +353,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
                 "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]",
-                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidName'))]"
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidVnetName'))]"
             ],
             "properties": {
                 "allowVirtualNetworkAccess": "true",
@@ -1083,11 +1129,63 @@
             ]
         },
         {
-            "name": "[variables('deployDnsSettings')]",
+            "name": "[variables('spokeRuntimeRouteTable')]",
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]"
+            ],
+            "properties": {
+                "routes": [
+                    {
+                        "name": "udr-default",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[reference(variables('azureFirewallName')).ipConfigurations[0].properties.privateIPAddress]"
+                        }
+                    }
+                ],
+                "disableBgpRoutePropagation": "False"
+            },
+            "resources": [
+            ]
+        },
+        {
+            "name": "[variables('spokeAppRouteTable')]",
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]"
+            ],
+            "properties": {
+                "routes": [
+                    {
+                        "name": "udr-default",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[reference(variables('azureFirewallName')).ipConfigurations[0].properties.privateIPAddress]"
+                        }
+                    }
+                ],
+                "disableBgpRoutePropagation": "False"
+            },
+            "resources": [
+            ]
+        },
+        {
+            "name": "[variables('deployDnsSpokeRouteSettings')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
             "dependsOn": [
-                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]"
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]",
+                "[concat('Microsoft.Network/routeTables/',variables('spokeRuntimeRouteTable'))]",
+                "[concat('Microsoft.Network/routeTables/',variables('spokeAppRouteTable'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1111,13 +1209,25 @@
                                     {
                                         "name": "[variables('runtimeSubnetName')]",
                                         "properties": {
-                                            "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]"
+                                            "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]",
+                                            "routeTable": {
+                                                "id": "[resourceId('Microsoft.Network/routeTables',variables('spokeRuntimeRouteTable'))]"
+                                            },
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeRuntime'))]"
+                                            }
                                         }
                                     },
                                     {
                                         "name": "[variables('appSubnetName')]",
                                         "properties": {
-                                            "addressPrefix": "[variables('spokeAppSubnetCidr')]"
+                                            "addressPrefix": "[variables('spokeAppSubnetCidr')]",
+                                            "routeTable": {
+                                                "id": "[resourceId('Microsoft.Network/routeTables',variables('spokeAppRouteTable'))]"
+                                            },
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeApp'))]"
+                                            }
                                         }
                                     },
                                     {
@@ -1189,7 +1299,7 @@
                                     {
                                         "name": "[variables('appGatewaySubnetName')]",
                                         "properties": {
-                                            "addressPrefix": "[variables('hubAppGatewayCidr')]"                                            
+                                            "addressPrefix": "[variables('hubAppGatewayCidr')]"
                                         }
 
                                     }
@@ -1209,6 +1319,32 @@
             }
         },
         {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "[variables('azureRbacApiVersion')]",
+            "name": "[parameters('roleGuidAppRouteTableName')]",
+            "scope": "[concat('Microsoft.Network/routeTables', '/', variables('spokeAppRouteTable'))]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/routeTables/', variables('spokeAppRouteTable'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('ownerDefinitionId')]",
+                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "[variables('azureRbacApiVersion')]",
+            "name": "[parameters('roleGuidRuntimeRouteTableName')]",
+            "scope": "[concat('Microsoft.Network/routeTables', '/', variables('spokeRuntimeRouteTable'))]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/routeTables/', variables('spokeRuntimeRouteTable'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('ownerDefinitionId')]",
+                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+            }
+        },
+        {
             "apiVersion": "[variables('springApiVersion')]",
             "name": "[variables('springCloudInstanceName')]",
             "location": "[variables('location')]",
@@ -1217,7 +1353,9 @@
                 "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]",
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Network/azureFirewalls', variables('azureFirewallName'))]",
-                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSettings'))]"
+                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSpokeRouteSettings'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidAppRouteTableName'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidRuntimeRouteTableName'))]"
             ],
             "type": "Microsoft.AppPlatform/Spring",
             "sku": {
@@ -1410,7 +1548,7 @@
             "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSettings'))]"
+                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSpokeRouteSettings'))]"
             ],
             "properties": {
                 "mode": "Incremental",
