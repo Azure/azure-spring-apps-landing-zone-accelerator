@@ -132,7 +132,8 @@
         "hubRouteTable": "rt-hub",
         "hubVmName": "vm01",
         "hubToSpokePeeringName": "peerhubtospoke",
-        "spokeRouteTable": "rt-spoke",
+        "spokeRuntimeRouteTable": "rt-spokeruntime",
+        "spokeAppRouteTable": "rt-spokeapp",
         "spokeToHubPeeringName": "peerspoketohub",
         "laWorkspaceName": "[concat('la-',uniqueString(subscription().id, resourceGroup().id))]",
         "keyVaultName": "[concat('kv-',uniqueString(subscription().id, resourceGroup().id))]",
@@ -1114,7 +1115,32 @@
             ]
         },
         {
-            "name": "[variables('spokeRouteTable')]",
+            "name": "[variables('spokeRuntimeRouteTable')]",
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]"
+            ],
+            "properties": {
+                "routes": [
+                    {
+                        "name": "udr-default",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[reference(variables('azureFirewallName')).ipConfigurations[0].properties.privateIPAddress]"
+                        }
+                    }
+                ],
+                "disableBgpRoutePropagation": "False"
+            },
+            "resources": [
+            ]
+        },
+        {
+            "name": "[variables('spokeAppRouteTable')]",
             "type": "Microsoft.Network/routeTables",
             "apiVersion": "[variables('networkApiVersion')]",
             "location": "[variables('location')]",
@@ -1144,7 +1170,8 @@
             "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/azureFirewalls/',variables('azureFirewallName'))]",
-                "[concat('Microsoft.Network/routeTables/',variables('spokeRouteTable'))]"
+                "[concat('Microsoft.Network/routeTables/',variables('spokeRuntimeRouteTable'))]",
+                "[concat('Microsoft.Network/routeTables/',variables('spokeAppRouteTable'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -1170,7 +1197,7 @@
                                         "properties": {
                                             "addressPrefix": "[variables('spokeRuntimeSubnetCidr')]",
                                             "routeTable": {
-                                                "id": "[resourceId('Microsoft.Network/routeTables',variables('spokeRouteTable'))]"
+                                                "id": "[resourceId('Microsoft.Network/routeTables',variables('spokeRuntimeRouteTable'))]"
                                             },
                                             "networkSecurityGroup": {
                                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeRuntime'))]"
@@ -1182,7 +1209,7 @@
                                         "properties": {
                                             "addressPrefix": "[variables('spokeAppSubnetCidr')]",
                                             "routeTable": {
-                                                "id": "[resourceId('Microsoft.Network/routeTables',variables('spokeRouteTable'))]"
+                                                "id": "[resourceId('Microsoft.Network/routeTables',variables('spokeAppRouteTable'))]"
                                             },
                                             "networkSecurityGroup": {
                                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgSpokeApp'))]"
