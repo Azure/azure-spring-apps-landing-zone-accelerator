@@ -41,10 +41,24 @@
                 "environment": "lab"
             }
         },
-        "roleGuidName": {
+        "roleGuidVnetName": {
             "type": "string",
             "metadata": {
-                "description": "A new GUID used to identify the role assignment"
+                "description": "A new GUID used to identify the role assignment for the virtual network"
+            },
+            "defaultValue": "[newGuid()]"
+        },
+        "roleGuidRuntimeRouteTableName": {
+            "type": "string",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment for the route table"
+            },
+            "defaultValue": "[newGuid()]"
+        },
+        "roleGuidAppRouteTableName": {
+            "type": "string",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment for the route table"
             },
             "defaultValue": "[newGuid()]"
         }
@@ -302,7 +316,7 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "[variables('azureRbacApiVersion')]",
-            "name": "[parameters('roleGuidName')]",
+            "name": "[parameters('roleGuidVnetName')]",
             "scope": "[concat('Microsoft.Network/virtualNetworks', '/', variables('spokeVnetName'))]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]"
@@ -320,7 +334,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
                 "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]",
-                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidName'))]"
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidVnetName'))]"
             ],
             "properties": {
                 "allowVirtualNetworkAccess": "true",
@@ -339,7 +353,7 @@
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('hubVnetName'))]",
                 "[concat('Microsoft.Network/virtualNetworks/', variables('spokeVnetName'))]",
-                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidName'))]"
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidVnetName'))]"
             ],
             "properties": {
                 "allowVirtualNetworkAccess": "true",
@@ -1305,6 +1319,32 @@
             }
         },
         {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "[variables('azureRbacApiVersion')]",
+            "name": "[parameters('roleGuidAppRouteTableName')]",
+            "scope": "[concat('Microsoft.Network/routeTables', '/', variables('spokeAppRouteTable'))]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/routeTables/', variables('spokeAppRouteTable'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('ownerDefinitionId')]",
+                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "[variables('azureRbacApiVersion')]",
+            "name": "[parameters('roleGuidRuntimeRouteTableName')]",
+            "scope": "[concat('Microsoft.Network/routeTables', '/', variables('spokeRuntimeRouteTable'))]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/routeTables/', variables('spokeRuntimeRouteTable'))]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[variables('ownerDefinitionId')]",
+                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+            }
+        },
+        {
             "apiVersion": "[variables('springApiVersion')]",
             "name": "[variables('springCloudInstanceName')]",
             "location": "[variables('location')]",
@@ -1313,7 +1353,9 @@
                 "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]",
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Network/azureFirewalls', variables('azureFirewallName'))]",
-                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSpokeRouteSettings'))]"
+                "[concat('Microsoft.Resources/deployments/', variables('deployDnsSpokeRouteSettings'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidAppRouteTableName'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', parameters('roleGuidRuntimeRouteTableName'))]"
             ],
             "type": "Microsoft.AppPlatform/Spring",
             "sku": {
