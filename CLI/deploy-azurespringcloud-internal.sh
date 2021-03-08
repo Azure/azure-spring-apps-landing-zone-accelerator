@@ -77,10 +77,12 @@ az monitor log-analytics workspace create \
 # Creates NSG for jump box VM and Azure Bastion subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${hub_vnet_jumphost_nsg_name}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${bastion_subnet_nsg}
 
 az network nsg rule create \
@@ -500,10 +502,12 @@ az monitor diagnostic-settings create \
 # Creates NSG for Azure Spring Cloud data and support subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${azure_spring_cloud_support_subnet_nsg}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${azure_spring_cloud_data_subnet_nsg}
 
 
