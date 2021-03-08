@@ -46,6 +46,8 @@ module "spring_cloud" {
   sc_service_name                 = "${var.sc_prefix}-${random_string.random.result}"
   app_insights_name               = "${var.app_insights_prefix}-${random_string.random.result}"
   azure_fw_private_ip             = module.hub_spoke.azure_firewall_private_ip
+  sc_default_apps_route           = module.hub_spoke.sc_default_apps_route
+  sc_default_runtime_route        = module.hub_spoke.sc_default_runtime_route
 }
 
 module "my_sql" {
