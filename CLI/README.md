@@ -117,4 +117,4 @@ az group delete --name sc-corp-rg --yes --no-wait
 
 ## Change Log
 
-* **03-05-21:** Update script to support bring your own route table, add additional firewall rules and update MySQL Server TLS/SSL enforcement
+* **03-05-21:** Update script to support bring your own route table [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table), add additional firewall rules and update MySQL Server TLS/SSL enforcement
