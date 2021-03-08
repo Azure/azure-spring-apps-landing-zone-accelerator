@@ -378,7 +378,7 @@ az network firewall application-rule create \
     --action allow
 
 az network firewall application-rule create \
-    --collection-name Microsoft_Blob \
+    --collection-name MicrosoftBlobRules \
     --firewall-name ${firewall_name} \
     --name Blob_rules \
     --description "Required Azure Storage Rules" \
@@ -390,7 +390,7 @@ az network firewall application-rule create \
     --action allow
 
 az network firewall application-rule create \
-    --collection-name database_clamav_rule \
+    --collection-name DatabaseClamavRule \
     --firewall-name ${firewall_name} \
     --name database_clamav_rules \
     --description "Required database clamav rules" \
@@ -402,7 +402,7 @@ az network firewall application-rule create \
     --action allow
 
 az network firewall application-rule create \
-    --collection-name Github_rules \
+    --collection-name GithubRule \
     --firewall-name ${firewall_name} \
     --name Github_Rules \
     --description "Required Github rules" \
@@ -414,7 +414,7 @@ az network firewall application-rule create \
     --action allow
 
 az network firewall application-rule create \
-    --collection-name Microsoft_Metric_rules \
+    --collection-name MicrosoftMetricRule \
     --firewall-name ${firewall_name} \
     --name Microsoft_metrics \
     --description "Required metric rules" \
@@ -427,7 +427,7 @@ az network firewall application-rule create \
 
 
 az network firewall application-rule create \
-    --collection-name AKS_ACS_rules \
+    --collection-name AKSACSRule \
     --firewall-name ${firewall_name} \
     --name AKS_acs_rules \
     --description "Required AKS acs rules" \
@@ -440,7 +440,7 @@ az network firewall application-rule create \
 
 
 az network firewall application-rule create \
-    --collection-name Microsoft_Login_Rules \
+    --collection-name MicrosoftLoginRule \
     --firewall-name ${firewall_name} \
     --name AKS_acs_rules \
     --description "Required login rules" \
