@@ -77,10 +77,12 @@ az monitor log-analytics workspace create \
 # Creates NSG for jump box VM and Azure Bastion subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${hub_vnet_jumphost_nsg_name}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${bastion_subnet_nsg}
 
 az network nsg rule create \
@@ -232,6 +234,7 @@ az network bastion create --resource-group ${hub_resource_group_name} --name ${a
 # creates Jumphost VM
 az vm create \
     --resource-group ${hub_resource_group_name} \
+    --location $location \
     --name jumphostvm \
     --image MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest \
     --size Standard_DS3_v2 \
@@ -500,16 +503,19 @@ az monitor diagnostic-settings create \
 # Creates NSG for Azure Spring Cloud data and support subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${azure_spring_cloud_support_subnet_nsg}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --name ${azure_spring_cloud_data_subnet_nsg}
 
 
 #Creates routetables and default route to be used with Azure Spring Cloud
 az network route-table create \
     --name ${azurespringcloud_service_subnet_route_table_name} \
+    --location ${location} \
     --resource-group ${hub_resource_group_name}
 
 az network route-table route create \
@@ -522,6 +528,7 @@ az network route-table route create \
 
 az network route-table create \
     --name ${azurespringcloud_app_subnet_route_table_name} \
+    --location ${location} \
     --resource-group ${hub_resource_group_name}
 
 az network route-table route create \
@@ -661,6 +668,7 @@ akv_id=$(az keyvault show -g ${hub_resource_group_name} --name ${azure_key_vault
 az network private-endpoint create \
     --name ${azure_key_vault_name}"-endpoint" \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${akv_id} \
@@ -719,6 +727,7 @@ mysql_id=$(az mysql server show -g ${hub_resource_group_name} --name ${azure_mys
 az network private-endpoint create \
     --name ${azure_mysql_name}"-endpoint" \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${mysql_id} \
