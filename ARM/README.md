@@ -128,6 +128,15 @@ Here you will have 2 options:
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
+## Cleaning Up
+Unless you plan to perform additional tasks with the Azure resources from the quickstart (such as post deployment steps above), it is important to destroy the resources that you created to avoid the cost of keeping them provisioned.
+
+The easiest way to do this is to call `az group delete`.
+
+```bash
+az group delete --name ${RESOURCE_GROUP} --yes --no-wait
+```
+
 ## Change Log
 3-8-21 - Added Network Security Groups to spoke app and runtime subnets. Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table).
 
