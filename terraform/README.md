@@ -89,6 +89,11 @@ Here you will have 2 options:
 ```
 
 When prompted enter the values for the variables.
+* az_fw_name - The name of the Azure Firewall Resource
+* az_fw_pip - The Public IP of the Azure Firewall used for DNAT
+* backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
+* certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
+* https_password - The password for the PFX file which will be used for the App Gateway Listener
 
 5. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
 
@@ -119,6 +124,9 @@ When prompted enter the values for the variables.
 ```
 
 When prompted enter the values for the variables.
+* backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
+* certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
+* https_password - The password for the PFX file which will be used for the App Gateway Listener
 
 5. Locate the Public IP of your Azure Firewall.
 
@@ -130,11 +138,9 @@ When prompted enter the values for the variables.
 
 ## Cleaning up
 
-Unless you plan to perform additional tasks with the Azure resources from the quickstart (such 
-as post deployment steps above), it is important to destroy the resources that you created 
-to avoid the cost of keeping them provisioned.
+Unless you plan to perform additional tasks with the Azure resources from the quickstart (such as post deployment steps above), it is important to destroy the resources that you created to avoid the cost of keeping them provisioned.
 
-The easiest way to do this is to call `terraform destroy`. Do this in both directories.
+The easiest way to do this is to call `terraform destroy`. Do this in both directories (root directory and relevant app gateway directory).
 
 ```bash
 terraform destroy
