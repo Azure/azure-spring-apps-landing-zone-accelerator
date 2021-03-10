@@ -89,8 +89,8 @@ resource "azurerm_firewall_network_rule_collection" "private_aks" {
         source_addresses  = [ 
             "*" 
         ]
-        destination_fqdns = [
-            "ntp.ubuntu.com"
+        destination_addresses = [
+            "*"
         ]
         destination_ports = [ 
             "123" 
@@ -217,7 +217,7 @@ resource "azurerm_firewall_application_rule_collection" "ubuntu_libs" {
     target_fqdns = [      
        
        "api.snapcraft.io",
-       "motd.ubuntu.com",       
+       "motd.ubuntu.com",      
     ]
 
     protocol {
@@ -377,7 +377,8 @@ resource "azurerm_firewall_application_rule_collection" "AKS_acs_rules" {
 
     target_fqdns = [      
        
-       "acs-mirror.azureedge.net"
+       "acs-mirror.azureedge.net",
+       "*.docker.io"
     ]
 
     protocol {

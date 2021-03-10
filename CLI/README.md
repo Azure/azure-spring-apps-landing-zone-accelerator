@@ -1,3 +1,4 @@
+
 # Azure CLI Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
@@ -34,8 +35,10 @@
     - A valid Azure Region where resources are deployed
         - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
         - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
+    - key=value pairs to be applied as [Tags](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources) on all resources which support tags
+        - Space separated list to support applying multiple tags
+        - **Example:** environment=Dev BusinessUnit=finance
 
-**Note:** Due to a known caching issue in East US 2 region, default routes need to be added to Azure Spring Cloud route tables manually.  Azure Spring Cloud apps and service runtime resource groups contain a single route table where a 0.0.0.0/0 route with Next Hop Address of Azure Firewall private IP address is needed.
 
 ## Post Deployment
 
@@ -45,19 +48,56 @@ Install one of the following sample applications:
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
-1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quick start, you can use a self signed certificate or one issued from an internal Certificate Authority. You will need to convert the certificate to a Base64 string value for the next step. The following will set the Base64 string value to a variable to be used as part of the deployment (replace the file name with your own).
+Here you will have 2 options:
+- Option 1: Use a public Azure Application gateway for direct ingress.
+- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
 
-    `export HTTPSDATA=$(base64 -w 0 nameofcertificatefile.pfx)`
+1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
-2. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
+### Option 1 - Public Application Gateway
 
-    `az deployment group create --resource-group my-resource-group --name appGW --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployAppGw.json" --parameters https_data=${HTTPSDATA}`
+1. Change the directory to to deployPublicAppGW
 
-3. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address
+```bash
+    cd PublicApplicationGateway
+```
 
-4. From a browser that isn't in the quick start virtual network, browse to https://<publicIPofAppGW>. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
+2. Copy the SSL/TLS certificate PFX file to this directory.
 
-![lab image](./images/Petclinic-External.jpeg)
+3. Run the following script to deploy Application Gateway
+
+```bash
+    deploy-public-application-gateway.sh
+```
+**Note:** You will prompted to enter Azure Application Gateway name, name of PFX certificate, password of PFX certificate, and Azure Firewall name.
+
+4. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
+
+5. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway. 
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+
+### Option 2 - Private Application Gateway behind Azure Firewall (DNAT)
+
+1. Change the directory to to deployPrivateAppGW
+
+```bash
+    cd PrivateApplicationGateway
+```
+
+2. Copy the SSL/TLS certificate PFX file to this directory.
+
+3. Run the following script to deploy Application Gateway
+
+```bash
+    deploy-private-application-gateway.sh
+```
+**Note:** You will prompted to enter Azure Application Gateway name, name of PFX certificate, password of PFX certificate, and Azure Firewall name.
+
+4. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
+
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+
 
 
 ## Additional Notes
@@ -77,3 +117,9 @@ The easiest way to do this is to call `az group delete`.
 ```azurecli
 az group delete --name sc-corp-rg --yes --no-wait
 ```
+
+## Change Log
+
+* **03-05-21:** Update script to support bring your own route table [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table), add additional firewall rules and update MySQL Server TLS/SSL enforcement
+* **03-08-21:** Fix typoes in README
+* **03-09-21:** Add support for tagging and update README instructions
