@@ -63,27 +63,33 @@ echo "Enter Jumphost VM admin password: "
 read -s vmpassword 
 vm_password=$vmpassword
 
+echo "Enter key=value pair used for tagging Azure Resources (space separated for multiple tags): "
+read tag
+tags=$tag
 
 # Creates Hub resource Group
-az group create --location ${location} --name ${hub_resource_group_name}
+az group create --location ${location} --name ${hub_resource_group_name} --tags ${tags}
 
 # Creates Log Analytics Workspace 
 az monitor log-analytics workspace create \
     --resource-group ${hub_resource_group_name} \
     --workspace-name ${log_analytics_workspace_name} \
     --location ${location} \
-    --sku PerGB2018
+    --sku PerGB2018 \
+    --tags ${tags}
 
 # Creates NSG for jump box VM and Azure Bastion subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --name ${hub_vnet_jumphost_nsg_name}
+    --name ${hub_vnet_jumphost_nsg_name} \
+    --tags ${tags}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --name ${bastion_subnet_nsg}
+    --name ${bastion_subnet_nsg} \
+    --tags ${tags}
 
 az network nsg rule create \
     --resource-group ${hub_resource_group_name} \
@@ -190,7 +196,8 @@ az network vnet create \
     --name ${hub_vnet_name} \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --address-prefixes ${hub_vnet_address_prefixes}
+    --address-prefixes ${hub_vnet_address_prefixes} \
+    --tags ${tags}
 
 az network vnet subnet create \
     --name 'AzureFirewallSubnet' \
@@ -226,7 +233,7 @@ az network vnet subnet create \
 
 
 # Creates public IP and Azure Bastion in hub Vnet
-az network public-ip create --resource-group ${hub_resource_group_name} --name ${azure_bastion_ip_name} --sku Standard --location ${location}
+az network public-ip create --resource-group ${hub_resource_group_name} --name ${azure_bastion_ip_name} --sku Standard --location ${location} --tags ${tags}
 
 az network bastion create --resource-group ${hub_resource_group_name} --name ${azure_bastion_name} --public-ip-address ${azure_bastion_ip_name} --vnet-name ${hub_vnet_name} --location ${location}
 
@@ -243,7 +250,8 @@ az vm create \
     --vnet-name ${hub_vnet_name} \
     --subnet ${jump_host_subnet_name} \
     --public-ip-address "" \
-    --nsg ""
+    --nsg "" \
+    --tags ${tags}
 
 # Creates custom script extension for jumphost VM 
 az vm extension set \
@@ -259,13 +267,15 @@ az network firewall create \
     --name ${firewall_name} \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --enable-dns-proxy true
+    --enable-dns-proxy true \
+    --tags ${tags}
 az network public-ip create \
     --name ${firewall_public_ip_name} \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
     --allocation-method static \
-    --sku standard
+    --sku standard \
+    --tags ${tags}
 az network firewall ip-config create \
     --firewall-name ${firewall_name} \
     --name FW-config \
@@ -504,19 +514,22 @@ az monitor diagnostic-settings create \
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --name ${azure_spring_cloud_support_subnet_nsg}
+    --name ${azure_spring_cloud_support_subnet_nsg} \
+    --tags ${tags}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --name ${azure_spring_cloud_data_subnet_nsg}
+    --name ${azure_spring_cloud_data_subnet_nsg} \
+    --tags ${tags}
 
 
 #Creates routetables and default route to be used with Azure Spring Cloud
 az network route-table create \
     --name ${azurespringcloud_service_subnet_route_table_name} \
     --location ${location} \
-    --resource-group ${hub_resource_group_name}
+    --resource-group ${hub_resource_group_name} \
+    --tags ${tags}
 
 az network route-table route create \
     --resource-group ${hub_resource_group_name} \
@@ -529,7 +542,8 @@ az network route-table route create \
 az network route-table create \
     --name ${azurespringcloud_app_subnet_route_table_name} \
     --location ${location} \
-    --resource-group ${hub_resource_group_name}
+    --resource-group ${hub_resource_group_name} \
+    --tags ${tags}
 
 az network route-table route create \
     --resource-group ${hub_resource_group_name} \
@@ -569,7 +583,8 @@ az network vnet create \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
     --address-prefixes ${azurespringcloud_vnet_address_prefixes} \
-    --dns-servers ${firewall_private_ip}
+    --dns-servers ${firewall_private_ip} \
+    --tags ${tags}
 
 
 az network vnet subnet create  \
@@ -653,7 +668,8 @@ az keyvault create --name ${azure_key_vault_name} \
 	--no-self-perms false \
     --default-action Deny \
     --enabled-for-deployment true \
-    --bypass AzureServices
+    --bypass AzureServices \
+    --tags ${tags}
 
 
 #az keyvault set-policy --name ${azure_key_vault_name} \
@@ -673,12 +689,14 @@ az network private-endpoint create \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${akv_id} \
     --group-id vault \
-    --connection-name "kv-private-link-connection"
+    --connection-name "kv-private-link-connection" \
+    --tags ${tags}
 
 # Creates the Private DNS for Azure Key Vault
 az network private-dns zone create \
     --resource-group ${hub_resource_group_name} \
-    --name privatelink.vaultcore.azure.net
+    --name privatelink.vaultcore.azure.net \
+    --tags ${tags}
 
 akv_dns_id=$(az network private-dns zone show --resource-group ${hub_resource_group_name} --name privatelink.vaultcore.azure.net --query id --output tsv)
 
@@ -720,7 +738,8 @@ az mysql server create \
 	--geo-redundant-backup Disabled \
 	--storage-size 51200 \
     --public-network-access Disabled \
-    --ssl-enforcement Disabled
+    --ssl-enforcement Disabled \
+    --tags ${tags}
 
 mysql_id=$(az mysql server show -g ${hub_resource_group_name} --name ${azure_mysql_name} --query id --output tsv)
 
@@ -732,13 +751,15 @@ az network private-endpoint create \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${mysql_id} \
     --group-id mysqlServer \
-    --connection-name "mysql-private-link-connection"
+    --connection-name "mysql-private-link-connection" \
+    --tags ${tags}
 
 
 # Creates Private DNS for MySql Db
 az network private-dns zone create \
     --resource-group ${hub_resource_group_name} \
-    --name privatelink.mysql.database.azure.com
+    --name privatelink.mysql.database.azure.com \
+    --tags ${tags}
 
 mysql_dns_id=$(az network private-dns zone show --resource-group ${hub_resource_group_name} --name privatelink.mysql.database.azure.com --query id --output tsv)
 
@@ -796,7 +817,8 @@ az spring-cloud create \
     --vnet ${azurespringcloud_vnet_id} \
     --reserved-cidr-range 10.0.0.0/16,10.1.0.0/16,10.2.0.1/16 \
     --service-runtime-subnet ${service_runtime_subnet_id} \
-    --app-subnet ${apps_subnet_id}
+    --app-subnet ${apps_subnet_id} \
+    --tags ${tags}
 
 # Gets LAW resource id and creates diagnostic settings to send logs and metrics to Log Analytics Workspace
 law_id=$(az monitor log-analytics workspace show --resource-group ${hub_resource_group_name} --workspace-name ${log_analytics_workspace_name} --query id --output tsv)
@@ -842,7 +864,8 @@ az monitor diagnostic-settings create \
 #Creates Private DNS Zone for Azure Spring Cloud
 az network private-dns zone create \
     --resource-group ${hub_resource_group_name} \
-    --name private.azuremicroservices.io
+    --name private.azuremicroservices.io \
+    --tags ${tags}
 
 
 

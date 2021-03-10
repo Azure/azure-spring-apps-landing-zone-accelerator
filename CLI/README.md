@@ -35,6 +35,9 @@
     - A valid Azure Region where resources are deployed
         - Run `https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
         - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
+    - key=value pairs to be applied as [Tags](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources) on all resources which support tags
+        - Space separated list to support applying multiple tags
+        - **Example:** environment=Dev BusinessUnit=finance
 
 
 ## Post Deployment
@@ -119,3 +122,4 @@ az group delete --name sc-corp-rg --yes --no-wait
 
 * **03-05-21:** Update script to support bring your own route table [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table), add additional firewall rules and update MySQL Server TLS/SSL enforcement
 * **03-08-21:** Fix typoes in README
+* **03-09-21:** Add support for tagging and update README instructions
