@@ -18,83 +18,129 @@
 
 1. Login to Azure and select the target subscription.
 
-```bash
-  az login
+    ```bash
+    az login
 
-  az account set --subscription "Your Subscription Name"
-```
+    az account set --subscription "Your Subscription Name"
+    ```
 
-2. Run the following command to initialize the terraform modules.
+2. Run the following command to initialize the terraform modules:
 
-```bash
-  terraform init
-```
+    ```bash
+    terraform init
+    ```
 
-3. Run the following command to plan the terraform deployment
+3. Run the following command to plan the terraform deployment:
 
-  **Note:** Terraform will prompt you for the following variables:  
-    - Jumphost administrator username
-    - Jumphost administrator password
-    - MySQL Db administrator username
-    - MySQL Db administrator password
+    ```bash
+    terraform plan -out=springcloud.plan
+    ```
 
-  *    Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
+    **Note:** Terraform will prompt you for the following variables:
+&nbsp;
+      * Jumphost administrator username
+      * Jumphost administrator password
+      * MySQL Db administrator username
+      * MySQL Db administrator password
+&nbsp;
 
-  *    Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
+    The following links contain references for Azure Virtual Machine administrator and password requirements:
 
-```bash
-  terraform plan -out=springcloud.plan
-```
+    * Azure Virtual Machine [administrator name](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
 
+    * Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
+&nbsp;
 4. Finally, deploy the terraform Spring Cloud using the following command.
 
-```bash
-  terraform apply springcloud.plan
-```
+   ```bash
+    terraform apply springcloud.plan
+   ```
 
 ## Post Deployment
 
-Install one of the following sample applications:
-* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
-* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+There are a few options available from a post deployment perspective the are as follows:
+
+1. Install one of the following sample applications from the locations below:
+&nbsp;
+    * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
+    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+&nbsp;
+2. For an automated installation you can leverage a PowerShell or bash script provided on Jumpbox created during the deployment process. To install the Pet Clinic App is to leverage a PowerShell or Shell Script that is provided as part of the deployment.  In  order to execute the scripts, login in to the JumpBox(jumphostvm) created leveraging the Bastion connection and the admin username and password created during the initial installation.  Both the PowerShell script and the Shell script can be found in c:\petclinic.
+&nbsp;
+    If you choose to leverage the PowerShell script you must navigate to the c:\petclinic and edit the deployPetClinicApp.ps1 script before running. Provide the following information for the corresponding variables:
+&nbsp;
+    * Your Subscription ID
+    * A Resource Group
+    * An Azure Region
+    * The name of the Spring Cloud Service that was created
+    * The name of the MySQL Server created
+    * The MySQL Administrator name
+    * The MySQL Administrator password
+&nbsp;
+
+    The variables to be edited in the deployPetClinicApp.ps1 script are as follows:
+
+    ```powershell
+      $SUBSCRIPTION='<Insert your Subscription ID>'
+      $RESOURCE_GROUP='<Insert Resource Group Name>'
+      $REGION='<Insert Azure Region>'
+      $SPRING_CLOUD_SERVICE='<Insert Spring Cloud Service Name Created>'
+      $MYSQL_SERVER_NAME='<Insert MySQL Server Name>'
+      $MYSQL_SERVER_ADMIN_NAME='<Insert MySQL Admin Name>' 
+      $MYSQL_SERVER_ADMIN_PASSWORD='<Insert MySQL Admin Password>'
+    ```
+
+    If you are more comfortable leveraging a shell script, navigate to the same directory, c:\petclininc, and edit the deployPetClinicApp.sh script before running. Provide the following information for the corresponding variables:
+
+    ```bash
+      subscription='<Insert your Subscription ID>'
+      resource_group='<Insert Resource Group Name>'
+      region='<Insert Azure Region>'
+      spring_cloud_service='<Insert Spring Cloud Service Name Created>'
+      mysql_server_name='<Insert MySQL Server Name>'
+      mysql_server_admin_name='<Insert MySQL Admin Name>' 
+      mysql_server_admin_password='<Insert MySQL Admin Password>'
+    ```
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
 Here you will have 2 options:
-- Option 1: Use a public Azure Application gateway for direct ingress.
-- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
 
-1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
+* **Option 1**: Use a public Azure Application gateway for direct ingress.
+* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
+&nbsp;
+  **Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
 ### Option 1 - Public Application Gateway
 
 1. Change the directory to to deployPublicAppGW
 
-```bash
-    cd deployPublicAppGW
-```
+   ```bash
+   cd deployPublicAppGW
+   ```
 
-2. copy the SSL/TLS certificate PFX file to this directory.
+2. Copy the SSL/TLS certificate PFX file to this directory.
 
 3. Run the following command to initialize the terraform.
 
-```bash
+    ```bash
     terraform init
-```
+    ```
 
 4. Run the following command to plan the terraform deployment.
 
-```bash
+    ```bash
     terraform plan -out=appgwpublic.plan
-```
+    ```
 
-When prompted enter the values for the variables.
-* az_fw_name - The name of the Azure Firewall Resource
-* az_fw_pip - The Public IP of the Azure Firewall used for DNAT
-* backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
-* certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
-* https_password - The password for the PFX file which will be used for the App Gateway Listener
-
+    When prompted enter the values for the following variables:
+&nbsp;
+    * az_fw_name - The name of the Azure Firewall Resource
+    * az_fw_pip - The Public IP of the Azure Firewall used for DNAT
+    * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
+    * certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
+    * https_password - The password for the PFX file which will be used for the App Gateway Listener
+&nbsp;
 5. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
 
 6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
@@ -105,36 +151,37 @@ When prompted enter the values for the variables.
 
 1. Change the directory to to deployPrivateAppGW
 
-```bash
+    ```bash
     cd deployPrivateAppGW
-```
+    ```
 
-2. copy the SSL/TLS certificate PFX file to this directory.
+2. Copy the SSL/TLS certificate PFX file to this directory.
 
-3. Run the following command to initialize the terraform.
+3. Run the following command to initialize the terraform:
 
-```bash
+    ```bash
     terraform init
-```
+    ```
 
-4. Run the following command to plan the terraform deployment.
+4. Run the following command to plan the terraform deployment:
 
-```bash
+    ```bash
     terraform plan -out=appgwprivate.plan
-```
+    ```
 
-When prompted enter the values for the variables.
-* backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
-* certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
-* https_password - The password for the PFX file which will be used for the App Gateway Listener
-
+    When prompted enter the values for the following variables:
+&nbsp;
+    * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
+    * certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
+    * https_password - The password for the PFX file which will be used for the App Gateway Listener
+&nbsp;
 5. Locate the Public IP of your Azure Firewall.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/terraform/images/azfwpip.jpeg)
+    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/terraform/images/azfwpip.jpeg)
 
 6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
 ## Cleaning up
 
@@ -142,13 +189,14 @@ Unless you plan to perform additional tasks with the Azure resources from the qu
 
 The easiest way to do this is to call `terraform destroy`. Do this in both directories (root directory and relevant app gateway directory).
 
-```bash
-terraform destroy
-```
+  ```bash
+  terraform destroy
+  ```
 
 ## Change Log
 
-**3-5-21** - Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table)
+* **03-05-21** - Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table)
+* **03-16-21** - Added third option to install PetClinic Application using PowerShell or Shell Script provided on the jumpbox
 
 ## Additional Notes
 

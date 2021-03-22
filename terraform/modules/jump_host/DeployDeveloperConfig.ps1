@@ -20,4 +20,10 @@ choco install jq -y --no-progress --log-file=$LogPath
 choco install git -y --no-progress --log-file=$LogPath
 choco install pgcli -y --no-progress --log-file=$LogPath
 choco install sqlserver-cmdlineutils -y --no-progress --log-file=$LogPath
+mkdir c:\petclinic
+$mypath = $MyInvocation.MyCommand.Path
+$shellScriptPath = join-path -path $(Split-Path $mypath -Parent) -childpath deployPetClinicApp.sh
+$petPSScriptPath = join-path -path $(Split-Path $mypath -Parent) -childpath deployPetClinicApp.ps1
+Copy-Item $shellScriptPath -Destination "c:\petclinic"
+Copy-Item $petPSScriptPath -Destination "c:\petclinic"
 Stop-Transcript
