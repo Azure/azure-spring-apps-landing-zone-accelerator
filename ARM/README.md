@@ -40,8 +40,10 @@
 ## Deployment
 
 Execute the template including the parameters of the tenant id from step 4, the object id from step 5, the object id from step 6. This will take about 30 minutes to deploy.
-   *    Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
-   *    Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
+
+* Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
+
+* Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 
 ```bash
     az deployment group create --resource-group ${RESOURCE_GROUP} \
@@ -54,42 +56,80 @@ You will be prompted to set a username and password.  This will be the username 
 
 ## Post Deployment
 
-Install one of the following sample applications:
-* [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
-* [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+There are a few options available from a post deployment perspective the are as follows:
 
-For the Pet Clinic application, you can skip the steps for creating the Azure Spring Cloud instance and MySQL instance but do follow the steps for configuring MySQL (Create database etc). When ready to test the application, connect to the Jump VM deployed to the VNet using Azure Bastion.
+1. Install one of the following sample applications from the locations below:
+    * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
+    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 
-If you set az cli defaults deploying the Pet Clinic application, clear the defaults using the following.
+    For the Pet Clinic application, you can skip the steps for creating the Azure Spring Cloud instance and MySQL instance but do follow the steps for configuring MySQL (Create database etc). When ready to test the application, connect to the Jump VM deployed to the VNet using Azure Bastion.
+&nbsp;
+    If you set az cli defaults deploying the Pet Clinic application, clear the defaults using the following:
 
-```bash
-    az configure --defaults location='' \
-    group='' \
-    spring-cloud=''
-```
+    ```bash
+        az configure --defaults location='' \
+        group='' \
+        spring-cloud=''
+    ```
+
+2. For an automated installation you can leverage a PowerShell or bash script provided on Jumpbox created during the deployment process. To install the Pet Clinic App leveraging the PowerShell or Shell Script that is provided as part of the deployment login in to the Jumphost (jumphostvm) created using the Bastion connection and the admin username and password created during the initial installation.  Both the PowerShell script and the Shell script can be found in c:\petclinic.
+&nbsp;
+   If you choose to leverage the PowerShell script you must navigate to the c:\petclinic and edit the deployPetClinicApp.ps1 script before running. Provide the following information for the corresponding variables:
+&nbsp;
+    * Your Subscription ID
+    * A Resource Group
+    * An Azure Region
+    * The name of the Spring Cloud Service that was created
+    * The name of the MySQL Server created
+    * The MySQL Administrator name
+    * The MySQL Administrator password
+&nbsp;
+
+    The variables to be edited in the deployPetClinicApp.ps1 script are as follows:
+
+    ```powershell
+        $SUBSCRIPTION='<Insert your Subscription ID>'
+        $RESOURCE_GROUP='<Insert Resource Group Name>'
+        $REGION='<Insert Azure Region>'
+        $SPRING_CLOUD_SERVICE='<Insert Spring Cloud Service Name Created>'
+        $MYSQL_SERVER_NAME='<Insert MySQL Server Name>'
+        $MYSQL_SERVER_ADMIN_NAME='<Insert MySQL Admin Name>' 
+        $MYSQL_SERVER_ADMIN_PASSWORD='<Insert MySQL Admin Password>'
+    ```
+
+    If you are more comfortable leveraging a shell script, navigate to the same directory, c:\petclininc, and edit the deployPetClinicApp.sh script before running. Provide the following information for the corresponding variables:
+
+    ```bash
+        subscription='<Insert your Subscription ID>'
+        resource_group='<Insert Resource Group Name>'
+        region='<Insert Azure Region>'
+        spring_cloud_service='<Insert Spring Cloud Service Name Created>'
+        mysql_server_name='<Insert MySQL Server Name>'
+        mysql_server_admin_name='<Insert MySQL Admin Name>' 
+        mysql_server_admin_password='<Insert MySQL Admin Password>'
+    ```
 
 ## Deploy Azure Application Gateway with WAF (optional)
 
-Here you will have 2 options:
-- Option 1: Use a public Azure Application gateway for direct ingress.
-- Option 2: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
+* **Option 1**: Use a public Azure Application gateway for direct ingress.
+* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
+&nbsp;
+  **Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
-1. You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority. You will need to convert the certificate to a Base64 string value for the next step. The following will set the Base64 string value to a variable to be used as part of the deployment (replace the file name with your own).
-
-```bash
-    export HTTPSDATA=$(base64 -w 0 nameofcertificatefile.pfx)
-```
+    ```bash
+        export HTTPSDATA=$(base64 -w 0 nameofcertificatefile.pfx)
+    ```
 
 ### Option 1 - Public Application Gateway
 
 1. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
 
-```bash
-    az deployment group create --resource-group ${RESOURCE_GROUP} \
-     --name appGW \
-    --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPublicAppGw.json" \
-    --parameters https_data=${HTTPSDATA}
-```
+    ```bash
+        az deployment group create --resource-group ${RESOURCE_GROUP} \
+        --name appGW \
+        --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPublicAppGw.json" \
+        --parameters https_data=${HTTPSDATA}
+    ```
 
 2. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address
 
@@ -101,34 +141,35 @@ Here you will have 2 options:
 
 1. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
 
-```bash
-    az deployment group create --resource-group ${RESOURCE_GROUP}  \
-    --name appGW \
-    --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPrivateAppGw.json" \
-    --parameters https_data=${HTTPSDATA}
-```
+    ```bash
+        az deployment group create --resource-group ${RESOURCE_GROUP}  \
+        --name appGW \
+        --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPrivateAppGw.json" \
+        --parameters https_data=${HTTPSDATA}
+    ```
 
 2. Once deployed, add a DNAT rule on the Azure Firewall using the following command, replacing "destination-addresses" with the public IP address of your Azure Firewall instance:
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/azfwpip.jpeg)
+    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/azfwpip.jpeg)
 
-```bash
-    az network firewall nat-rule create --resource-group ${RESOURCE_GROUP} \
-    --firewall-name "fwhub" \
-    --name springCLoudIngressDNAT \
-    --collection-name springCLoudIngressDNAT \
-    --protocols "TCP" --source-addresses "*" \
-    --destination-addresses "x.x.x.x" \
-    --destination-ports 443 --action "Dnat" \
-    --priority 100 --translated-address "10.0.3.10" \
-    --translated-port "443"
-```
+    ```bash
+        az network firewall nat-rule create --resource-group ${RESOURCE_GROUP} \
+        --firewall-name "fwhub" \
+        --name springCLoudIngressDNAT \
+        --collection-name springCLoudIngressDNAT \
+        --protocols "TCP" --source-addresses "*" \
+        --destination-addresses "x.x.x.x" \
+        --destination-ports 443 --action "Dnat" \
+        --priority 100 --translated-address "10.0.3.10" \
+        --translated-port "443"
+    ```
 
 3. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
 
 ## Cleaning Up
+
 Unless you plan to perform additional tasks with the Azure resources from the quickstart (such as post deployment steps above), it is important to destroy the resources that you created to avoid the cost of keeping them provisioned.
 
 The easiest way to do this is to call `az group delete`.
@@ -138,7 +179,9 @@ az group delete --name ${RESOURCE_GROUP} --yes --no-wait
 ```
 
 ## Change Log
-3-8-21 - Added Network Security Groups to spoke app and runtime subnets. Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table).
+
+* **3-8-21** - Added Network Security Groups to spoke app and runtime subnets. Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table).
+* **03-16-21** - Added third option to install PetClinic Application using PowerShell or Shell Script provided on the jumpbox
 
 ## Additional Notes
 
