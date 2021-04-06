@@ -40,7 +40,7 @@ Execute the deploySpringCloud.sh Bash script. You will be prompted at the start 
  - Subscrition ID the Azure account you will be deploying to
 
  - A valid Azure Region where resources are deployed
-     - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
+     - Run `https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Cloud
      - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
 
  - Name of the Resource Group where resources will be deployed
