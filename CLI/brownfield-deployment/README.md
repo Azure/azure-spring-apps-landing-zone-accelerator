@@ -12,31 +12,29 @@ This template will create an Azure Spring Cloud cluster into an existing Virtual
 
 3. You must plan the 3 internal CIDR ranges (at least /16 each) used for the Azure Spring Cloud cluster. These will not be directly routable and will be used only internally by the Azure Spring Cloud Cluster. Clusters may not use 169.254.0.0/16, 172.30.0.0/16, 172.31.0.0/16, or 192.0.2.0/24 for the internal Spring Cloud CIDR ranges, or any ranges included within the cluster virtual network address range.
 
-4. DNS FINISH
-
-5. Permissions/RBAC FINISH
+4. Grant service permission to the virtual network. The Azure Spring Cloud Resource Provider requires Owner permission to your virtual network in order to grant a dedicated and dynamic service principal on the virtual network for further deployment and maintenance. See [here](https://docs.microsoft.com/en-us/azure/spring-cloud/how-to-deploy-in-azure-virtual-network#grant-service-permission-to-the-virtual-network) for instructions and more information.
 
 6.  If using Azure Firewall or an NVA you will need the following:
-  * Network and FQDN rules. see [requirements](https://docs.microsoft.com/en-us/azure/spring-cloud/how-to-deploy-in-azure-virtual-network#virtual-network-requirements).
-  * A unique UDR ([User Defined Route](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-udr-overview)) applied to each of the service runtime and Spring Boot micro-service application subnets. The UDR should be configured with a route for **0.0.0.0/0** with a destination of your NVA. See [here](https://docs.microsoft.com/en-us/azure/spring-cloud/how-to-deploy-in-azure-virtual-network#bring-your-own-route-table) for more information.
+    * Network and FQDN rules. see [requirements](https://docs.microsoft.com/en-us/azure/spring-cloud/how-to-deploy-in-azure-virtual-network#virtual-network-requirements).
+    * A unique UDR ([User Defined Route](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-udr-overview)) applied to each of the service runtime and Spring Boot micro-service application subnets. The UDR should be configured with a route for **0.0.0.0/0** with a destination of your NVA. See [here](https://docs.microsoft.com/en-us/azure/spring-cloud/how-to-deploy-in-azure-virtual-network#bring-your-own-route-table) for more information.
 
-7. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+6. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
-8. Run the following command to register the Azure Spring Cloud Resource Provider.
+7. Run the following command to register the Azure Spring Cloud Resource Provider.
 
     `az provider register --namespace 'Microsoft.AppPlatform'`
 
-9. Run the command below to add the required extensions to Azure CLI.
+8. Run the command below to add the required extensions to Azure CLI.
 
     `az extension add --name spring-cloud`
 
-10. Run az login to log into Azure
+9. Run az login to log into Azure
 
-11. Record your subscription id of the Azure account you will be deploying to. This id will be used when you run deploySpringCloud and prompted to enter the subscrition.
+10. Record your subscription id of the Azure account you will be deploying to. This id will be used when you run deploySpringCloud and prompted to enter the subscrition.
 
     `az account list`
 
-12. Create a resource group to deploy the resource to.
+11. Create a resource group to deploy the resource to.
 
 ```bash
     export RESOURCE_GROUP=my-resource-group
