@@ -1,4 +1,4 @@
-# ARM Template Quickstart - Azure Spring Cloud Reference Architecture
+# Bicep template Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
