@@ -57,6 +57,7 @@ There are three methods to deploy the architecture in the diagram documented in 
 * [ARM Deployment](/ARM)
 * [Terraform Deployment](/terraform)
 * [CLI Deployment](/CLI)
+* [Bicep Deployment](/Bicep)
 
 ARM, Terraform and CLI scripts will deploy Azure Spring Cloud in a secure environment. Once the core 
 infrastructure has been deployed, the Post Installation process can be followed to test sample 
