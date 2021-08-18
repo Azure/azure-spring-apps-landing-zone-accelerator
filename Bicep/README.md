@@ -117,12 +117,12 @@ There are a few options available from a post deployment perspective the are as 
 
 * **Option 1**: Use a public Azure Application gateway for direct ingress.
 * **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
-&nbsp;
-  **Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
-    ```bash
+**Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
+
+   ```bash
         export HTTPSDATA=$(base64 -w 0 nameofcertificatefile.pfx)
-    ```
+   ```
 
 ### Option 1 - Public Application Gateway
 
