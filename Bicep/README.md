@@ -1,4 +1,4 @@
-# ARM Template Quickstart - Azure Spring Cloud Reference Architecture
+# Bicep template Quickstart - Azure Spring Cloud Reference Architecture
 
 ## Overview
 
@@ -46,9 +46,13 @@ Execute the template including the parameters of the tenant id from step 4, the 
 * Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 
 ```bash
+    # Clone the repo
+    git clone https://github.com/Azure/azure-spring-cloud-reference-architecture.git
+    cd azure-spring-cloud-reference-architecture/Bicep
+
     az deployment group create --resource-group ${RESOURCE_GROUP} \
     --name initial \
-    --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/deploy.json" \
+    --template-file deploy.bicep \
     --parameters tenantId=<TENANT_ID> keyVaultAdminObjectId=<KEY_VAULT_ADMIN_OBJECT_ID> springCloudPrincipalObjectId=<SPRING_CLOUD_SP_OBJECT_ID>
 ```
 
@@ -127,7 +131,7 @@ There are a few options available from a post deployment perspective the are as 
     ```bash
         az deployment group create --resource-group ${RESOURCE_GROUP} \
         --name appGW \
-        --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPublicAppGw.json" \
+        --template-file resources/deployPublicAppGw.bicep \
         --parameters https_data=${HTTPSDATA}
     ```
 
@@ -135,7 +139,7 @@ There are a few options available from a post deployment perspective the are as 
 
 3. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/Bicep/images/Petclinic-External.jpeg)
 
 ### Option 2 - Private Application Gateway behind Azure Firewall (DNAT)
 
@@ -144,13 +148,13 @@ There are a few options available from a post deployment perspective the are as 
     ```bash
         az deployment group create --resource-group ${RESOURCE_GROUP}  \
         --name appGW \
-        --template-uri="https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/ARM/resources/deployPrivateAppGw.json" \
+        --template-file resources/deployPrivateAppGw.bicep \
         --parameters https_data=${HTTPSDATA}
     ```
 
 2. Once deployed, add a DNAT rule on the Azure Firewall using the following command, replacing "destination-addresses" with the public IP address of your Azure Firewall instance:
 
-    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/azfwpip.jpeg)
+    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/Bicep/images/azfwpip.jpeg)
 
     ```bash
         az network firewall nat-rule create --resource-group ${RESOURCE_GROUP} \
@@ -166,7 +170,7 @@ There are a few options available from a post deployment perspective the are as 
 
 3. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/Bicep/images/Petclinic-External.jpeg)
 
 ## Cleaning Up
 
@@ -177,11 +181,6 @@ The easiest way to do this is to call `az group delete`.
 ```bash
 az group delete --name ${RESOURCE_GROUP} --yes --no-wait
 ```
-
-## Change Log
-
-* **3-8-21** - Added Network Security Groups to spoke app and runtime subnets. Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table).
-* **03-16-21** - Added third option to install PetClinic Application using PowerShell or Shell Script provided on the jumpbox
 
 ## Additional Notes
 
