@@ -39,6 +39,8 @@ azurespringcloud_resource_group_name='azspringcloud-rg' #Hub Virtual Network Res
 azurespringcloud_service='spring-'$randomstring #Name of unique Spring Cloud resource
 azurespringcloud_service_runtime_resource_group_name=$azurespringcloud_service'-runtime-rg' #Name of Azure Spring Cloud service runtime resource group	
 azurespringcloud_app_resource_group_name=$azurespringcloud_service'-apps-rg' #Name of Azure Spring Cloud apps resource group
+azurespringcloud_service_subnet_route_table_name='sc-service-subnet-routetable' #Azure Spring Cloud service subnet routetable name
+azurespringcloud_app_subnet_route_table_name='sc-app-subnet-routetable' #Azure Spring Cloud app subnet routetable name
 
 
 echo "Enter an Azure region for resource deployment: "
@@ -61,25 +63,33 @@ echo "Enter Jumphost VM admin password: "
 read -s vmpassword 
 vm_password=$vmpassword
 
+echo "Enter key=value pair used for tagging Azure Resources (space separated for multiple tags): "
+read tag
+tags=$tag
 
 # Creates Hub resource Group
-az group create --location ${location} --name ${hub_resource_group_name}
+az group create --location ${location} --name ${hub_resource_group_name} --tags ${tags}
 
 # Creates Log Analytics Workspace 
 az monitor log-analytics workspace create \
     --resource-group ${hub_resource_group_name} \
     --workspace-name ${log_analytics_workspace_name} \
     --location ${location} \
-    --sku PerGB2018
+    --sku PerGB2018 \
+    --tags ${tags}
 
 # Creates NSG for jump box VM and Azure Bastion subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
-    --name ${hub_vnet_jumphost_nsg_name}
+    --location ${location} \
+    --name ${hub_vnet_jumphost_nsg_name} \
+    --tags ${tags}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
-    --name ${bastion_subnet_nsg}
+    --location ${location} \
+    --name ${bastion_subnet_nsg} \
+    --tags ${tags}
 
 az network nsg rule create \
     --resource-group ${hub_resource_group_name} \
@@ -186,7 +196,8 @@ az network vnet create \
     --name ${hub_vnet_name} \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --address-prefixes ${hub_vnet_address_prefixes}
+    --address-prefixes ${hub_vnet_address_prefixes} \
+    --tags ${tags}
 
 az network vnet subnet create \
     --name 'AzureFirewallSubnet' \
@@ -222,7 +233,7 @@ az network vnet subnet create \
 
 
 # Creates public IP and Azure Bastion in hub Vnet
-az network public-ip create --resource-group ${hub_resource_group_name} --name ${azure_bastion_ip_name} --sku Standard --location ${location}
+az network public-ip create --resource-group ${hub_resource_group_name} --name ${azure_bastion_ip_name} --sku Standard --location ${location} --tags ${tags}
 
 az network bastion create --resource-group ${hub_resource_group_name} --name ${azure_bastion_name} --public-ip-address ${azure_bastion_ip_name} --vnet-name ${hub_vnet_name} --location ${location}
 
@@ -230,6 +241,7 @@ az network bastion create --resource-group ${hub_resource_group_name} --name ${a
 # creates Jumphost VM
 az vm create \
     --resource-group ${hub_resource_group_name} \
+    --location $location \
     --name jumphostvm \
     --image MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest \
     --size Standard_DS3_v2 \
@@ -238,20 +250,32 @@ az vm create \
     --vnet-name ${hub_vnet_name} \
     --subnet ${jump_host_subnet_name} \
     --public-ip-address "" \
-    --nsg ""
+    --nsg "" \
+    --tags ${tags}
+
+# Creates custom script extension for jumphost VM 
+az vm extension set \
+    --name CustomScriptExtension \
+    --publisher Microsoft.Compute \
+    --vm-name jumphostvm \
+    --resource-group ${hub_resource_group_name} \
+    --protected-settings '{"commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""}' \
+    --settings '{"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.sh"]}'
 
 # creates Azure Firewall instance, public IP and Azure Firewall IP Configuration
 az network firewall create \
     --name ${firewall_name} \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
-    --enable-dns-proxy true
+    --enable-dns-proxy true \
+    --tags ${tags}
 az network public-ip create \
     --name ${firewall_public_ip_name} \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
     --allocation-method static \
-    --sku standard
+    --sku standard \
+    --tags ${tags}
 az network firewall ip-config create \
     --firewall-name ${firewall_name} \
     --name FW-config \
@@ -366,6 +390,80 @@ az network firewall application-rule create \
     --priority 110 \
     --action allow
 
+az network firewall application-rule create \
+    --collection-name MicrosoftBlobRules \
+    --firewall-name ${firewall_name} \
+    --name Blob_rules \
+    --description "Required Azure Storage Rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "*.blob.core.windows.net" \
+    --priority 120 \
+    --action allow
+
+az network firewall application-rule create \
+    --collection-name DatabaseClamavRule \
+    --firewall-name ${firewall_name} \
+    --name database_clamav_rules \
+    --description "Required database clamav rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "database.clamav.net" \
+    --priority 130 \
+    --action allow
+
+az network firewall application-rule create \
+    --collection-name GithubRule \
+    --firewall-name ${firewall_name} \
+    --name Github_Rules \
+    --description "Required Github rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "github.com" \
+    --priority 140 \
+    --action allow
+
+az network firewall application-rule create \
+    --collection-name MicrosoftMetricRule \
+    --firewall-name ${firewall_name} \
+    --name Microsoft_metrics \
+    --description "Required metric rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "*.prod.microsoftmetrics.com" \
+    --priority 150 \
+    --action allow
+
+
+az network firewall application-rule create \
+    --collection-name AKSACSRule \
+    --firewall-name ${firewall_name} \
+    --name AKS_acs_rules \
+    --description "Required AKS acs rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "acs-mirror.azureedge.net" \
+    --priority 160 \
+    --action allow
+
+
+az network firewall application-rule create \
+    --collection-name MicrosoftLoginRule \
+    --firewall-name ${firewall_name} \
+    --name AKS_acs_rules \
+    --description "Required login rules" \
+    --protocols https=443 \
+    --resource-group ${hub_resource_group_name} \
+    --source-addresses ${azurespringcloud_app_subnet_prefix} ${azurespringcloud_service_runtime_subnet_prefix} \
+    --target-fqdns  "login.microsoftonline.com" \
+    --priority 170 \
+    --action allow
+
 # Creates Diagnostic Settings to send logs and metrics to Log Analytics Workspace
 az monitor diagnostic-settings create \
     --name "ToLAW" \
@@ -415,11 +513,69 @@ az monitor diagnostic-settings create \
 # Creates NSG for Azure Spring Cloud data and support subnets
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
-    --name ${azure_spring_cloud_support_subnet_nsg}
+    --location ${location} \
+    --name ${azure_spring_cloud_support_subnet_nsg} \
+    --tags ${tags}
 
 az network nsg create \
     --resource-group ${hub_resource_group_name} \
-    --name ${azure_spring_cloud_data_subnet_nsg}
+    --location ${location} \
+    --name ${azure_spring_cloud_data_subnet_nsg} \
+    --tags ${tags}
+
+
+#Creates routetables and default route to be used with Azure Spring Cloud
+az network route-table create \
+    --name ${azurespringcloud_service_subnet_route_table_name} \
+    --location ${location} \
+    --resource-group ${hub_resource_group_name} \
+    --tags ${tags}
+
+az network route-table route create \
+    --resource-group ${hub_resource_group_name} \
+    --route-table-name ${azurespringcloud_service_subnet_route_table_name} \
+    --name default \
+    --address-prefix 0.0.0.0/0 \
+    --next-hop-type VirtualAppliance \
+    --next-hop-ip-address ${firewall_private_ip}
+
+az network route-table create \
+    --name ${azurespringcloud_app_subnet_route_table_name} \
+    --location ${location} \
+    --resource-group ${hub_resource_group_name} \
+    --tags ${tags}
+
+az network route-table route create \
+    --resource-group ${hub_resource_group_name} \
+    --route-table-name ${azurespringcloud_app_subnet_route_table_name} \
+    --name default \
+    --address-prefix 0.0.0.0/0 \
+    --next-hop-type VirtualAppliance \
+    --next-hop-ip-address ${firewall_private_ip}
+
+app_rt_id=$(az network route-table show \
+    --resource-group ${hub_resource_group_name} \
+    --name ${azurespringcloud_app_subnet_route_table_name} \
+    --query id --output tsv )
+
+service_rt_id=$(az network route-table show \
+    --resource-group ${hub_resource_group_name} \
+    --name ${azurespringcloud_service_subnet_route_table_name} \
+    --query id --output tsv )
+
+
+#Grant Azure Spring Cloud Resoure Provider Owner role to route tables
+az role assignment create \
+    --role "Owner" \
+    --scope ${service_rt_id} \
+    --assignee e8de9221-a19c-4c81-b814-fd37c6caf9d2
+
+az role assignment create \
+    --role "Owner" \
+    --scope ${app_rt_id} \
+    --assignee e8de9221-a19c-4c81-b814-fd37c6caf9d2
+
+
 
 #Creates Azure Spring Cloud spoke Vnet and subnets
 az network vnet create \
@@ -427,21 +583,25 @@ az network vnet create \
     --resource-group ${hub_resource_group_name} \
     --location ${location} \
     --address-prefixes ${azurespringcloud_vnet_address_prefixes} \
-    --dns-servers ${firewall_private_ip}
+    --dns-servers ${firewall_private_ip} \
+    --tags ${tags}
 
 
 az network vnet subnet create  \
     --name ${azurespringcloud_service_runtime_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
-    --address-prefix ${azurespringcloud_service_runtime_subnet_prefix} 
+    --address-prefix ${azurespringcloud_service_runtime_subnet_prefix} \
+    --route-table ${service_rt_id}
+
 
 
 az network vnet subnet create \
     --name ${azurespringcloud_app_subnet_name} \
     --resource-group ${hub_resource_group_name} \
     --vnet-name ${azurespringcloud_vnet_name} \
-    --address-prefix ${azurespringcloud_app_subnet_prefix}
+    --address-prefix ${azurespringcloud_app_subnet_prefix} \
+    --route-table ${app_rt_id}
 
 
 az network vnet subnet create \
@@ -508,14 +668,15 @@ az keyvault create --name ${azure_key_vault_name} \
 	--no-self-perms false \
     --default-action Deny \
     --enabled-for-deployment true \
-    --bypass AzureServices
+    --bypass AzureServices \
+    --tags ${tags}
 
 
-az keyvault set-policy --name ${azure_key_vault_name} \
-	--object-id $admin_object_id  \
-	--key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey \
-	--secret-permissions backup delete get list purge recover restore set \
-	--certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update
+#az keyvault set-policy --name ${azure_key_vault_name} \
+	#--object-id $admin_object_id  \
+	#--key-permissions backup create decrypt delete encrypt get import list purge recover restore sign unwrapKey update verify wrapKey \
+	#--secret-permissions backup delete get list purge recover restore set \
+	#--certificate-permissions backup create delete deleteissuers get getissuers import list listissuers managecontacts manageissuers purge recover restore setissuers update
 
 
 akv_id=$(az keyvault show -g ${hub_resource_group_name} --name ${azure_key_vault_name} --query id --output tsv)
@@ -523,16 +684,19 @@ akv_id=$(az keyvault show -g ${hub_resource_group_name} --name ${azure_key_vault
 az network private-endpoint create \
     --name ${azure_key_vault_name}"-endpoint" \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${akv_id} \
     --group-id vault \
-    --connection-name "kv-private-link-connection"
+    --connection-name "kv-private-link-connection" \
+    --tags ${tags}
 
 # Creates the Private DNS for Azure Key Vault
 az network private-dns zone create \
     --resource-group ${hub_resource_group_name} \
-    --name privatelink.vaultcore.azure.net
+    --name privatelink.vaultcore.azure.net \
+    --tags ${tags}
 
 akv_dns_id=$(az network private-dns zone show --resource-group ${hub_resource_group_name} --name privatelink.vaultcore.azure.net --query id --output tsv)
 
@@ -572,26 +736,30 @@ az mysql server create \
 	--sku-name GP_Gen5_2 \
 	--backup-retention 7 \
 	--geo-redundant-backup Disabled \
-    --minimal-tls-version TLS1_2 \
 	--storage-size 51200 \
-    --public-network-access Disabled
+    --public-network-access Disabled \
+    --ssl-enforcement Disabled \
+    --tags ${tags}
 
 mysql_id=$(az mysql server show -g ${hub_resource_group_name} --name ${azure_mysql_name} --query id --output tsv)
 
 az network private-endpoint create \
     --name ${azure_mysql_name}"-endpoint" \
     --resource-group ${hub_resource_group_name} \
+    --location ${location} \
     --vnet-name ${azurespringcloud_vnet_name} \
     --subnet ${azure_spring_cloud_support_subnet_name} \
     --private-connection-resource-id ${mysql_id} \
     --group-id mysqlServer \
-    --connection-name "mysql-private-link-connection"
+    --connection-name "mysql-private-link-connection" \
+    --tags ${tags}
 
 
 # Creates Private DNS for MySql Db
 az network private-dns zone create \
     --resource-group ${hub_resource_group_name} \
-    --name privatelink.mysql.database.azure.com
+    --name privatelink.mysql.database.azure.com \
+    --tags ${tags}
 
 mysql_dns_id=$(az network private-dns zone show --resource-group ${hub_resource_group_name} --name privatelink.mysql.database.azure.com --query id --output tsv)
 
@@ -647,8 +815,10 @@ az spring-cloud create \
     --app-network-resource-group ${azurespringcloud_app_resource_group_name} \
     --service-runtime-network-resource-group ${azurespringcloud_service_runtime_resource_group_name} \
     --vnet ${azurespringcloud_vnet_id} \
+    --reserved-cidr-range 10.0.0.0/16,10.1.0.0/16,10.2.0.1/16 \
     --service-runtime-subnet ${service_runtime_subnet_id} \
-    --app-subnet ${apps_subnet_id}
+    --app-subnet ${apps_subnet_id} \
+    --tags ${tags}
 
 # Gets LAW resource id and creates diagnostic settings to send logs and metrics to Log Analytics Workspace
 law_id=$(az monitor log-analytics workspace show --resource-group ${hub_resource_group_name} --workspace-name ${log_analytics_workspace_name} --query id --output tsv)
@@ -690,53 +860,12 @@ az monitor diagnostic-settings create \
     ]'
 
 
-#Gets Azure Spring Cloud apps routetable and adds route to Azure Firewall
-azurespringcloud_app_resourcegroup_name=$(az spring-cloud show \
-    --resource-group ${hub_resource_group_name} \
-    --name ${azurespringcloud_service} \
-    --query 'properties.networkProfile.appNetworkResourceGroup' --output tsv )
-
-azurespringcloud_app_routetable_name=$(az network route-table list \
-    --resource-group $azurespringcloud_app_resourcegroup_name \
-    --query [].name --output tsv)
-
-az network route-table route create \
-    --resource-group ${azurespringcloud_app_resourcegroup_name} \
-    --route-table-name ${azurespringcloud_app_routetable_name} \
-    --name default \
-    --address-prefix 0.0.0.0/0 \
-    --next-hop-type VirtualAppliance \
-    --next-hop-ip-address ${firewall_private_ip}
-
-
-
-
-#Gets Azure Spring Cloud service runtime routetable and adds route to Azure Firewall
-azurespringcloud_service_resourcegroup_name=$(az spring-cloud show \
-    --resource-group ${hub_resource_group_name} \
-    --name ${azurespringcloud_service} \
-    --query 'properties.networkProfile.serviceRuntimeNetworkResourceGroup' --out tsv )
-
-azurespringcloud_service_routetable_name=$(az network route-table list \
-    --resource-group $azurespringcloud_service_resourcegroup_name \
-    --query [].name --out tsv)
-
-az network route-table route create \
-    --resource-group ${azurespringcloud_service_resourcegroup_name} \
-    --route-table-name ${azurespringcloud_service_routetable_name} \
-    --name default \
-    --address-prefix 0.0.0.0/0 \
-    --next-hop-type VirtualAppliance \
-    --next-hop-ip-address ${firewall_private_ip}
-
-
-
-
 
 #Creates Private DNS Zone for Azure Spring Cloud
 az network private-dns zone create \
     --resource-group ${hub_resource_group_name} \
-    --name private.azuremicroservices.io
+    --name private.azuremicroservices.io \
+    --tags ${tags}
 
 
 

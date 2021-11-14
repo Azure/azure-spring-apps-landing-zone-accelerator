@@ -107,3 +107,41 @@ module "jump_host" {
     jump_host_admin_username             = var.jump_host_admin_username
     jump_host_password                   = var.jump_host_password
 }
+
+resource "azurerm_route_table" "default_apps_route" {
+  name                          = "default_apps_route"
+  resource_group_name                 = var.resource_group_name
+  location                            = var.location
+
+  route {
+    name                        = "default_egress"
+    address_prefix              = "0.0.0.0/0" 
+    next_hop_type               = "VirtualAppliance"
+    next_hop_in_ip_address      =  module.azure_firewall.ip
+  }
+
+}
+
+resource "azurerm_route_table" "default_runtime_route" {
+  name                          = "default_runtime_route"
+  resource_group_name                 = var.resource_group_name
+  location                            = var.location
+
+  route {
+    name                        = "default_egress"
+    address_prefix              = "0.0.0.0/0" 
+    next_hop_type               = "VirtualAppliance"
+    next_hop_in_ip_address      =  module.azure_firewall.ip
+  }
+
+}
+
+resource "azurerm_subnet_route_table_association" "sc_app_association" {
+  subnet_id      = azurerm_subnet.azuresbcloudapps.id
+  route_table_id = azurerm_route_table.default_apps_route.id
+}
+
+resource "azurerm_subnet_route_table_association" "sc_runtime_association" {
+  subnet_id      = azurerm_subnet.azuresbcloudsvc.id
+  route_table_id = azurerm_route_table.default_runtime_route.id
+}

@@ -14,6 +14,8 @@ variable "private_dns_a_record_a_record_name" {
   type    = string
   default = "*"
 }
+variable "sc_default_apps_route" {}
+variable "sc_default_runtime_route" {}
 
 variable "private_dns_a_record_a_record_ttl" {
   type    = number
