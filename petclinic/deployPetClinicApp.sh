@@ -32,11 +32,11 @@ visits_service='visits-service'
 
 
 # ==== JARS ====
-api_gateway_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-2.3.6.jar'
-admin_server_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-admin-server/target/spring-petclinic-admin-server-2.3.6.jar'
-customers_service_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-customers-service/target/spring-petclinic-customers-service-2.3.6.jar'
-vets_service_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-vets-service/target/spring-petclinic-vets-service-2.3.6.jar'
-visits_service_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-visits-service/target/spring-petclinic-visits-service-2.3.6.jar'
+api_gateway_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-2.5.1.jar'
+admin_server_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-admin-server/target/spring-petclinic-admin-server-2.5.1.jar'
+customers_service_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-customers-service/target/spring-petclinic-customers-service-2.5.1.jar'
+vets_service_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-vets-service/target/spring-petclinic-vets-service-2.5.1.jar'
+visits_service_jar='/c/source-code/spring-petclinic-microservices/spring-petclinic-visits-service/target/spring-petclinic-visits-service-2.5.1.jar'
 
 # ==== MYSQL INFO ====
 mysql_server_full_name="${mysql_server_name}.privatelink.mysql.database.azure.com"

@@ -29,11 +29,11 @@ $VETS_SERVICE='vets-service'
 $VISITS_SERVICE='visits-service'
 
 # ==== JARS ====
-$API_GATEWAY_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-api-gateway\target\spring-petclinic-api-gateway-2.3.6.jar'
-$ADMIN_SERVER_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-admin-server\target\spring-petclinic-admin-server-2.3.6.jar'
-$CUSTOMERS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-customers-service\target\spring-petclinic-customers-service-2.3.6.jar'
-$VETS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-vets-service\target\spring-petclinic-vets-service-2.3.6.jar'
-$VISITS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-visits-service\target\spring-petclinic-visits-service-2.3.6.jar'
+$API_GATEWAY_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-api-gateway\target\spring-petclinic-api-gateway-2.5.1.jar'
+$ADMIN_SERVER_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-admin-server\target\spring-petclinic-admin-server-2.5.1.jar'
+$CUSTOMERS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-customers-service\target\spring-petclinic-customers-service-2.5.1.jar'
+$VETS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-vets-service\target\spring-petclinic-vets-service-2.5.1.jar'
+$VISITS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-visits-service\target\spring-petclinic-visits-service-2.5.1.jar'
 
 # ==== MYSQL INFO ====
 $MYSQL_SERVER_FULL_NAME="$MYSQL_SERVER_NAME.privatelink.mysql.database.azure.com"
