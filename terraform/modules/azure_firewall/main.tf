@@ -158,8 +158,8 @@ resource "azurerm_firewall_network_rule_collection" "spring_cloud_tcp" {
     ]
 
     destination_addresses = [
-      "AzureCloud.EastUS",
-      "AzureCloud.EastUS2"
+      "AzureCloud",
+      
     ]
 
     protocols = [
@@ -189,8 +189,7 @@ resource "azurerm_firewall_network_rule_collection" "aks_netrules_tcp" {
     ]
 
     destination_addresses = [
-      "AzureCloud.eastus2",
-      "AzureCloud.eastus",
+      "AzureCloud",
     ]
 
     protocols = [
