@@ -43,6 +43,19 @@ This template will create an Azure Spring Cloud cluster into an existing Virtual
     az group create --name ${RESOURCE_GROUP} --location ${LOCATION}
 ```
 
+12. Use the following command to accept the legal terms and privacy statements for the Enterprise tier. 
+    - **Note:** This step is necessary only if you intend to to create an Enterprise tire instance and your subscription has never been used to create an Enterprise tier instance of Azure Spring Cloud
+    - **Note:** The deployment script executed with Entrprise tire as input parameter enables all Tanzu components by default. After provisioning the Azure Spring Cloud Enterprose instance, you can't enable or disable Tanzu components.
+
+```bash
+        az provider register -n Microsoft.SaaS
+
+        az term accept \
+            --publisher vmware-inc \
+            --product azure-spring-cloud-vmware-tanzu-2 \
+            --plan tanzu-asc-ent-mtr
+```
+
 ## Deployment
 
 Execute the deploySpringCloud.sh Bash script. You will be prompted at the start of the script to enter:
@@ -54,6 +67,8 @@ Execute the deploySpringCloud.sh Bash script. You will be prompted at the start 
      - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
 
  - Name of the Resource Group where resources will be deployed
+ 
+ - A valid Azure Spring cloud SKU (Enterprise or Standard)
 
  - Name of the Virtual Network Resource Group where resources will be deployed
 
