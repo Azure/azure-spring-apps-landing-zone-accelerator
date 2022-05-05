@@ -8,27 +8,27 @@ echo "Enter Azure region for resource deployment: "
 read region
 location=$region
 
-echo "Enter Azure Spring cloud Resource Group Name: "
+echo "Enter Azure Spring  Resource Group Name: "
 read azurespringrg
 azurespring_resource_group_name=$azurespringrg
 
-echo "Enter Azure Spring cloud SKU (Enterprise or Standard): "
+echo "Enter Azure Spring SKU (Enterprise or Standard): "
 read azurespringsku
 azurespring_sku=$azurespringsku
 
-echo "Enter Azure Spring cloud VNet Resource Group Name: "
+echo "Enter Azure Spring VNet Resource Group Name: "
 read azurespringvnetrg
 azurespring_vnet_resource_group_name=$azurespringvnetrg
 
-echo "Enter Azure Spring cloud Spoke VNet : "
+echo "Enter Azure Spring Spoke VNet : "
 read azurespringappspokevnet
 azurespringappspokevnet=$azurespringappspokevnet
 
-echo "Enter Azure Spring cloud App SubNet : "
+echo "Enter Azure Spring App SubNet : "
 read azurespringappsubnet
 azurespring_app_subnet_name='/subscriptions/'$subscription'/resourcegroups/'$azurespring_vnet_resource_group_name'/providers/Microsoft.Network/virtualNetworks/'$azurespringappspokevnet'/subnets/'$azurespringappsubnet
 
-echo "Enter Azure Spring cloud Service SubNet : "
+echo "Enter Azure Spring Service SubNet : "
 read azurespringservicesubnet
 azurespring_service_subnet_name='/subscriptions/'$subscription'/resourcegroups/'$azurespring_vnet_resource_group_name'/providers/Microsoft.Network/virtualNetworks/'$azurespringappspokevnet'/subnets/'$azurespringservicesubnet
 
@@ -40,7 +40,7 @@ echo "Enter Log Analytics Workspace Resource ID: "
 read workspace
 workspaceID='/subscriptions/'$subscription'/resourcegroups/'$loganalyticsrg'/providers/microsoft.operationalinsights/workspaces/'$workspace
 
-echo "Enter Reserved CIDR Ranges for Azure Spring Cloud: "
+echo "Enter Reserved CIDR Ranges for Azure Spring: "
 read reservedcidrrange
 reservedcidrrange=$reservedcidrrange
 
@@ -49,7 +49,7 @@ read tag
 tags=$tag
 
 randomstring=$(LC_ALL=C tr -dc 'a-z0-9' < /dev/urandom | fold -w 13 | head -n 1)
-azurespring_service='spring-'$randomstring #Name of unique Spring Cloud resource
+azurespring_service='spring-'$randomstring #Name of unique Spring resource
 azurespring_appinsights=$azurespring_service
 azurespring_resourceid='/subscriptions/'$subscription'/resourceGroups/'$azurespring_resource_group_name'/providers/Microsoft.AppPlatform/Spring/'$azurespring_service
 
@@ -80,7 +80,7 @@ if [ ${azurespringsku} == "Standard" ]; then
         wait    # Wait for the above command to complete
 elif [ ${azurespringsku} == "Enterprise" ]; then
     echo "Creating Azure Spring Enterprise"
-        az spring-cloud create \
+        az spring create \
             -n ${azurespring_service} \
             -g ${azurespringrg} \
             -l ${location} \
@@ -102,7 +102,7 @@ else
     echo "Invalid SKU. Please Enter Standard or Enterprise"
 fi
 
-# Update diagnostic setting for Azure Spring Cloud instance
+# Update diagnostic setting for Azure Spring instance
 az monitor diagnostic-settings create  \
    --name monitoring \
    --resource ${azurespring_resourceid} \
