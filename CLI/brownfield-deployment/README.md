@@ -30,7 +30,7 @@ This template will create an Azure Spring cluster into an existing Virtual Netwo
 
 9. Run az login to log into Azure
 
-10. Record your subscription id of the Azure account you will be deploying to. This id will be used when you run deploySpringand prompted to enter the subscrition.
+10. Record your subscription id of the Azure account you will be deploying to. This id will be used when you run deploySpring.sh and prompted to enter the subscrition.
 
     `az account list`
 
