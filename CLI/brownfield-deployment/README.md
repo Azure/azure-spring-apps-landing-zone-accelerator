@@ -45,7 +45,7 @@ This template will create an Azure Spring Cloud cluster into an existing Virtual
 
 12. Use the following command to accept the legal terms and privacy statements for the Enterprise tier. 
     - **Note:** This step is necessary only if you intend to to create an Enterprise tire instance and your subscription has never been used to create an Enterprise tier instance of Azure Spring Cloud
-    - **Note:** The deployment script executed with Entrprise tire as input parameter enables all Tanzu components by default. After provisioning the Azure Spring Cloud Enterprose instance, you can't enable or disable Tanzu components.
+    - **Note:** The deployment script executed with Entrprise tire as input parameter enables all Tanzu components by default. After provisioning the Azure Spring Cloud Enterprise instance, you can't enable or disable Tanzu components.
 
 ```bash
         az provider register -n Microsoft.SaaS
