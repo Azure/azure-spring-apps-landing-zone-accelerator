@@ -1,0 +1,202 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "springCloudInstanceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The instance name of the Azure Spring Cloud resource"
+            }
+        },
+        "appInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Application Insights instance for Azure Spring Cloud"
+            }
+        },
+        "laWorkspaceResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "The resource ID of the existing Log Analytics workspace. This will be used for both diagnostics logs and Application Insights"
+            }
+        },
+        "springCloudAppSubnetID": {
+            "type": "string",
+            "metadata": {
+                "description": "The resourceID of the Azure Spring Cloud App Subnet"
+            }
+        },
+        "springCloudRuntimeSubnetID": {
+            "type": "string",
+            "metadata": {
+                "description": "The resourceID of the Azure Spring Cloud Runtime Subnet"
+            }
+        },
+        "springCloudServiceCidrs": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16,10.2.0.0/16,10.3.0.1/16",
+            "metadata": {
+                "description": "Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Cloud infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges"
+            }
+        },        
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "The tags that will be associated to the Resources"
+            },
+            "defaultValue": {
+                "environment": "lab"
+            }
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]"                    
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Insights/components",
+            "name": "[parameters('appInsightsName')]",
+            "apiVersion": "2020-02-02",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "Application_Type": "web",
+                "ApplicationId": "[parameters('appInsightsName')]",
+                "Flow_Type": "Bluefield",
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[parameters('laWorkspaceResourceId')]"
+            }
+        },
+        {
+            "apiVersion": "2022-03-01-preview",
+            "name": "[parameters('springCloudInstanceName')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
+                
+            ],
+            "type": "Microsoft.AppPlatform/Spring",
+            "sku": {
+                "name": "E0",
+                "tier": "Enterprise"
+            },
+            "properties": {
+                "networkProfile": {
+                    "serviceCidr": "[parameters('springCloudServiceCidrs')]",
+                    "serviceRuntimeSubnetId": "[parameters('springCloudRuntimeSubnetID')]",
+                    "appSubnetId": "[parameters('springCloudAppSubnetID')]"
+                }
+            },
+            "resources": [
+                {
+                    "type": "serviceRegistries",
+                    "name": "default",
+                    "apiVersion": "2022-03-01-preview",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName'))]"
+                    ]
+                },
+                {
+                    "type": "configurationServices",
+                    "name": "default",
+                    "apiVersion": "2022-03-01-preview",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName'))]"
+                    ]
+                },
+                {
+                    "type": "gateways",
+                    "name": "default",
+                    "apiVersion": "2022-03-01-preview",
+                    "location": "[variables('location')]",
+                    "sku": {
+                        "name": "E0",
+                        "tier": "Enterprise",
+                        "capacity": 2
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName'))]"
+                    ]
+                },
+                {
+                    "type": "apiPortals",
+                    "name": "default",
+                    "apiVersion": "2022-03-01-preview",
+                    "location": "[variables('location')]",
+                    "sku": {
+                        "name": "E0",
+                        "tier": "Enterprise",
+                        "capacity": 1
+                    },
+                    "properties": {
+                        "gatewayIds": [
+                            "[concat(resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName')), '/gateways/default')]"
+                        ]
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName'))]"
+                    ]
+                },
+                {
+                    "type": "Microsoft.AppPlatform/Spring/buildServices/agentPools",
+                    "name": "[concat(parameters('springCloudInstanceName'), '/default/default')]",
+                    "apiVersion": "2022-03-01-preview",
+                    "location": "[variables('location')]",
+                    "properties": {
+                        "poolSize": {
+                            "name": "S1"
+                        }
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "apiVersion": "2022-03-01-preview",
+            "name": "[concat(parameters('springCloudInstanceName'), '/default/default/default')]",
+            "type": "Microsoft.AppPlatform/Spring/buildservices/builders/buildpackBindings",            
+            "properties": {
+                "bindingType": "ApplicationInsights",
+                "launchProperties": {
+                    "properties": {
+                        "sampling_percentage": 10,
+                        "connection_string": "[reference(concat('microsoft.insights/components/', parameters('appInsightsName')), '2015-05-01').ConnectionString]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.AppPlatform/Spring', parameters('springCloudInstanceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.AppPlatform/Spring/providers/diagnosticSettings",
+            "name": "[concat(parameters('springCloudInstanceName'), '/Microsoft.Insights/monitoring')]",
+            "dependsOn": [  
+                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springCloudInstanceName'))]"       
+            ],
+            "apiVersion": "2017-05-01-preview",
+            "properties": {
+                "name": "monitoring",
+                "workspaceId": "[parameters('laWorkspaceResourceId')]",
+                "logs": [
+                    {
+                        "category": "ApplicationConsole",
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 30,
+                            "enabled": false
+                        }
+                    }
+                ]
+            }
+        }
+               
+    ],
+    "outputs": {
+    }
+}
