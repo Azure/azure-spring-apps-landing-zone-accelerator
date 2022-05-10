@@ -1,1 +1,1 @@
-The contents of this page has moved to docs.microsoft.com [Quickstart: Provision Azure Spring Cloud using Bicep](https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-bicep)
+The contents of this page has moved to docs.microsoft.com [Quickstart: Provision Azure Spring Cloud using an ARM template](https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet)
