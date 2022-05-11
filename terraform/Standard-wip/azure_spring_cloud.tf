@@ -1,3 +1,7 @@
+
+          
+
+
 resource "azurerm_private_dns_zone" "spring_cloud_zone" {
   name                = "private.azuremicroservices.io"
   resource_group_name = azurerm_resource_group.sc_corp_rg.name
@@ -71,8 +75,8 @@ resource "azurerm_spring_cloud_service" "sc" {
     app_subnet_id                               = azurerm_subnet.azuresbcloudsvc.id
     service_runtime_subnet_id                   = azurerm_subnet.azuresbcloudapps.id
     cidr_ranges                                 = var.sc_cidr
-    app_network_resource_group                  = "${var.sc_service_name}-apps-rg"
-    service_runtime_network_resource_group      = "${var.sc_service_name}-runtime-rg"
+    app_network_resource_group                  = "${azurerm_spring_cloud_service.sc.name}-apps-rg"
+    service_runtime_network_resource_group      = "${azurerm_spring_cloud_service.sc.name}-runtime-rg"
   }
   
   timeouts {
@@ -103,7 +107,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
 
 data "azurerm_lb" "svc_load_balancer" {
   name                = var.internal_lb_svc_load_balancer_name
-  resource_group_name = "${var.sc_service_name}-runtime-rg"
+  resource_group_name = "${azurerm_spring_cloud_service.sc.name}-runtime-rg"
   depends_on = [azurerm_spring_cloud_service.sc]
 }
 
