@@ -66,7 +66,7 @@ resource "azurerm_monitor_diagnostic_setting" "sc_diag" {
 }
 
 resource "azurerm_spring_cloud_service" "sc" {
-  name                = "${var.sc_prefix}-${random_string.random.result}"
+  name                = local.spring_cloud_name
   resource_group_name = azurerm_resource_group.sc_corp_rg.name
   location            = var.location
   
@@ -75,8 +75,8 @@ resource "azurerm_spring_cloud_service" "sc" {
     app_subnet_id                               = azurerm_subnet.azuresbcloudsvc.id
     service_runtime_subnet_id                   = azurerm_subnet.azuresbcloudapps.id
     cidr_ranges                                 = var.sc_cidr
-    app_network_resource_group                  = "${azurerm_spring_cloud_service.sc.name}-apps-rg"
-    service_runtime_network_resource_group      = "${azurerm_spring_cloud_service.sc.name}-runtime-rg"
+    app_network_resource_group                  = "${local.spring_cloud_name}-apps-rg"
+    service_runtime_network_resource_group      = "${local.spring_cloud_name}-runtime-rg"
   }
   
   timeouts {
@@ -107,7 +107,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "spoke-link" {
 
 data "azurerm_lb" "svc_load_balancer" {
   name                = var.internal_lb_svc_load_balancer_name
-  resource_group_name = "${azurerm_spring_cloud_service.sc.name}-runtime-rg"
+  resource_group_name = "${local.spring_cloud_name}-runtime-rg"
   depends_on = [azurerm_spring_cloud_service.sc]
 }
 

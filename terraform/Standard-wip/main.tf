@@ -27,6 +27,12 @@ resource "random_string" "random" {
 
 }
 
+locals  {
+  spring_cloud_name  = "${var.sc_prefix}-${random_string.random.result}"
+  
+}
+
+
 # module "log_analytics" {
 #   source                          = "./modules/log_analytics"
 #   resource_group_name             = azurerm_resource_group.sc_corp_rg.name
