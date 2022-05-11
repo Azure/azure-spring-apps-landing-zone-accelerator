@@ -1,6 +1,6 @@
 variable "subscription" {
     type = string
-    description = "Azure Subscription"
+    description = "Azure Subscription "
     default = ""
 }
 variable "location" {
