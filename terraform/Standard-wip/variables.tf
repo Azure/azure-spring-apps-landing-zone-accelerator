@@ -1,12 +1,22 @@
+# General
+
 variable "resource_group_name" {
     type        = string 
     description = "Core Infrastructure Resource Group"
     default     = "sc-corp-rg"
 }
+
 variable "location" {
     type = string
     default = "East US"
 } 
+
+variable "tags" {
+    type        = map 
+    default     = { 
+        Environment = "development"
+    }
+}
 
 # mysql module
 
@@ -190,12 +200,5 @@ variable "sc_cidr" {
 }
 
 
-variable  "sc_service_name" {
-     type    = string
-     default = "${var.sc_prefix}-${random_string.random.result}"
-}
 
-variable "app_insights_name" {
-    type    = string
-    default =  "${var.app_insights_prefix}-${random_string.random.result}"
-}               
+
