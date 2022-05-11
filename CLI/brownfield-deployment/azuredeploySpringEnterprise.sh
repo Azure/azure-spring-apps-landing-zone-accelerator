@@ -12,10 +12,6 @@ echo "Enter Azure Spring  Resource Group Name: "
 read azurespringrg
 azurespring_resource_group_name=$azurespringrg
 
-echo "Enter Azure Spring SKU (Enterprise or Standard): "
-read azurespringsku
-azurespring_sku=$azurespringsku
-
 echo "Enter Azure Spring VNet Resource Group Name: "
 read azurespringvnetrg
 azurespring_vnet_resource_group_name=$azurespringvnetrg
@@ -62,45 +58,23 @@ az monitor app-insights component create \
     --application-type web \
     --workspace ${workspaceID}
 
-wait    # Wait for the above command to complete
-
-if [ ${azurespringsku} == "Standard" ]; then
-    echo "Creating Azure Spring Standard"
-        az spring create \
-            -n ${azurespring_service} \
-            -g ${azurespringrg} \
-            -l ${location} \
-            --sku ${azurespringsku} \
-            --enable-java-agent true \
-            --app-insights ${azurespring_service} \
-            --app-subnet ${azurespring_app_subnet_name} \
-            --service-runtime-subnet ${azurespring_service_subnet_name} \
-            --reserved-cidr-range ${reservedcidrrange} \
-            --tags ${tags}
-        wait    # Wait for the above command to complete
-elif [ ${azurespringsku} == "Enterprise" ]; then
-    echo "Creating Azure Spring Enterprise"
-        az spring create \
-            -n ${azurespring_service} \
-            -g ${azurespringrg} \
-            -l ${location} \
-            --sku ${azurespringsku} \
-            --build-pool-size S1 \
-            --enable-application-configuration-service \
-            --enable-service-registry \
-            --enable-gateway \
-            --enable-api-portal \
-            --api-portal-instance-count 2 \
-            --enable-java-agent true \
-            --app-insights ${azurespring_service} \
-            --app-subnet ${azurespring_app_subnet_name} \
-            --service-runtime-subnet ${azurespring_service_subnet_name} \
-            --reserved-cidr-range ${reservedcidrrange} \
-            --tags ${tags}
-        wait    # Wait for the above command to complete
-else
-    echo "Invalid SKU. Please Enter Standard or Enterprise"
-fi
+az spring create \
+    -n ${azurespring_service} \
+    -g ${azurespringrg} \
+    -l ${location} \
+    --sku Enterprise \
+    --build-pool-size S1 \
+    --enable-application-configuration-service \
+    --enable-service-registry \
+    --enable-gateway \
+    --enable-api-portal \
+    --api-portal-instance-count 2 \
+    --enable-java-agent true \
+    --app-insights ${azurespring_service} \
+    --app-subnet ${azurespring_app_subnet_name} \
+    --service-runtime-subnet ${azurespring_service_subnet_name} \
+    --reserved-cidr-range ${reservedcidrrange} \
+    --tags ${tags}
 
 # Update diagnostic setting for Azure Spring instance
 az monitor diagnostic-settings create  \
