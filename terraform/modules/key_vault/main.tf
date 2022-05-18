@@ -62,68 +62,68 @@ resource "azurerm_key_vault" "sc_vault" {
     object_id = data.azurerm_client_config.current.object_id
 
     certificate_permissions = [
-      "backup",
-      "create",
-      "delete",
-      "deleteissuers",
-      "get",
-      "getissuers",
-      "import",
-      "list",
-      "listissuers",
-      "managecontacts",
-      "manageissuers",
-      "purge",
-      "recover",
-      "restore",
-      "setissuers",
-      "update"
+      "Backup",
+      "Create",
+      "Delete",
+      "DeleteIssuers",
+      "Get",
+      "GetIssuers",
+      "Import",
+      "List",
+      "ListIssuers",
+      "ManageContacts",
+      "ManageIssuers",
+      "Purge",
+      "Recover",
+      "Restore",
+      "SetIssuers",
+      "Update"
     ]
 
     key_permissions = [
-      "list",
-      "encrypt",
-      "decrypt",
-      "wrapKey",
-      "unwrapKey",
-      "sign",
-      "verify",
-      "get",
-      "create",
-      "update",
-      "import",
-      "backup",
-      "restore",
-      "recover",
-      "delete",
-      "purge"
+      "List",
+      "Encrypt",
+      "Decrypt",
+      "WrapKey",
+      "UnwrapKey",
+      "Sign",
+      "Verify",
+      "Get",
+      "Create",
+      "Update",
+      "Import",
+      "Backup",
+      "Restore",
+      "Recover",
+      "Delete",
+      "Purge"
     ]
 
     secret_permissions = [
-      "list",
-      "get",
-      "set",
-      "backup",
-      "restore",
-      "recover",
-      "purge",
-      "delete"
+      "List",
+      "Get",
+      "Set",
+      "Backup",
+      "Restore",
+      "Recover",
+      "Purge",
+      "Delete"
     ]
 
     storage_permissions = [
-      "backup",
-      "delete",
-      "deletesas",
-      "get",
-      "getsas",
-      "listsas",
-      "purge",
-      "recover",
-      "regeneratekey",
-      "restore",
-      "set",
-      "setsas",
-      "update"
+      "Backup",
+      "Delete",
+      "DeleteSAS",
+      "Get",
+      "GetSAS",
+      "ListSAS",
+      "Purge",
+      "Recover",
+      "RegenerateKey",
+      "Restore",
+      "Set",
+      "SetSAS",
+      "Update"
     ]
   }
 
