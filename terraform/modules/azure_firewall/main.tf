@@ -20,6 +20,9 @@ resource "azurerm_firewall" "azure_firewall_instance" {
     name                        = var.azurefw_name
     location                    = var.location
     resource_group_name         = var.resource_group_name
+
+    sku_name                    = "AZFW_VNet"
+    sku_tier                    = "Standard"
     
     dns_servers                 = [ 
         "168.63.129.16"

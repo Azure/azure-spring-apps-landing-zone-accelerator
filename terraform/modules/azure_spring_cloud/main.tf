@@ -80,7 +80,7 @@ resource "azurerm_spring_cloud_service" "sc" {
   }
 
   trace {
-    instrumentation_key = azurerm_application_insights.sc_app_insights.instrumentation_key
+    connection_string   = azurerm_application_insights.sc_app_insights.connection_string
   }
   depends_on = [azurerm_role_assignment.scowner]
 
