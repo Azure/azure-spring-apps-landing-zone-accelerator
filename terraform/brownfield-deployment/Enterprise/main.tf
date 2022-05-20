@@ -111,7 +111,7 @@ resource "azurerm_spring_cloud_configuration_service" "configservice" {
 # Gateway
 resource "azurerm_spring_cloud_gateway" "scgateway" {
   name                    = "default"
-  spring_cloud_service_id = azurerm_spring_cloud_service.test.id
+  spring_cloud_service_id = azurerm_spring_cloud_service.sc.id
 
   instance_count                = 2
  
