@@ -1,10 +1,10 @@
-# Terraform Quickstart - Azure Spring Cloud Reference Architecture
+# Terraform Quickstart - Azure Spring Apps Reference Architecture
 
 ## Overview
 
 ## Prerequisites
 
-**Note:** *You must have owner privileges on the target subscription. This script will automatically assign the Azure Spring Cloud Resource Provider Owner rights on the created VNET.*
+**Note:** *You must have owner privileges on the target subscription. This script will automatically assign the Azure Spring Apps Resource Provider Owner rights on the created VNET.*
 
 1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html)
 
@@ -12,7 +12,7 @@
     https://registry.terraform.io/providers/hashicorp/azurerm/2.42.0
     Earlier and later versions will need to be independently tested and verified.
 
-2. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+2. [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 
 ## Deployment
 
@@ -46,11 +46,11 @@
 
     The following links contain references for Azure Virtual Machine administrator and password requirements:
 
-    * Azure Virtual Machine [administrator name](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
+    * Azure Virtual Machine [administrator name](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
 
-    * Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
+    * Azure database for MySQL [administrator name](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 &nbsp;
-4. Finally, deploy the terraform Spring Cloud using the following command.
+4. Finally, deploy the terraform Spring Apps using the following command.
 
    ```bash
     terraform apply springcloud.plan
@@ -63,7 +63,7 @@ There are a few options available from a post deployment perspective the are as 
 1. Install one of the following sample applications from the locations below:
 &nbsp;
     * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
-    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+    * [Simple Hello World](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 &nbsp;
 2. For an automated installation you can leverage a PowerShell or bash script provided on Jumpbox created during the deployment process. To install the Pet Clinic App leveraging the PowerShell or Shell Script that is provided as part of the deployment login in to the Jumphost (jumphostvm) created using the Bastion connection and the admin username and password created during the initial installation.  Both the PowerShell script and the Shell script can be found in c:\petclinic.
 &nbsp;
@@ -72,7 +72,7 @@ There are a few options available from a post deployment perspective the are as 
     * Your Subscription ID
     * A Resource Group
     * An Azure Region
-    * The name of the Spring Cloud Service that was created
+    * The name of the Spring Apps Service that was created
     * The name of the MySQL Server created
     * The MySQL Administrator name
     * The MySQL Administrator password
@@ -84,7 +84,7 @@ There are a few options available from a post deployment perspective the are as 
       $SUBSCRIPTION='<Insert your Subscription ID>'
       $RESOURCE_GROUP='<Insert Resource Group Name>'
       $REGION='<Insert Azure Region>'
-      $SPRING_CLOUD_SERVICE='<Insert Spring Cloud Service Name Created>'
+      $SPRING_CLOUD_SERVICE='<Insert Spring Apps Service Name Created>'
       $MYSQL_SERVER_NAME='<Insert MySQL Server Name>'
       $MYSQL_SERVER_ADMIN_NAME='<Insert MySQL Admin Name>' 
       $MYSQL_SERVER_ADMIN_PASSWORD='<Insert MySQL Admin Password>'
@@ -96,7 +96,7 @@ There are a few options available from a post deployment perspective the are as 
       subscription='<Insert your Subscription ID>'
       resource_group='<Insert Resource Group Name>'
       region='<Insert Azure Region>'
-      spring_cloud_service='<Insert Spring Cloud Service Name Created>'
+      spring_cloud_service='<Insert Spring Apps Service Name Created>'
       mysql_server_name='<Insert MySQL Server Name>'
       mysql_server_admin_name='<Insert MySQL Admin Name>' 
       mysql_server_admin_password='<Insert MySQL Admin Password>'
@@ -107,7 +107,7 @@ There are a few options available from a post deployment perspective the are as 
 Here you will have 2 options:
 
 * **Option 1**: Use a public Azure Application gateway for direct ingress.
-* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
+* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Apps application (DNAT Rule and ingress on Azure Firewall).
 
 **Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
@@ -137,7 +137,7 @@ Here you will have 2 options:
 &nbsp;
     * az_fw_name - The name of the Azure Firewall Resource
     * az_fw_pip - The Public IP of the Azure Firewall used for DNAT
-    * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
+    * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Apps Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
     * certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
     * https_password - The password for the PFX file which will be used for the App Gateway Listener
 &nbsp;
@@ -171,7 +171,7 @@ Here you will have 2 options:
 
     When prompted enter the values for the following variables:
 &nbsp;
-    * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Cloud Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
+    * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Apps Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
     * certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
     * https_password - The password for the PFX file which will be used for the App Gateway Listener
 &nbsp;
@@ -195,9 +195,9 @@ The easiest way to do this is to call `terraform destroy`. Do this in both direc
 
 ## Change Log
 
-* **03-05-21** - Added bring your own route table as documented in the [Azure Spring Cloud documentation](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table)
+* **03-05-21** - Added bring your own route table as documented in the [Azure Spring Apps documentation](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table)
 * **03-16-21** - Added third option to install PetClinic Application using PowerShell or Shell Script provided on the jumpbox
 
 ## Additional Notes
 
-You can use a custom domain suffix for your Azure Spring Cloud application instead of the default .private.azuremicrososervices.io domain suffix. See the [custom-domain](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/) section of this repo.
+You can use a custom domain suffix for your Azure Spring Apps application instead of the default .private.azuremicrososervices.io domain suffix. See the [custom-domain](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/) section of this repo.

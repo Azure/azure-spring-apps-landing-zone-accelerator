@@ -1,1 +1,1 @@
-The contents of this page has moved to docs.microsoft.com [Quickstart: Provision Azure Spring Cloud using an ARM template](https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet)
+The contents of this page has moved to docs.microsoft.com [Quickstart: Provision Azure Spring Apps using an ARM template](https://docs.microsoft.com/azure/spring-cloud/quickstart-deploy-infrastructure-vnet)
