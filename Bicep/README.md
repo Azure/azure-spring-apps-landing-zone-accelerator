@@ -1,12 +1,12 @@
-# Bicep template Quickstart - Azure Spring Cloud Reference Architecture
+# Bicep template Quickstart - Azure Spring Apps Reference Architecture
 
 ## Overview
 
 ## Prerequisites
 
-1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+1. [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 
-2. Run the following command to register the Azure Spring Cloud Resource Provider.
+2. Run the following command to register the Azure Spring Apps Resource Provider.
 
     `az provider register --namespace 'Microsoft.AppPlatform'`
 
@@ -24,7 +24,7 @@
 
     `az ad user show --id someuser@sometenant.com --query objectId --output tsv`
 
-6. Get the object id of the Spring Cloud Resource Provider from your Azure AD tenant. This will be used for the springCloudPrincipalObjectId parameter of the template.
+6. Get the object id of the Spring Apps Resource Provider from your Azure AD tenant. This will be used for the springCloudPrincipalObjectId parameter of the template.
 
     `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query objectId --output tsv`
 
@@ -41,9 +41,9 @@
 
 Execute the template including the parameters of the tenant id from step 4, the object id from step 5, the object id from step 6. This will take about 30 minutes to deploy.
 
-* Azure Virtual Machine [administrator name ](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
+* Azure Virtual Machine [administrator name ](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
 
-* Azure database for MySQL [administrator name](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/en-us/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
+* Azure database for MySQL [administrator name](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
 
 ```bash
     # Clone the repo
@@ -64,9 +64,9 @@ There are a few options available from a post deployment perspective the are as 
 
 1. Install one of the following sample applications from the locations below:
     * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
-    * [Simple Hello World](https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
+    * [Simple Hello World](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 
-    For the Pet Clinic application, you can skip the steps for creating the Azure Spring Cloud instance and MySQL instance but do follow the steps for configuring MySQL (Create database etc). When ready to test the application, connect to the Jump VM deployed to the VNet using Azure Bastion.
+    For the Pet Clinic application, you can skip the steps for creating the Azure Spring Apps instance and MySQL instance but do follow the steps for configuring MySQL (Create database etc). When ready to test the application, connect to the Jump VM deployed to the VNet using Azure Bastion.
 &nbsp;
     If you set az cli defaults deploying the Pet Clinic application, clear the defaults using the following:
 
@@ -83,7 +83,7 @@ There are a few options available from a post deployment perspective the are as 
     * Your Subscription ID
     * A Resource Group
     * An Azure Region
-    * The name of the Spring Cloud Service that was created
+    * The name of the Spring Apps Service that was created
     * The name of the MySQL Server created
     * The MySQL Administrator name
     * The MySQL Administrator password
@@ -95,7 +95,7 @@ There are a few options available from a post deployment perspective the are as 
         $SUBSCRIPTION='<Insert your Subscription ID>'
         $RESOURCE_GROUP='<Insert Resource Group Name>'
         $REGION='<Insert Azure Region>'
-        $SPRING_CLOUD_SERVICE='<Insert Spring Cloud Service Name Created>'
+        $SPRING_CLOUD_SERVICE='<Insert Spring Apps Service Name Created>'
         $MYSQL_SERVER_NAME='<Insert MySQL Server Name>'
         $MYSQL_SERVER_ADMIN_NAME='<Insert MySQL Admin Name>' 
         $MYSQL_SERVER_ADMIN_PASSWORD='<Insert MySQL Admin Password>'
@@ -107,7 +107,7 @@ There are a few options available from a post deployment perspective the are as 
         subscription='<Insert your Subscription ID>'
         resource_group='<Insert Resource Group Name>'
         region='<Insert Azure Region>'
-        spring_cloud_service='<Insert Spring Cloud Service Name Created>'
+        spring_cloud_service='<Insert Spring Apps Service Name Created>'
         mysql_server_name='<Insert MySQL Server Name>'
         mysql_server_admin_name='<Insert MySQL Admin Name>' 
         mysql_server_admin_password='<Insert MySQL Admin Password>'
@@ -116,7 +116,7 @@ There are a few options available from a post deployment perspective the are as 
 ## Deploy Azure Application Gateway with WAF (optional)
 
 * **Option 1**: Use a public Azure Application gateway for direct ingress.
-* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Cloud application (DNAT Rule and ingress on Azure Firewall).
+* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Apps application (DNAT Rule and ingress on Azure Firewall).
 
 **Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
@@ -126,7 +126,7 @@ There are a few options available from a post deployment perspective the are as 
 
 ### Option 1 - Public Application Gateway
 
-1. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
+1. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Apps application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
 
     ```bash
         az deployment group create --resource-group ${RESOURCE_GROUP} \
@@ -143,7 +143,7 @@ There are a few options available from a post deployment perspective the are as 
 
 ### Option 2 - Private Application Gateway behind Azure Firewall (DNAT)
 
-1. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Cloud application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
+1. Execute the template and when prompted, enter the certificate password for https_password and the FQDN of the internal Azure Spring Apps application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io. Note: For this quickstart, use the same resource group that was created previously.
 
     ```bash
         az deployment group create --resource-group ${RESOURCE_GROUP}  \
@@ -184,8 +184,8 @@ az group delete --name ${RESOURCE_GROUP} --yes --no-wait
 
 ## Additional Notes
 
-You can use a custom domain suffix for your Azure Spring Cloud application instead of the default .private.azuremicrososervices.io domain suffix. See the [custom-domain](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/) section of this repo.
+You can use a custom domain suffix for your Azure Spring Apps application instead of the default .private.azuremicrososervices.io domain suffix. See the [custom-domain](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/) section of this repo.
 
-This quickstart deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/en-us/azure/application-gateway/multiple-site-overview
+This quickstart deploys an Azure Application gateway with a basic listener. To host multiple sites on the same Application gateway, you can use multi-site listeners. For more information see https://docs.microsoft.com/azure/application-gateway/multiple-site-overview
 
-Azure Application Gateway can also retrieve TLS certificates from Azure Key Vault. Fore more information see https://docs.microsoft.com/en-us/azure/application-gateway/key-vault-certs
+Azure Application Gateway can also retrieve TLS certificates from Azure Key Vault. Fore more information see https://docs.microsoft.com/azure/application-gateway/key-vault-certs
