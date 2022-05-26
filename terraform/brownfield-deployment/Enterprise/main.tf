@@ -28,14 +28,6 @@ resource "azurerm_application_insights" "sc_app_insights" {
   depends_on = [azurerm_resource_group.sc_corp_rg]
 }
 
-### Disable the smart detection rules that get created automatically
-resource "azurerm_application_insights_smart_detection_rule" "example" {
-  name                    = "Slow server response time"
-  application_insights_id = azurerm_application_insights.sc_app_insights.id
-  enabled                 = false
-}
-
-
 ### Create Spring Cloud Service
 resource "azurerm_spring_cloud_service" "sc" {
   name                = var.sc_service_name 
@@ -99,11 +91,11 @@ resource "azurerm_spring_cloud_build_pack_binding" "appinsights-binding" {
   binding_type            = "ApplicationInsights"
   launch {
     properties = {
-      sampling_percentage           = "10"
+      sampling_percentage = "10"
     }
 
     secrets = {
-      connection-string = azurerm_application_insights.sc_app_insights.connection_string
+      connection-string   = azurerm_application_insights.sc_app_insights.connection_string
     }
   }
 }
@@ -121,6 +113,6 @@ resource "azurerm_spring_cloud_gateway" "scgateway" {
   name                    = "default"
   spring_cloud_service_id = azurerm_spring_cloud_service.sc.id
 
-  instance_count                = 2
+  instance_count          = 2
  
 }
