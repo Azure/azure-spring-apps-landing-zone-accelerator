@@ -1,12 +1,11 @@
-# Add Custom domain to an Azure Spring Cloud application with SSL/TLS
-
+# Add Custom domain to an Azure Spring Apps application with SSL/TLS
 
 ## Overview
-When you deploy an application to an Azure Spring cloud environment, it will publish the application using the domain suffix azuremicroservices.io or private.azuremicroservice.io when injected into a VNet. A custom domain allows you to utilize your own custom domain for your Azure Spring Cloud application endpoint.
+When you deploy an application to an Azure Spring cloud environment, it will publish the application using the domain suffix azuremicroservices.io or private.azuremicroservice.io when injected into a VNet. A custom domain allows you to utilize your own custom domain for your Azure Spring Apps application endpoint.
 
 ## Prerequisites
 
-1. [Install Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
+1. [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli).
 
 2. One of the following Quickstarts deployed: [ARM](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/ARM) or [Terraform](https://github.com/Azure/azure-spring-cloud-reference-architecture/tree/main/terraform).
 
@@ -29,7 +28,7 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
     for IP in "${MGMT_IPS[@]}"; do az keyvault network-rule add --resource-group ${RESOURCE_GROUP} --name ${VAULT_NAME} --ip-address "$IP"; done
 ```
 
-3. Set your default Azure Spring Cloud resource group name and cluster name.
+3. Set your default Azure Spring Apps resource group name and cluster name.
 
 ```bash
     az configure --defaults \
@@ -57,7 +56,7 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
     -e false
 ```
 
-7. Add a new A record for the application within the new DNS Zone. Replace yourIPAddress with your Azure Spring Cloud endpoint private IP. You can get the IP address of your spring cloud VNet injection endpoint from the Azure Portal.
+7. Add a new A record for the application within the new DNS Zone. Replace yourIPAddress with your Azure Spring Apps endpoint private IP. You can get the IP address of your spring cloud VNet injection endpoint from the Azure Portal.
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/images/vnetinjection.jpeg)
 
@@ -80,6 +79,6 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
 
 ## Additional Notes
 
-Azure Spring Cloud custom domain setup - https://docs.microsoft.com/en-us/azure/spring-cloud/spring-cloud-tutorial-custom-domain
+Azure Spring Apps custom domain setup - https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-custom-domain
 
-Azure Private DNS Zones - https://docs.microsoft.com/en-us/azure/dns/private-dns-overview
+Azure Private DNS Zones - https://docs.microsoft.com/azure/dns/private-dns-overview

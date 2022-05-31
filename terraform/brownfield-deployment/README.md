@@ -1,1 +1,1 @@
-The contents of this page has moved to docs.microsoft.com [Quickstart: Provision Azure Spring Cloud using Terraform](https://docs.microsoft.com/en-us/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-terraform)
+The contents of this page has moved to docs.microsoft.com [Quickstart: Provision Azure Spring Apps using Terraform](https://docs.microsoft.com/azure/spring-cloud/quickstart-deploy-infrastructure-vnet-terraform)
