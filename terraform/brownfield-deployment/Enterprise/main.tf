@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "= 3.6.0"
+      version = "= 3.8.0"
     }
   }
 }
@@ -115,4 +115,13 @@ resource "azurerm_spring_cloud_gateway" "scgateway" {
 
   instance_count          = 2
  
+}
+
+resource "azurerm_spring_cloud_api_portal" "apiportal" {
+  name                          = "default"
+  spring_cloud_service_id       = azurerm_spring_cloud_service.sc.id
+  gateway_ids                   = [azurerm_spring_cloud_gateway.scgateway.id]
+  https_only_enabled            = false
+  public_network_access_enabled = true
+  instance_count                = 1
 }

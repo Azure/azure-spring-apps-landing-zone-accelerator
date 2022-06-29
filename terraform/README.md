@@ -27,6 +27,7 @@
 2. Run the following command to initialize the terraform modules:
 
     ```bash
+    cd greenfield-deployment
     terraform init
     ```
 
@@ -38,10 +39,12 @@
 
     **Note:** Terraform will prompt you for the following variables:
 &nbsp;
-      * Jumphost administrator username
-      * Jumphost administrator password
-      * MySQL Db administrator username
-      * MySQL Db administrator password
+      * For the Jumphost and Database servers 
+          Administrator username
+          Administrator password
+      * Azure Spring Apps SKU
+          Enterprise or Standard
+   
 &nbsp;
 
     The following links contain references for Azure Virtual Machine administrator and password requirements:
