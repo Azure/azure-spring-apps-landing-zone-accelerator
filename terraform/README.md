@@ -9,7 +9,7 @@
 1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html)
 
     **Note:** This script was tested using the following terraform version:
-    https://registry.terraform.io/providers/hashicorp/azurerm/2.42.0
+    https://registry.terraform.io/providers/hashicorp/azurerm/3.8.0
     Earlier and later versions will need to be independently tested and verified.
 
 2. [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
@@ -39,20 +39,12 @@
 
     **Note:** Terraform will prompt you for the following variables:
 &nbsp;
-      * For the Jumphost and Database servers 
-          Administrator username
-          Administrator password
-      * Azure Spring Apps SKU
-          Enterprise or Standard
-   
+      * Administrator username       [Used by Jumphost and Database services]
+      * Administrator password       [Used by Jumphost and Database services]
+      * Azure Spring Apps SKU        [Standard or Enterprise]
+        
 &nbsp;
-
-    The following links contain references for Azure Virtual Machine administrator and password requirements:
-
-    * Azure Virtual Machine [administrator name](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
-
-    * Azure database for MySQL [administrator name](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
-&nbsp;
+    
 4. Finally, deploy the terraform Spring Apps using the following command.
 
    ```bash
@@ -62,6 +54,8 @@
 ## Post Deployment
 
 There are a few options available from a post deployment perspective the are as follows:
+
+    **Note:** For Standard Deployments only
 
 1. Install one of the following sample applications from the locations below:
 &nbsp;
