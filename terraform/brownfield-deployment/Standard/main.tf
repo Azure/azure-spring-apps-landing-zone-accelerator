@@ -45,7 +45,7 @@ resource "azurerm_spring_cloud_service" "sc" {
       create = "60m"
       delete = "2h"
   }
-  
+
   depends_on = [azurerm_resource_group.sc_corp_rg]
   tags = var.tags
   

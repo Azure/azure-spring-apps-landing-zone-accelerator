@@ -105,16 +105,13 @@ resource "azurerm_spring_cloud_build_pack_binding" "appinsights-binding" {
 resource "azurerm_spring_cloud_configuration_service" "configservice" {
   name                    = "default"
   spring_cloud_service_id = azurerm_spring_cloud_service.sc.id
-
 }
 
 # Gateway
 resource "azurerm_spring_cloud_gateway" "scgateway" {
   name                    = "default"
   spring_cloud_service_id = azurerm_spring_cloud_service.sc.id
-
-  instance_count          = 2
- 
+  instance_count          = 2 
 }
 
 resource "azurerm_spring_cloud_api_portal" "apiportal" {
