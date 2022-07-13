@@ -50,7 +50,7 @@ resource "azurerm_spring_cloud_service" "sc" {
 
   # Tanzu service registry - Set to true if Enterprise Tier
   service_registry_enabled = ( var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? true : false )
-
+  build_agent_pool_size    = "S1"
 
   network {
     
