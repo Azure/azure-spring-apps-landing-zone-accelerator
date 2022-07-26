@@ -54,7 +54,7 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
 }
 
 resource springCloudMonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2020-07-01' = {
-  name: '${springCloudInstance.name}/default'
+  name: '${springCloudInstance.name}/default' // The only supported value is 'default'
   properties: {
     traceEnabled: true
     appInsightsInstrumentationKey: appInsights.properties.InstrumentationKey
