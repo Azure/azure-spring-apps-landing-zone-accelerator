@@ -53,17 +53,20 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
   }
 
   resource serviceRegistries 'serviceRegistries' = {
-    name: 'default' //The only supported value is 'default'
+    // The only supported value is 'default'
+    name: 'default'
 
   }
 
   resource configurationServices 'configurationServices' = {
-    name: 'default' //The only supported value is 'default'
+    // The only supported value is 'default'
+    name: 'default'
     
   }
 
   resource gateways 'gateways' = {
-    name: 'default' //The only supported value is 'default'
+    // The only supported value is 'default'
+    name: 'default'
     sku: {
       capacity: 2
       name: 'E0'
@@ -73,7 +76,8 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
   }
 
   resource apiPortals 'apiPortals' = {
-    name: 'default' //The only supported value is 'default'
+    // The only supported value is 'default'
+    name: 'default'
     sku: {
       capacity: 1
       name: 'E0'
