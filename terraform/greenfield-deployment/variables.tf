@@ -16,7 +16,9 @@ variable "hub_resource_group_name" {
 
 variable "location" {
     type = string
-    default = "East US"
+    #default = "East US"
+    description = "Deployment region (ex. East US), for supported regions see https://docs.microsoft.com/en-us/azure/spring-apps/faq?pivots=programming-language-java#in-which-regions-is-azure-spring-apps-basicstandard-tier-available"
+
 } 
 
 variable "skuTier" {
@@ -248,11 +250,13 @@ variable "jump_host_vm_size" {
 }
 variable "jump_host_admin_username" {
     type        = string 
-    description = "Azure Admin Username"
+    description = "Admin Username, used by Jump Host and Database Services"
 }
 variable "jump_host_password" {
     sensitive   = true
-    type        = string 
+    type        = string
+    description = "Admin Password, used by Jump Host and Database Services"
+
 }
 
 

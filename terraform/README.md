@@ -24,14 +24,25 @@
     az account set --subscription "Your Subscription Name"
     ```
 
-2. Run the following command to initialize the terraform modules:
+2. If you're deploying Azure Spring Apps Enterprise tier for the first time in the target subscription, use the following commands to register the provider and accept the legal terms and privacy statements for the Enterprise tier.
+
+    ```
+    az provider register --namespace Microsoft.SaaS
+    
+    az term accept \
+    --publisher vmware-inc \
+    --product azure-spring-cloud-vmware-tanzu-2 \
+    --plan tanzu-asc-ent-mtr
+    ``` 
+
+3. Run the following command to initialize the terraform modules:
 
     ```bash
     cd greenfield-deployment
     terraform init
     ```
 
-3. Run the following command to plan the terraform deployment:
+4. Run the following command to plan the terraform deployment:
 
     ```bash
     terraform plan -out=springcloud.plan
@@ -42,10 +53,11 @@
       * Administrator username       [Used by Jumphost and Database services]
       * Administrator password       [Used by Jumphost and Database services]
       * Azure Spring Apps SKU        [Standard or Enterprise]
+      * Location                     Deployment region (ex. East US) [for supported regions see](https://docs.microsoft.com/en-us/azure/spring-apps/faq?pivots=programming-language-java#in-which-regions-is-azure-spring-apps-basicstandard-tier-available)
         
 &nbsp;
     
-4. Finally, deploy the terraform Spring Apps using the following command.
+5. Finally, deploy the terraform Spring Apps using the following command.
 
    ```bash
     terraform apply springcloud.plan
