@@ -82,7 +82,7 @@ resource "azurerm_spring_cloud_service" "sc" {
     connection_string   = azurerm_application_insights.sc_app_insights.connection_string
 
   }
-  
+ 
   depends_on = [
     azurerm_subnet_route_table_association.sc_runtime_association,
     azurerm_subnet_route_table_association.sc_app_association

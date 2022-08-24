@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "= 3.8.0"
+      version = "= 3.19.0"
     }
   }
 }
@@ -27,7 +27,7 @@ resource "azurerm_resource_group" "hub_sc_corp_rg" {
 }
 
 resource "random_string" "random" {
-  length = 13
+  length = 5
   upper = false
   special = false
 
