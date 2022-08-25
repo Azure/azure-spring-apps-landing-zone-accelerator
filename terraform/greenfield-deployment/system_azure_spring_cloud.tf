@@ -85,7 +85,10 @@ resource "azurerm_spring_cloud_service" "sc" {
  
   depends_on = [
     azurerm_subnet_route_table_association.sc_runtime_association,
-    azurerm_subnet_route_table_association.sc_app_association
+    azurerm_subnet_route_table_association.sc_app_association,
+    
+    # Last FW Rule needed for Spring apps deployment
+    azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
   ]
 
 }
