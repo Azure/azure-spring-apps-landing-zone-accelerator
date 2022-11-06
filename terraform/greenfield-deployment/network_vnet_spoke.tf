@@ -54,6 +54,12 @@ resource "azurerm_route_table" "default_apps_route" {
     next_hop_in_ip_address      =  azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address
   }
 
+  lifecycle {
+    ignore_changes = [
+      route,tags
+    ]
+  }
+
 }
 
 resource "azurerm_route_table" "default_runtime_route" {
@@ -66,6 +72,12 @@ resource "azurerm_route_table" "default_runtime_route" {
     address_prefix              = "0.0.0.0/0" 
     next_hop_type               = "VirtualAppliance"
     next_hop_in_ip_address      =  azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address
+  }
+
+  lifecycle {
+    ignore_changes = [
+      route,tags
+    ]
   }
 
 }

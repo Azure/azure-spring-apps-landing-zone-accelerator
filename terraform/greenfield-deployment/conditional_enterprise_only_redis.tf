@@ -54,6 +54,10 @@ resource "azurerm_redis_cache" "rediscache" {
 
 
 resource "azurerm_private_endpoint" "redis-endpoint" {
+
+  # Only execute if Enterprise tier
+  count = (var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? 1 : 0)
+
   name                = "sc-redis-endpoint"
   location            = var.location
   resource_group_name = azurerm_resource_group.spoke_sc_corp_rg.name

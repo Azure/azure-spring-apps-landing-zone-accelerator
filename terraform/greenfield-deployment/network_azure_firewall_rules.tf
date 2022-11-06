@@ -812,7 +812,24 @@ resource "azurerm_firewall_application_rule_collection" "AllowAcmeFitnessInstall
             ]
 
             target_fqdns = [
-                "services.gradle.org","downloads.gradle-dn.com","plugins.gradle.org",
+                "services.gradle.org","downloads.gradle-dn.com","plugins.gradle.org","plugins-artifacts.gradle.org","repo.gradle.org",
+            ]
+
+            protocol {
+                port = "443"
+                type = "Https"
+            }
+               
+        }
+
+        rule {
+            name = "maven"
+            source_addresses = [
+                "${var.springboot-service-subnet-addr}", "${var.springboot-apps-subnet-addr}",
+            ]
+
+            target_fqdns = [
+                "repo.maven.apache.org",
             ]
 
             protocol {

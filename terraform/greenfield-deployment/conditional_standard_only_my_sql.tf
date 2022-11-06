@@ -12,6 +12,7 @@ resource "azurerm_subnet" "mysql-azuresbclouddata" {
   resource_group_name   = azurerm_resource_group.spoke_sc_corp_rg.name
   virtual_network_name  = azurerm_virtual_network.spoke.name
   address_prefixes      = [var.springboot-data-subnet-addr]
+  service_endpoints     = ["Microsoft.Storage"]
   
    delegation {
     name = "fs"
@@ -88,7 +89,9 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   delegated_subnet_id    = azurerm_subnet.mysql-azuresbclouddata[0].id
   private_dns_zone_id    = azurerm_private_dns_zone.mysql_zone[0].id
 
-  depends_on = [azurerm_private_dns_zone_virtual_network_link.ms-hub-link[0]]
+  depends_on = [azurerm_private_dns_zone_virtual_network_link.ms-hub-link[0],
+                azurerm_private_dns_zone_virtual_network_link.ms-spoke-link[0]
+                ]
 }
 
 

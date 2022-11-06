@@ -7,7 +7,7 @@ resource "azurerm_spring_cloud_build_pack_binding" "appinsights-binding" {
   
   # Note: Max name 16 characters (name + builder name + builder service name max 30 chars)
   name                    = "appins-binding"
-  spring_cloud_builder_id = "${azurerm_spring_cloud_service.sc.id}/buildServices/default/builders/default"
+  spring_cloud_builder_id = "${azurerm_spring_cloud_service.sc_enterprise[0].id}/buildServices/default/builders/default"
   binding_type            = "ApplicationInsights"
   launch {
     properties = {
@@ -28,7 +28,7 @@ resource "azurerm_spring_cloud_configuration_service" "configservice" {
   count = (var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? 1 : 0)
 
   name                    = "default"
-  spring_cloud_service_id = azurerm_spring_cloud_service.sc.id
+  spring_cloud_service_id = azurerm_spring_cloud_service.sc_enterprise[0].id
 
 }
 
@@ -39,7 +39,7 @@ resource "azurerm_spring_cloud_gateway" "scgateway" {
   count = (var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? 1 : 0)
 
   name                    = "default"
-  spring_cloud_service_id = azurerm_spring_cloud_service.sc.id
+  spring_cloud_service_id = azurerm_spring_cloud_service.sc_enterprise[0].id
 
   instance_count          = 2
  
@@ -51,7 +51,7 @@ resource "azurerm_spring_cloud_api_portal" "apiportal" {
   count = (var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? 1 : 0)
 
   name                          = "default"
-  spring_cloud_service_id       = azurerm_spring_cloud_service.sc.id
+  spring_cloud_service_id       = azurerm_spring_cloud_service.sc_enterprise[0].id
   gateway_ids                   = [azurerm_spring_cloud_gateway.scgateway[0].id]
   https_only_enabled            = false
   public_network_access_enabled = true
