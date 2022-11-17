@@ -9,12 +9,14 @@
 1. [Install Hashicorp Terraform](https://www.terraform.io/downloads.html)
 
     **Note:** This script was tested using the following terraform version:
-    https://registry.terraform.io/providers/hashicorp/azurerm/2.42.0
+    https://registry.terraform.io/providers/hashicorp/azurerm/3.21.1
     Earlier and later versions will need to be independently tested and verified.
 
 2. [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 
-## Deployment
+## Greenfield Deployment
+ **Note:** A brownfield deployment option is also available, see [here](brownfield-deployment)
+ 
 
 1. Login to Azure and select the target subscription.
 
@@ -24,47 +26,59 @@
     az account set --subscription "Your Subscription Name"
     ```
 
-2. Run the following command to initialize the terraform modules:
+2. If you're deploying Azure Spring Apps Enterprise tier for the first time in the target subscription, use the following commands to register the provider and accept the legal terms and privacy statements for the Enterprise tier.
+
+    ```
+    az provider register --namespace Microsoft.SaaS
+    
+    az term accept \
+    --publisher vmware-inc \
+    --product azure-spring-cloud-vmware-tanzu-2 \
+    --plan tanzu-asc-ent-mtr
+    ``` 
+
+3. Run the following command to initialize the terraform modules:
 
     ```bash
+    cd greenfield-deployment
     terraform init
     ```
 
-3. Run the following command to plan the terraform deployment:
+4. Run the following command to plan the terraform deployment:
 
     ```bash
-    terraform plan -out=springcloud.plan
+    terraform plan -out=springapps.plan
     ```
 
     **Note:** Terraform will prompt you for the following variables:
 &nbsp;
-      * Jumphost administrator username
-      * Jumphost administrator password
-      * MySQL Db administrator username
-      * MySQL Db administrator password
+      * Administrator username       [Used by Jumphost and Database services]
+      * Administrator password       [Used by Jumphost and Database services]
+      * Azure Spring Apps SKU        [Standard or Enterprise]
+      * Location                     Deployment region (ex. East US) [for supported regions see](https://docs.microsoft.com/en-us/azure/spring-apps/faq?pivots=programming-language-java#in-which-regions-is-azure-spring-apps-basicstandard-tier-available)
+        
 &nbsp;
-
-    The following links contain references for Azure Virtual Machine administrator and password requirements:
-
-    * Azure Virtual Machine [administrator name](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm) and [password](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm) requirements.
-
-    * Azure database for MySQL [administrator name](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) and [password](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server) requirements.
-&nbsp;
-4. Finally, deploy the terraform Spring Apps using the following command.
+    
+5. Finally, deploy the terraform Spring Apps using the following command.
 
    ```bash
-    terraform apply springcloud.plan
+    terraform apply springapps.plan
    ```
 
 ## Post Deployment
 
-There are a few options available from a post deployment perspective the are as follows:
+There are a few options available from a post deployment perspective:
+
+* For Enteprise deployments, use this [sample app](https://learn.microsoft.com/en-us/azure/spring-apps/quickstart-sample-app-acme-fitness-store-introduction)
+
+* For Standard Deployments only, follow the instructions below
 
 1. Install one of the following sample applications from the locations below:
 &nbsp;
     * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
     * [Simple Hello World](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
 &nbsp;
+  
 2. For an automated installation you can leverage a PowerShell or bash script provided on Jumpbox created during the deployment process. To install the Pet Clinic App leveraging the PowerShell or Shell Script that is provided as part of the deployment login in to the Jumphost (jumphostvm) created using the Bastion connection and the admin username and password created during the initial installation.  Both the PowerShell script and the Shell script can be found in c:\petclinic.
 &nbsp;
     If you choose to leverage the PowerShell script you must navigate to the c:\petclinic and edit the deployPetClinicApp.ps1 script before running. Provide the following information for the corresponding variables:
@@ -145,7 +159,7 @@ Here you will have 2 options:
 
 6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
 
-![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+![lab image](/ARM/images/Petclinic-External.jpeg)
 
 ### Option 2 - Private Application Gateway behind Azure Firewall (DNAT)
 
@@ -177,11 +191,11 @@ Here you will have 2 options:
 &nbsp;
 5. Locate the Public IP of your Azure Firewall.
 
-    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/terraform/images/azfwpip.jpeg)
+    ![lab image](images/azfwpip.jpeg)
 
 6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAzFWNatRule>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address being used for the DNAT rule. Proceed to the page anyway.
 
-    ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/ARM/images/Petclinic-External.jpeg)
+    ![lab image](/ARM/images/Petclinic-External.jpeg)
 
 ## Cleaning up
 
@@ -194,7 +208,7 @@ The easiest way to do this is to call `terraform destroy`. Do this in both direc
   ```
 
 ## Change Log
-
+* **11-06-22** - Added Enterprise SKU with Tanzu components, Azure Database for PostgreSQL and Azure Cache for Redis
 * **03-05-21** - Added bring your own route table as documented in the [Azure Spring Apps documentation](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table)
 * **03-16-21** - Added third option to install PetClinic Application using PowerShell or Shell Script provided on the jumpbox
 

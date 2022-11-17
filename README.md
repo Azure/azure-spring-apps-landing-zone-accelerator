@@ -37,7 +37,7 @@ to analyze Azure Firewall log data written to Log Analytics.
 utilizing the [DNS Proxy feature](https://docs.microsoft.com/azure/firewall/dns-settings#dns-proxy) 
 of Azure Firewall.
 * Azure Private DNS zones for Azure Spring Apps and support services deployed with Private Endpoints
-* A single Windows Server 2016 Virtual Machine the hub Virtual Network for testing access to 
+* A single Windows Server 2022 Virtual Machine the hub Virtual Network for testing access to 
 applications deployed into the Azure Spring Apps instance.  This virtual machine is configured 
 with the Microsoft Monitoring Agent and is integrated with the Log Analytics Workspace. This VM is 
 not exposed to the internet and is only accessible via Azure Bastion (for brevity, both the VM and Azure
@@ -46,9 +46,13 @@ Bastion are not shown in the diagram).
 logs and metrics.
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage 
 for applications deployed to Azure Spring Apps
-* Instance of Azure Database for MySQL deployed with a Private Endpoint.  This can be used to deploy 
-the sample app described in this document.
-* Instance of Azure Bastion for connection to the Windows Server 2016 virtual machine running in the hub virtual network.
+* Instance of Azure Bastion for connection to the Windows Server 2022 virtual machine running in the hub virtual network.
+
+For Azure Spring Apps Standard SKU:
+* Instance of Azure Database for MySQL flexible server deployed with VNET Integration.  This can be used to deploy the PetClinic sample app described in this document.
+
+For Azure Spring Apps Enterprise SKU:
+* Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  This can be used to deploy the ACME Fitness sample app described in this document.
 
 ## Deployment Process
 
@@ -79,7 +83,8 @@ Get started today – deploy Spring applications to Azure Spring Apps using this
 * Learn using an [MS Learn module](https://docs.microsoft.com/learn/modules/azure-spring-cloud-workshop/)
  or [self-paced workshop](https://github.com/microsoft/azure-spring-cloud-training) on GitHub
 * Learn [more](https://docs.microsoft.com/azure/spring-cloud/) about implementing solutions on Azure Spring Apps
-* [Deploy](https://github.com/Azure-Samples/spring-petclinic-microservices) a distributed version of Spring Petclinic built with Spring Apps
+* [Deploy](https://github.com/Azure-Samples/spring-petclinic-microservices) a distributed version of Spring Petclinic built with Spring Apps Standard
+* [Deploy](https://learn.microsoft.com/en-us/azure/spring-apps/quickstart-sample-app-acme-fitness-store-introduction)  a distributed version of ACME Fitness sample app for Spring Apps Enterprise
 * Migrate your [Spring Boot](https://docs.microsoft.com/azure/developer/java/migration/migrate-spring-boot-to-azure-spring-cloud), 
 [Spring Apps](https://docs.microsoft.com/azure/developer/java/migration/migrate-spring-cloud-to-azure-spring-cloud) and 
 [Tomcat applications](https://aka.ms/migrate-tomcat-to-azure-spring-cloud-service) to Azure Spring Apps
