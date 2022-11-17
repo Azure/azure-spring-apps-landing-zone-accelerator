@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "= 3.6.0"
+      version = "= 3.21.1"
     }
   }
 }
@@ -25,6 +25,7 @@ resource "azurerm_application_insights" "sc_app_insights" {
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
+  workspace_id        = "/subscriptions/${var.subscription}/resourceGroups/${var.azurespringcloudvnetrg}/providers/Microsoft.OperationalInsights/workspaces/${var.sc_law_id}"
   depends_on = [azurerm_resource_group.sc_corp_rg]
 }
 

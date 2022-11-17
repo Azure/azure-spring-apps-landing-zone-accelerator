@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "= 3.8.0"
+      version = "= 3.21.1"
     }
   }
 }
@@ -25,6 +25,8 @@ resource "azurerm_application_insights" "sc_app_insights" {
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
+  workspace_id        = "/subscriptions/${var.subscription}/resourceGroups/${var.azurespringcloudvnetrg}/providers/Microsoft.OperationalInsights/workspaces/${var.sc_law_id}"
+ 
   depends_on = [azurerm_resource_group.sc_corp_rg]
 }
 
@@ -35,8 +37,9 @@ resource "azurerm_spring_cloud_service" "sc" {
   location            = var.location
   sku_name            = "E0" 
 
-  # Tanzu service registry
+  # Tanzu service registry - Set to true if Enterprise Tier
   service_registry_enabled = true
+  build_agent_pool_size    = "S1"
 
   
   network {
@@ -86,7 +89,7 @@ resource "azurerm_monitor_diagnostic_setting" "sc_diag" {
 
 
 resource "azurerm_spring_cloud_build_pack_binding" "appinsights-binding" {
-  name                    = "appinsights-binding"
+  name                    = "appins-binding"
   spring_cloud_builder_id = "${azurerm_spring_cloud_service.sc.id}/buildServices/default/builders/default"
   binding_type            = "ApplicationInsights"
   launch {
