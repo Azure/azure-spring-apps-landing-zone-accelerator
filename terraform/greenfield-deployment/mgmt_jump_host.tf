@@ -85,7 +85,7 @@ resource "azurerm_virtual_machine_extension" "Installdependancies" {
   settings = <<SETTINGS
     {
         "fileUris": [
-          "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1",
+          "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/greenfield-deployment/scripts/DeployDeveloperConfig.ps1",
            "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.ps1",
            "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.sh"
 
