@@ -16,7 +16,6 @@
 
 ## Greenfield Deployment
  **Note:** A brownfield deployment option is also available, see [here](brownfield-deployment)
- 
 
 1. Login to Azure and select the target subscription.
 
@@ -51,14 +50,11 @@
     ```
 
     **Note:** Terraform will prompt you for the following variables:
-&nbsp;
       * Administrator username       [Used by Jumphost and Database services]
       * Administrator password       [Used by Jumphost and Database services]
       * Azure Spring Apps SKU        [Standard or Enterprise]
       * Location                     Deployment region (ex. East US) [for supported regions see](https://docs.microsoft.com/en-us/azure/spring-apps/faq?pivots=programming-language-java#in-which-regions-is-azure-spring-apps-basicstandard-tier-available)
         
-&nbsp;
-    
 5. Finally, deploy the terraform Spring Apps using the following command.
 
    ```bash
@@ -74,15 +70,12 @@ There are a few options available from a post deployment perspective:
 * For Standard Deployments only, follow the instructions below
 
 1. Install one of the following sample applications from the locations below:
-&nbsp;
     * [Pet Clinic App with MySQL Integration](https://github.com/azure-samples/spring-petclinic-microservices) (Microservices with MySQL backend)
     * [Simple Hello World](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-quickstart?tabs=Azure-CLI&pivots=programming-language-java)
-&nbsp;
-  
+
 2. For an automated installation you can leverage a PowerShell or bash script provided on Jumpbox created during the deployment process. To install the Pet Clinic App leveraging the PowerShell or Shell Script that is provided as part of the deployment login in to the Jumphost (jumphostvm) created using the Bastion connection and the admin username and password created during the initial installation.  Both the PowerShell script and the Shell script can be found in c:\petclinic.
-&nbsp;
-    If you choose to leverage the PowerShell script you must navigate to the c:\petclinic and edit the deployPetClinicApp.ps1 script before running. Provide the following information for the corresponding variables:
-&nbsp;
+
+If you choose to leverage the PowerShell script you must navigate to the c:\petclinic and edit the deployPetClinicApp.ps1 script before running. Provide the following information for the corresponding variables:
     * Your Subscription ID
     * A Resource Group
     * An Azure Region
@@ -90,7 +83,6 @@ There are a few options available from a post deployment perspective:
     * The name of the MySQL Server created
     * The MySQL Administrator name
     * The MySQL Administrator password
-&nbsp;
 
     The variables to be edited in the deployPetClinicApp.ps1 script are as follows:
 
@@ -121,7 +113,7 @@ There are a few options available from a post deployment perspective:
 Here you will have 2 options:
 
 * **Option 1**: Use a public Azure Application gateway for direct ingress.
-* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure   Spring Apps application (DNAT Rule and ingress on Azure Firewall).
+* **Option 2**: Use a private Azure Application gateway in between Azure Firewall and the Azure Spring Apps application (DNAT Rule and ingress on Azure Firewall).
 
 **Note**: You will need a TLS/SSL Certificate with the Private Key (PFX Format) for the Application Gateway Listener. The PFX certificate on the listener needs the entire certificate chain and the password must be 4 to 12 characters. For the purpose of this quickstart, you can use a self signed certificate or one issued from an internal Certificate Authority.
 
@@ -148,13 +140,12 @@ Here you will have 2 options:
     ```
 
     When prompted enter the values for the following variables:
-&nbsp;
     * az_fw_name - The name of the Azure Firewall Resource
     * az_fw_pip - The Public IP of the Azure Firewall used for DNAT
     * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Apps Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
     * certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
     * https_password - The password for the PFX file which will be used for the App Gateway Listener
-&nbsp;
+
 5. Once deployed, look for the Application Gateway Resource in the Resource Group and note the Frontend Public IP address.
 
 6. From a browser that isn't in the quickstart virtual network, browse to https://`<publicIPofAppGW>`. You will get a warning in the browser that the connection is not secure. This is expected as we are connecting via the IP address. Proceed to the page anyway.
@@ -184,11 +175,10 @@ Here you will have 2 options:
     ```
 
     When prompted enter the values for the following variables:
-&nbsp;
     * backendPoolFQDN - FQDN of the backend URL of the Azure Spring Apps Application e.g. petclinic-in-vnet-api-gateway.private.azuremicroservices.io
     * certfilename - The filename of the PFX certificate file which will be added to the Application Gateway Listener
     * https_password - The password for the PFX file which will be used for the App Gateway Listener
-&nbsp;
+
 5. Locate the Public IP of your Azure Firewall.
 
     ![lab image](images/azfwpip.jpeg)
