@@ -53,16 +53,19 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
   }
 
   resource serviceRegistries 'serviceRegistries' = {
+    // The only supported value is 'default'
     name: 'default'
 
   }
 
   resource configurationServices 'configurationServices' = {
+    // The only supported value is 'default'
     name: 'default'
     
   }
 
   resource gateways 'gateways' = {
+    // The only supported value is 'default'
     name: 'default'
     sku: {
       capacity: 2
@@ -73,6 +76,7 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
   }
 
   resource apiPortals 'apiPortals' = {
+    // The only supported value is 'default'
     name: 'default'
     sku: {
       capacity: 1
@@ -90,7 +94,7 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
 
 resource agentPools 'Microsoft.AppPlatform/Spring/buildservices/agentPools@2022-03-01-preview' = {
   
-  name: '${springCloudInstance.name}/default/default'
+  name: '${springCloudInstance.name}/default/default' //The only supported value is 'default'
   properties: {
     poolSize: {
       name: 'S1'
@@ -100,7 +104,7 @@ resource agentPools 'Microsoft.AppPlatform/Spring/buildservices/agentPools@2022-
 }
 
 resource springCloudMonitoringSettings 'Microsoft.AppPlatform/Spring/buildservices/builders/buildpackBindings@2022-03-01-preview' = {
-  name: '${springCloudInstance.name}/default/default/default'
+  name: '${springCloudInstance.name}/default/default/default' //The only supported value is 'default'
   properties: {
     bindingType: 'ApplicationInsights'
     launchProperties: {

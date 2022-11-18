@@ -16,7 +16,7 @@
 
 ## Greenfield Deployment
  **Note:** A brownfield deployment option is also available, see [here](brownfield-deployment)
- 
+
 1. Login to Azure and select the target subscription.
 
     ```bash
@@ -50,7 +50,6 @@
     ```
 
     **Note:** Terraform will prompt you for the following variables:
-
       * Administrator username       [Used by Jumphost and Database services]
       * Administrator password       [Used by Jumphost and Database services]
       * Azure Spring Apps SKU        [Standard or Enterprise]
