@@ -79,7 +79,7 @@
 
 There are a few options available from a post deployment perspective the are as follows:
 
-* * For Enteprise deployments, use this [sample app](https://learn.microsoft.com/en-us/azure/spring-apps/quickstart-sample-app-acme-fitness-store-introduction)
+* For Enteprise deployments, use this [sample app](https://learn.microsoft.com/en-us/azure/spring-apps/quickstart-sample-app-acme-fitness-store-introduction)
 
 * For Standard Deployments only, follow the instructions below
 
