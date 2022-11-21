@@ -38,7 +38,7 @@
 
 3. Execute the Bash script for Spring App Standard or Enterprise deployment.  
 
-    - For Spring App Standard deployment execute `azuredeploySpringStandard` You will be prompted at the start of the script to enter:
+    - For Spring App Standard deployment execute `azuredeploySpringStandard`. You will be prompted at the start of the script to enter:
 
         - [Azure Virtual Machine](https://azure.microsoft.com/services/virtual-machines/) administrator name and password
             - [Password syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
@@ -57,7 +57,7 @@
             - **Example:** environment=Dev BusinessUnit=finance
 
 
-    - For Spring App Enterprise deployment execute `azuredeploySpringEnterprise` You will be prompted at the start of the script to enter:
+    - For Spring App Enterprise deployment execute `azuredeploySpringEnterprise`. You will be prompted at the start of the script to enter:
 
         - [Azure Virtual Machine](https://azure.microsoft.com/services/virtual-machines/) administrator name and password
             - [Password syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
