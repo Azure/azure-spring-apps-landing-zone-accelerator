@@ -197,7 +197,7 @@ az group delete --name sc-corp-rg --yes --no-wait
 ```
 
 ## Change Log
-- **11-06-22** - Added Enterprise SKU with Tanzu components, Azure Database for PostgreSQL and Azure Cache for Redis
+- **11-21-22** - Added Enterprise SKU with Tanzu components, Azure Database for PostgreSQL and Azure Cache for Redis
 - **03-05-21:** Update script to support bring your own route table [Azure Spring Apps documentation](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table), add additional firewall rules and update MySQL Server TLS/SSL enforcement
 - **03-08-21:** Fix typoes in README
 - **03-09-21:** Add support for tagging and update README instructions
