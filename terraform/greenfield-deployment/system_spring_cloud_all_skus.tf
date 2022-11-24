@@ -46,6 +46,8 @@ resource "azurerm_application_insights" "sc_app_insights" {
   resource_group_name = azurerm_resource_group.spoke_sc_corp_rg.name
   workspace_id        = azurerm_log_analytics_workspace.sc_app_insights_law.id
   application_type    = "web"
+
+  depends_on = [azurerm_log_analytics_workspace.sc_law]
 }
 
 

@@ -89,6 +89,13 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   delegated_subnet_id    = azurerm_subnet.mysql-azuresbclouddata[0].id
   private_dns_zone_id    = azurerm_private_dns_zone.mysql_zone[0].id
 
+  lifecycle {
+    ignore_changes = [
+      zone
+    ]
+  }
+
+
   depends_on = [azurerm_private_dns_zone_virtual_network_link.ms-hub-link[0],
                 azurerm_private_dns_zone_virtual_network_link.ms-spoke-link[0]
                 ]
