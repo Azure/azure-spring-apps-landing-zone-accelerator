@@ -31,8 +31,8 @@ resource "azurerm_private_dns_zone" "mysql_zone" {
   
   # Only execute if Standard Tier
   count = (var.skuTier == "Standard" || var.skuTier == "standard" ? 1 : 0)
-
-  name                = "privatelink.mysql.database.azure.com"
+  #name                = "privatelink.mysql.database.azure.com"
+  name                = "mysql.database.azure.com"
   resource_group_name = azurerm_resource_group.hub_sc_corp_rg.name
 }
 
