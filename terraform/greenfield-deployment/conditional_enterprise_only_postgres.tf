@@ -97,7 +97,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
       azurerm_private_dns_zone_virtual_network_link.postgres-hub-link[0],
       azurerm_private_dns_zone_virtual_network_link.postgres-spoke-link[0],
       #Last Firewall rule is in!
-      azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
+      azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
       ]
 
 }

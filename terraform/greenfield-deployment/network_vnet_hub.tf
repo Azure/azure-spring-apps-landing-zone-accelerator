@@ -53,6 +53,6 @@ resource "azurerm_subnet_route_table_association" "hub_association" {
 
   depends_on = [
     #Last Firewall rule is in!
-    azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
+    azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
   ]
 }

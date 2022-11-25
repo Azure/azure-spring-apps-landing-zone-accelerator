@@ -88,7 +88,7 @@ resource "azurerm_subnet_route_table_association" "sc_app_association" {
 
   depends_on = [
     #Last Firewall rule is in!
-    azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
+    azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
   ]
 }
 
@@ -98,7 +98,7 @@ resource "azurerm_subnet_route_table_association" "sc_runtime_association" {
 
   depends_on = [
     #Last Firewall rule is in!
-    azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
+    azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
   ]
 }
 
