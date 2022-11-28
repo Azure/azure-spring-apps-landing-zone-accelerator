@@ -31,7 +31,7 @@ resource "azurerm_private_dns_zone" "postgres_zone" {
   # Only execute if Enterprise tier
   count = (var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? 1 : 0)
 
-  name                = "privatelink.postgres.database.azure.com"
+  name                = "${var.postgres_name_prefix}-${random_string.random.result}.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.hub_sc_corp_rg.name
 }
 
