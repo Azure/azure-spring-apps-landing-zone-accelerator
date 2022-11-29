@@ -31,7 +31,7 @@ resource "azurerm_private_dns_zone" "postgres_zone" {
   # Only execute if Enterprise tier
   count = (var.skuTier == "Enterprise" || var.skuTier == "enterprise" ? 1 : 0)
 
-  name                = "privatelink.postgres.database.azure.com"
+  name                = "private.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.hub_sc_corp_rg.name
 }
 
@@ -97,7 +97,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
       azurerm_private_dns_zone_virtual_network_link.postgres-hub-link[0],
       azurerm_private_dns_zone_virtual_network_link.postgres-spoke-link[0],
       #Last Firewall rule is in!
-      azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
+      azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
       ]
 
 }

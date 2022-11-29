@@ -38,7 +38,7 @@ resource "azurerm_spring_cloud_service" "sc_enterprise" {
     azurerm_subnet_route_table_association.sc_app_association,
     
     # Last FW Rule needed for Spring apps deployment
-    azurerm_firewall_application_rule_collection.AllowSpringCloudWebAccess-AllowDigiCerty
+    azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
   ]
 
 }

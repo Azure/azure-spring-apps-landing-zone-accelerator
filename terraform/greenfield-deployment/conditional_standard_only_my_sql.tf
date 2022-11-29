@@ -31,8 +31,8 @@ resource "azurerm_private_dns_zone" "mysql_zone" {
   
   # Only execute if Standard Tier
   count = (var.skuTier == "Standard" || var.skuTier == "standard" ? 1 : 0)
-
-  name                = "privatelink.mysql.database.azure.com"
+  
+  name                = "private.mysql.database.azure.com"
   resource_group_name = azurerm_resource_group.hub_sc_corp_rg.name
 }
 
@@ -88,6 +88,13 @@ resource "azurerm_mysql_flexible_server" "mysql" {
 
   delegated_subnet_id    = azurerm_subnet.mysql-azuresbclouddata[0].id
   private_dns_zone_id    = azurerm_private_dns_zone.mysql_zone[0].id
+
+  lifecycle {
+    ignore_changes = [
+      zone
+    ]
+  }
+
 
   depends_on = [azurerm_private_dns_zone_virtual_network_link.ms-hub-link[0],
                 azurerm_private_dns_zone_virtual_network_link.ms-spoke-link[0]

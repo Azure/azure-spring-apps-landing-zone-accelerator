@@ -53,7 +53,7 @@ resource "azurerm_key_vault" "sc_vault" {
     bypass         = "AzureServices"
     default_action = "Deny"
     ip_rules = [
-      "${chomp(data.http.myip.body)}/32"
+      "${chomp(data.http.myip.response_body)}/32"
   ]
  
   }
