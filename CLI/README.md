@@ -12,7 +12,7 @@
 
     `az extension add --name spring-cloud`
 
-3. The script has been tested using `Azure CLI version 2.17.1`
+3. The script has been tested using `Azure CLI version 2.42.0`
 
 # Azure CLI Quickstart - Azure Spring Apps Reference Architecture
 
@@ -28,7 +28,7 @@
 
     `az extension add --name spring-cloud`
 
-3. The script has been tested using `Azure CLI version 2.17.1`
+3. The script has been tested using `Azure CLI version 2.42.0`
 
 ## Deployment
 
@@ -36,26 +36,52 @@
 
 2. Run `az account set --subscription {your subscription name}` to set your default subscription
 
-3. Execute the `deploy-azurespringcloud-internal.sh` Bash script.  You will be prompted at the start of the script to enter:
+3. Execute the Bash script for Spring App Standard or Enterprise deployment.  
 
-    - [Azure Virtual Machine](https://azure.microsoft.com/services/virtual-machines/) administrator name and password
-        - [Password syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
-        - [Administrator syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm)
+    - For Spring App Standard deployment execute `azuredeploySpringStandard`. You will be prompted at the start of the script to enter:
 
-    - [Azure database for MySQL](https://azure.microsoft.com/services/mysql/) administrator and password
-        - [Password syntax](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
-        - [Administrator syntax](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+        - [Azure Virtual Machine](https://azure.microsoft.com/services/virtual-machines/) administrator name and password
+            - [Password syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
+            - [Administrator syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm)
 
-    - A valid Azure Region where resources are deployed
-        - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Apps
-        - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
-    - key=value pairs to be applied as [Tags](https://docs.microsoft.com/azure/azure-resource-manager/management/tag-resources) on all resources which support tags
-        - Space separated list to support applying multiple tags
-        - **Example:** environment=Dev BusinessUnit=finance
+        - [Azure database for MySQL](https://azure.microsoft.com/services/mysql/) administrator and password
+            - [Password syntax](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+            - [Administrator syntax](https://docs.microsoft.com/azure/mysql/quickstart-create-mysql-server-database-using-azure-cli#create-an-azure-database-for-mysql-server)
+
+        - A valid Azure Region where resources are deployed
+            - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Apps
+            - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
+
+        - key=value pairs to be applied as [Tags](https://docs.microsoft.com/azure/azure-resource-manager/management/tag-resources) on all resources which support tags
+            - Space separated list to support applying multiple tags
+            - **Example:** environment=Dev BusinessUnit=finance
+
+
+    - For Spring App Enterprise deployment execute `azuredeploySpringEnterprise`. You will be prompted at the start of the script to enter:
+
+        - [Azure Virtual Machine](https://azure.microsoft.com/services/virtual-machines/) administrator name and password
+            - [Password syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm)
+            - [Administrator syntax](https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm)
+
+        - [Azure database for PostgreSQL](https://azure.microsoft.com/en-us/products/postgresq/) administrator and password
+            - [Password syntax](https://learn.microsoft.com/en-us/azure/postgresql/single-server/quickstart-create-server-up-azure-cli)
+            - [Administrator syntax](https://learn.microsoft.com/en-us/azure/postgresql/single-server/quickstart-create-server-up-azure-cli)
+
+        - A valid Azure Region where resources are deployed
+            - Run `open https://azure.microsoft.com/global-infrastructure/services/?products=spring-cloud&regions=all` command to find list of available regions for Azure Spring Apps
+            - **Note:** region format must be lower case with no spaces.  For example: East US is represented as eastus
+
+        - key=value pairs to be applied as [Tags](https://docs.microsoft.com/azure/azure-resource-manager/management/tag-resources) on all resources which support tags
+            - Space separated list to support applying multiple tags
+            - **Example:** environment=Dev BusinessUnit=finance
 
 ## Post Deployment
 
 There are a few options available from a post deployment perspective the are as follows:
+
+* For Enteprise deployments, use this [sample app](https://learn.microsoft.com/en-us/azure/spring-apps/quickstart-sample-app-acme-fitness-store-introduction)
+
+* For Standard Deployments only, follow the instructions below
 
 1. Install one of the following sample applications from the locations below:
 &nbsp;
@@ -171,7 +197,7 @@ az group delete --name sc-corp-rg --yes --no-wait
 ```
 
 ## Change Log
-
+- **11-21-22** - Added Enterprise SKU with Tanzu components, Azure Database for PostgreSQL and Azure Cache for Redis
 - **03-05-21:** Update script to support bring your own route table [Azure Spring Apps documentation](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network#bring-your-own-route-table), add additional firewall rules and update MySQL Server TLS/SSL enforcement
 - **03-08-21:** Fix typoes in README
 - **03-09-21:** Add support for tagging and update README instructions
