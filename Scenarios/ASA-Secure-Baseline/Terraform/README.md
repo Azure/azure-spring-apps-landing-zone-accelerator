@@ -28,8 +28,8 @@ Use this to deploy each component individually.  It is important to include the 
 ```
     az login
     cd <xx-FolderName>
-	terraform init --upgrade
-	terraform plan -out my.plan --var-file ../parameters.tfvars
+    terraform init --upgrade
+    terraform plan -out my.plan --var-file ../parameters.tfvars
     terraform apply my.plan
 ```
 
