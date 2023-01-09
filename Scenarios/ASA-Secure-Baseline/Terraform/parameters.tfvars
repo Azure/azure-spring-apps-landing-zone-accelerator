@@ -2,12 +2,30 @@
 ##################################################
 # REQUIRED
 ##################################################
-location              = "westus3"
-name_prefix           = "springlza"
-Hub_Vnet_Name         = "springlza-vnet-HUB"
-Hub_Vnet_RG           = "springlza-HUB"
 
 
+# The Region to deploy to
+    location              = "westus3"
+
+# This Prefix will be used on most deployed resources.
+# The environment will also be used as part of the name
+    name_prefix           = "springlza"
+    environment           = "dev"
+
+# Update the names below to match your prefix and location
+#               -- or --
+# If you have precreated a Hub RG and VNET, specify it below
+
+    Hub_Vnet_Name         = "vnet-springlza-westus3-HUB"
+    Hub_Vnet_RG           = "rg-springlza-HUB"
+
+# Deployment state information
+    state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
+    container_name="springappsterraform"
+
+# This can also be sourced from variable ARM_ACCESS_KEY
+# https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
+    access_key="xxxx-enter-the-access-key-here-xxxx"
 
 
 
