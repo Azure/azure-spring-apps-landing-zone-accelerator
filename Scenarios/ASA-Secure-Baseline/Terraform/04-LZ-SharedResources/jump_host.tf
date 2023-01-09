@@ -56,7 +56,7 @@ resource "azurerm_virtual_machine" "jump_host" {
   }
 }
  
-resource "azurerm_virtual_machine_extension" "Installdependancies" {
+resource "azurerm_virtual_machine_extension" "Installdependencies" {
     name                    = "${local.jumphost_name}-vmext"
     virtual_machine_id = azurerm_virtual_machine.jump_host.id
     publisher            = "Microsoft.Compute"

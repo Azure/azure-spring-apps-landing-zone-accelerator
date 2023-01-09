@@ -30,7 +30,7 @@ resource "random_string" "random" {
 
 locals  {
   spring_apps_name         = "spring-${var.name_prefix}-${var.environment}-${random_string.random.result}"
-  springapps_rg            = "${var.name_prefix}-apps"
+  springapps_rg            = "rg-${var.name_prefix}-APPS"
 
 
   hub_vnet_name            = var.Hub_Vnet_Name

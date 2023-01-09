@@ -1,0 +1,1 @@
+1/9/2023 - key_vault.tf - Removed Adding your own IP to IPrules because many customers block sites like ipv4.icanhazip.com
