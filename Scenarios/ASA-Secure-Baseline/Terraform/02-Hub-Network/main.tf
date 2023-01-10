@@ -9,9 +9,8 @@ resource "random_string" "random" {
 
 locals  {
 
-  hub_vnet_name            = "vnet-${var.name_prefix}-${var.location}-HUB"
-  hub_rg                   = "rg-${var.name_prefix}-HUB"
-
+  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
+  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
   bastion_name             = "bastion-${var.name_prefix}-${random_string.random.result}"
  
 }

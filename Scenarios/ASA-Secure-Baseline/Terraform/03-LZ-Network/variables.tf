@@ -118,13 +118,15 @@ variable "keyvault_dnszone_name" {
 
 ## Needed for the Peering
 variable "Hub_Vnet_Name" {
-    type        = string 
-    description = "The Name of the Hub Vnet - This is needed for the creating the Peering"
-}
+    type = string    
+    description = "The name of the Hub Vnet"
+    default =""
+} 
 
 variable "Hub_Vnet_RG" {
-    type        = string 
-    description = "The Resource Group of the Hub Vnet - This is needed for the creating the Peering"
+    type = string    
+    description = "The name of the Hub RG"
+    default =""
 }
 
 

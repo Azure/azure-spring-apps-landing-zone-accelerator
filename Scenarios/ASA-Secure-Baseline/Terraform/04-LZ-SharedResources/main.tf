@@ -19,8 +19,8 @@ resource "random_string" "random" {
 
 
 locals  {
-  hub_vnet_name            = var.Hub_Vnet_Name
-  hub_rg                   = var.Hub_Vnet_RG
+  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
+  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
   
   shared_rg                = "rg-${var.name_prefix}-SHARED"
 

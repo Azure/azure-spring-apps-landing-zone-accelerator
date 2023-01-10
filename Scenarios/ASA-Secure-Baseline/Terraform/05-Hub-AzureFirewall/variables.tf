@@ -27,17 +27,19 @@ variable "tags" {
 }
 
 
-# Info about Precreated Hub and Spoke VNETS
-
+# Info about Precreated Hub 
 variable "Hub_Vnet_Name" {
     type = string    
     description = "The name of the Hub Vnet"
+    default =""
 } 
 
 variable "Hub_Vnet_RG" {
     type = string    
     description = "The name of the Hub RG"
+    default =""
 }
+
 
 
 # Subnets Info

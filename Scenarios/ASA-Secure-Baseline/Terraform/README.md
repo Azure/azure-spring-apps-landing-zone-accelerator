@@ -51,6 +51,7 @@ Modify parameters.tfvars as needed
 
 Sample:
 ```bash
+
 # The Region to deploy to
     location              = "westus3"
 
@@ -59,11 +60,12 @@ Sample:
     name_prefix           = "springlza"
     environment           = "dev"
 
-# If using a different name for the Hub Vnet, specify it here
-# Otherwise, keep this as is.   The prefix on the names below
-# should match the name_prefix
-    Hub_Vnet_Name         = "springlza-vnet-HUB"
-    Hub_Vnet_RG           = "springlza-HUB"
+# Only populate Hub VNET name and RG if you have
+# Precreated a Hub and Resource group that you want to use
+# Otherwise leave blank
+
+    Hub_Vnet_Name         = ""
+    Hub_Vnet_RG           = ""
 
 # Deployment state information
     state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
@@ -71,7 +73,6 @@ Sample:
 
 # This can also be sourced from variable ARM_ACCESS_KEY
 # https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
-
     access_key="xxxx-enter-the-access-key-here-xxxx"
 ```
 
@@ -123,6 +124,14 @@ This will run a PowerShell script that will destroy the terraform deployment
     ./_destroy.ps1
 ```
 
+## Known Issues / Notes
+  - When destroying Azure Spring Apps Enterprise, there is an issue with the API Portal destruction where destruction will fail with error "Please unassign public endpoint before deleting API Portal."
+  - A bug has been filed with the AZURERM terraform provider Github
+https://github.com/hashicorp/terraform-provider-azurerm/issues/19949
+
+- To get around this and complete the destruction, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal
+Portal > Azure Spring Apps instance > API Portal > Assign endpoint -> Set to No
+Then run attempt the destruction
 
 # Project
 

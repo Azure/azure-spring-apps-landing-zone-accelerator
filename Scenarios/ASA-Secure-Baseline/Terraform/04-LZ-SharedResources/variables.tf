@@ -32,12 +32,15 @@ variable "tags" {
 variable "Hub_Vnet_Name" {
     type = string    
     description = "The name of the Hub Vnet"
+    default =""
 } 
 
 variable "Hub_Vnet_RG" {
     type = string    
     description = "The name of the Hub RG"
+    default =""
 }
+
 
 
 # Subnets Info

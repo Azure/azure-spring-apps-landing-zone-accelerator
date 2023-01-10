@@ -12,12 +12,12 @@
     name_prefix           = "springlza"
     environment           = "dev"
 
-# Update the names below to match your prefix and location
-#               -- or --
-# If you have precreated a Hub RG and VNET, specify it below
+# Only populate Hub VNET name and RG if you have
+# Precreated a Hub and Resource group that you want to use
+# Otherwise leave blank
 
-    Hub_Vnet_Name         = "vnet-springlza-westus3-HUB"
-    Hub_Vnet_RG           = "rg-springlza-HUB"
+    Hub_Vnet_Name         = ""
+    Hub_Vnet_RG           = ""
 
 # Deployment state information
     state_sa_name="xxxx-enter-the-storage-account-name-xxxx"

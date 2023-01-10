@@ -1,12 +1,16 @@
 
 # Destroy in reverse order
-$Modules= "06-LZ-SpringApps-Enterprise", `
-          "06-LZ-SpringApps-Standard", `
-		  "05-Hub-AzureFirewall", `
-		  "04-LZ-SharedResources", `
-          "03-LZ-Network", `
-          "02-Hub-Network"
-		  
+$Modules=@()
+$Modules+= "06-LZ-SpringApps-Enterprise"
+$Modules+= "06-LZ-SpringApps-Standard"
+$Modules+= "05-Hub-AzureFirewall"
+$Modules+= "04-LZ-SharedResources" 
+$Modules+= "03-LZ-Network"
+$Modules+= "02-Hub-Network"
+
+
+
+
 $Modules | ForEach-Object {
 	write-warning  $_
 	cd ..\$_
@@ -19,6 +23,10 @@ $Modules | ForEach-Object {
 		terraform apply my.plan
 
 		if ($lastexitcode -ne 0) { exit }
+
+		remove-item my.plan
+		remove-item .terraform.lock.hcl
+        remove-item .terraform -Recurse -Confirm:$false
 	}
 }
 
