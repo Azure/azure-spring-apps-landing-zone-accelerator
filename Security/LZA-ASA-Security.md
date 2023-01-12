@@ -1,6 +1,6 @@
 <!-- Landing Zone Accelerator - Azure Spring App -Security.MD v2 -->
 
-### Seurity considerations for Azure Spring Apps Landing Zone Accelerator
+### Security considerations for Azure Spring Apps Landing Zone Accelerator
 
 This ReadMe File provides design considerations and recommendations for Security when you use Azure Spring Apps landing zone accelerator.  It walks through aspects of Azure Spring Apps (ASA) security governance to think about before implementing any solution.
 
