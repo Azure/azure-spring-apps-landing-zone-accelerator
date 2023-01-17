@@ -27,14 +27,14 @@ Pending
 
 
 ### Design Considerations
-#### 1. Azure Security Baseline for Azure Spring Cloud Service
-This security baseline applies guidance from the [Azure Security Benchmark version 2.0](https://learn.microsoft.com/en-us/security/benchmark/azure/overview-v2) to Azure Spring Cloud Service.  The Azure Security Benchmark provides recommendations on how you can secure your cloud solutions on Azure. The content is grouped by the security controls defined by the Azure Security Benchmark and the related guidance applicable to Azure Spring Cloud Service.
+#### 1. Azure Security Baseline for Azure Spring Apps Service
+This security baseline applies guidance from the [Azure Security Benchmark version 2.0](https://learn.microsoft.com/en-us/security/benchmark/azure/overview-v2) to Azure Spring App Service.  The Azure Security Benchmark provides recommendations on how you can secure your cloud solutions on Azure. The content is grouped by the security controls defined by the Azure Security Benchmark and the related guidance applicable to Azure Spring App Service.
 
 You can monitor this security baseline and its recommendations using Microsoft Defender for Cloud. Azure Policy definitions will be listed in the Regulatory Compliance section of the Microsoft Defender for Cloud dashboard.
 
 When a section has relevant Azure Policy Definitions, they are listed in this baseline to help you measure compliance to the Azure Security Benchmark controls and recommendations. Some recommendations may require a paid Microsoft Defender plan to enable certain security scenarios.
 
-Controls not applicable to Azure Spring Cloud Service, and those for which the global guidance is recommended verbatim, have been excluded. To see how Azure Spring Cloud Service completely maps to the Azure Security Benchmark, see the full [Azure Spring Cloud Service security baseline mapping file](https://github.com/MicrosoftDocs/SecurityBenchmarks/blob/master/Azure Offer Security Baselines/2.0/azure-spring-cloud-service-security-baseline-v2.0.xlsx).
+Controls not applicable to Azure Spring App Service, and those for which the global guidance is recommended verbatim, have been excluded. To see how Azure Spring App Service completely maps to the Azure Security Benchmark, see the full [Azure Spring App Service security baseline mapping file](https://github.com/MicrosoftDocs/SecurityBenchmarks/blob/master/Azure Offer Security Baselines/2.0/azure-spring-cloud-service-security-baseline-v2.0.xlsx).
 
 #### 2. Data Protection Security Controls
 | Security Control | Yes/No | Notes | Documentation |
@@ -49,7 +49,7 @@ Controls not applicable to Azure Spring Cloud Service, and those for which the g
 #### 3. Network Access Security Controls
 | Security Control | Yes/No | Notes | Documentation |
 |-------------|---------------|---------------|---------------|
-|Service Tag| Yes |Use Azure Spring Cloud service tag to define outbound network access controls on [network security groups](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview#security-rules) or [Azure Firewall](https://learn.microsoft.com/en-us/azure/firewall/service-tags), to allow traffic to applications in Azure Spring Apps.|[Service tags](https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview)|
+|Service Tag| Yes |Use Azure Spring App service tag to define outbound network access controls on [network security groups](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview#security-rules) or [Azure Firewall](https://learn.microsoft.com/en-us/azure/firewall/service-tags), to allow traffic to applications in Azure Spring Apps.|[Service tags](https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview)|
 
 
 #### 4. Micrsoft Defender for Cloud Monitoring
@@ -59,11 +59,11 @@ The [Azure Security Benchmark](https://learn.microsoft.com/en-us/azure/governanc
 #### 5. Azure Policy Built-in Definitions - Microsoft.AppPlatform
 | Name| Description | Effect(s) | Version |
 |-------------|---------------|---------------|---------------|
-|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|Azure Spring Cloud instances should use virtual network injection for the following purposes: 1. Isolate Azure Spring Cloud from Internet. 2. Enable Azure Spring Cloud to interact with systems in either on premises data centers or Azure service in other virtual networks. 3. Empower customers to control inbound and outbound network communications for Azure Spring Cloud.|Audit, Disabled, Deny| 1.0.0|
+|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|Azure Spring App instances should use virtual network injection for the following purposes: 1. Isolate Azure Spring App from Internet. 2. Enable Azure Spring App to interact with systems in either on premises data centers or Azure service in other virtual networks. 3. Empower customers to control inbound and outbound network communications for Azure Spring App.|Audit, Disabled, Deny| 1.0.0|
 
 ### Design Recommendations
 #### 1. Azure Policy Regulatory Compliance Controls for Azure Spring Apps
-Azure Spring Apps is the new name for the Azure Spring Cloud service. Although the service has a new name, you'll see the old name in some places for a while as we work to update assets such as screenshots, videos, and diagrams.
+Azure Spring Apps is the new name for the Azure Spring App service. Although the service has a new name, you'll see the old name in some places for a while as we work to update assets such as screenshots, videos, and diagrams.
 
 [Regulatory Compliance in Azure Policy](https://learn.microsoft.com/en-us/azure/governance/policy/concepts/regulatory-compliance) provides Microsoft created and managed initiative definitions, known as built-ins, for the compliance domains and security controls related to different compliance standards. This page lists the compliance domains and security controls for Azure Spring Apps. You can assign the built-ins for a security control individually to help make your Azure resources compliant with the specific standard.
 
