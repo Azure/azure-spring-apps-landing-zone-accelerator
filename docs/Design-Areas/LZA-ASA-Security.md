@@ -34,7 +34,7 @@ You can monitor this security baseline and its recommendations using Microsoft D
 
 When a section has relevant Azure Policy Definitions, they are listed in this baseline to help you measure compliance to the Azure Security Benchmark controls and recommendations. Some recommendations may require a paid Microsoft Defender plan to enable certain security scenarios.
 
-Controls not applicable to Azure Spring App Service, and those for which the global guidance is recommended verbatim, have been excluded. To see how Azure Spring App Service completely maps to the Azure Security Benchmark, see the full [Azure Spring App Service security baseline mapping file](https://github.com/MicrosoftDocs/SecurityBenchmarks/blob/master/Azure Offer Security Baselines/2.0/azure-spring-cloud-service-security-baseline-v2.0.xlsx).
+Controls not applicable to Azure Spring App Service, and those for which the global guidance is recommended verbatim, have been excluded. To see how Azure Spring App Service completely maps to the Azure Security Benchmark, see the full [Azure Spring App Service security baseline mapping file](https://github.com/MicrosoftDocs/SecurityBenchmarks/blob/master/AzureOfferSecurityBaselines/2.0/azure-spring-cloud-service-security-baseline-v2.0.xlsx).
 
 #### 2. Data Protection Security Controls
 | Security Control | Yes/No | Notes | Documentation |
