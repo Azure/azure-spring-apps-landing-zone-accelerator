@@ -34,7 +34,7 @@ You can monitor this security baseline and its recommendations using Microsoft D
 
 When a section has relevant Azure Policy Definitions, they are listed in this baseline to help you measure compliance to the Azure Security Benchmark controls and recommendations. Some recommendations may require a paid Microsoft Defender plan to enable certain security scenarios.
 
-Controls not applicable to Azure Spring App Service, and those for which the global guidance is recommended verbatim, have been excluded. To see how Azure Spring App Service completely maps to the Azure Security Benchmark, see the full [Azure Spring App Service security baseline mapping file](https://github.com/MicrosoftDocs/SecurityBenchmarks/blob/master/Azure Offer Security Baselines/2.0/azure-spring-cloud-service-security-baseline-v2.0.xlsx).
+Controls not applicable to Azure Spring App Service, and those for which the global guidance is recommended verbatim, have been excluded. To see how Azure Spring App Service completely maps to the Azure Security Benchmark, see the full [Azure Spring App Service security baseline mapping file](https://github.com/MicrosoftDocs/SecurityBenchmarks/blob/master/Azure%20Offer%20Security%20Baselines/2.0/azure-spring-cloud-service-security-baseline-v2.0.xlsx).
 
 #### 2. Data Protection Security Controls
 | Security Control | Yes/No | Notes | Documentation |
@@ -69,7 +69,7 @@ Azure Spring Apps is the new name for the Azure Spring App service. Although the
 
 The title of each built-in policy definition links to the policy definition in the Azure portal. Use the link in the Policy Version column to view the source on the [Azure Policy GitHub repo](https://github.com/Azure/azure-policy).
 
-Each control is associated with one or more [Azure Policy](https://learn.microsoft.com/en-us/azure/governance/policy/overview)definitions. These policies might help you [assess compliance](https://learn.microsoft.com/en-us/azure/governance/policy/how-to/get-compliance-data) with the control. However, there often isn't a one-to-one or complete match between a control and one or more policies. As such, Compliant in Azure Policy refers only to the policies themselves. This doesn't ensure that you're fully compliant with all requirements of a control. In addition, the compliance standard includes controls that aren't addressed by any Azure Policy definitions at this time. Therefore, compliance in Azure Policy is only a partial view of your overall compliance status. The associations between controls and Azure Policy Regulatory Compliance definitions for these compliance standards can change over time.
+Each control is associated with one or more [Azure Policy definitions](https://learn.microsoft.com/en-us/azure/governance/policy/overview). These policies might help you [assess compliance](https://learn.microsoft.com/en-us/azure/governance/policy/how-to/get-compliance-data) with the control. However, there often isn't a one-to-one or complete match between a control and one or more policies. As such, Compliant in Azure Policy refers only to the policies themselves. This doesn't ensure that you're fully compliant with all requirements of a control. In addition, the compliance standard includes controls that aren't addressed by any Azure Policy definitions at this time. Therefore, compliance in Azure Policy is only a partial view of your overall compliance status. The associations between controls and Azure Policy Regulatory Compliance definitions for these compliance standards can change over time.
 
 #### 2. Azure Security Benchmark
 The [Azure Security Benchmark](https://learn.microsoft.com/en-us/security/benchmark/azure/introduction) provides recommendations on how you can secure your cloud solutions on Azure. To see how this service completely maps to the Azure Security Benchmark, see the [Azure Security Benchmark mapping files](https://github.com/MicrosoftDocs/SecurityBenchmarks/tree/master/Azure Offer Security Baselines).
@@ -78,7 +78,7 @@ To review how the available Azure Policy built-ins for all Azure services map to
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Network Security|NS-2|Secure cloud services with network controls|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Network Security|NS-2|Secure cloud services with network controls|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 
 #### 3. FedRAMP High
@@ -86,8 +86,8 @@ To review how the available Azure Policy built-ins for all Azure services map to
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Access Control|AC-17|Remote Access|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
-|Access Control|AC-17 (1)|Automated Monitoring / Control|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Access Control|AC-17|Remote Access|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Access Control|AC-17 (1)|Automated Monitoring / Control|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 
 #### 4. FedRAMP Moderate
@@ -95,39 +95,39 @@ To review how the available Azure Policy built-ins for all Azure services map to
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Access Control|AC-17|Remote Access|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
-|Access Control|AC-17 (1)|Automated Monitoring / Control|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Access Control|AC-17|Remote Access|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Access Control|AC-17 (1)|Automated Monitoring / Control|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 #### 5. New Zealand ISM Restricted
 To review how the available Azure Policy built-ins for all Azure services map to this compliance standard, see [Azure Policy Regulatory Compliance - New Zealand ISM Restricted](https://learn.microsoft.com/en-us/azure/governance/policy/samples/new-zealand-ism). For more information about this compliance standard, see [New Zealand ISM Restricted](https://www.nzism.gcsb.govt.nz/).
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Infrastructure|INF-9|10.8.35 Security Architecture|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Infrastructure|INF-9|10.8.35 Security Architecture|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 #### 6. NIST SP 800-53 Rev. 5
 To review how the available Azure Policy built-ins for all Azure services map to this compliance standard, see [Azure Policy Regulatory Compliance - NIST SP 800-53 Rev. 5](https://learn.microsoft.com/en-us/azure/governance/policy/samples/nist-sp-800-53-r5). For more information about this compliance standard, see [NIST SP 800-53 Rev. 5](https://nvd.nist.gov/800-53).
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Access Control|AC-17|Remote Access|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
-|Access Control|AC-17 (1)|Monitoring and Control|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Access Control|AC-17|Remote Access|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Access Control|AC-17 (1)|Monitoring and Control|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 #### 7. NZ ISM Resticted v3.5
 To review how the available Azure Policy built-ins for all Azure services map to this compliance standard, see [Azure Policy Regulatory Compliance - NZ ISM Restricted v3.5](https://learn.microsoft.com/en-us/azure/governance/policy/samples/nz_ism_restricted_v3_5). For more information about this compliance standard, see [NZ ISM Restricted v3.5](https://www.nzism.gcsb.govt.nz/ism-document).
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Infrastructure|NZISM Security Benchmark INF-9|10.8.35 Security Architecture|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Infrastructure|NZISM Security Benchmark INF-9|10.8.35 Security Architecture|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 #### 8. Reserve Bank of India IT Framerwork for Banks v2016
 To review how the available Azure Policy built-ins for all Azure services map to this compliance standard, see [Azure Policy Regulatory Compliance - RBI ITF Banks v2016](https://learn.microsoft.com/en-us/azure/governance/policy/samples/rbi_itf_banks_v2016). For more information about this compliance standard, see [RBI ITF Banks v2016 (PDF)](https://rbidocs.rbi.org.in/rdocs/notification/PDFs/NT41893F697BC1D57443BB76AFC7AB56272EB.PDF).
 
 | Domain | Control ID | Control Title | Policy | Policy Version |
 |---------------|---------------|---------------|---------------|---------------|
-|Patch/Vulnerability & Change Management| |Patch/Vulnerability & Change Management-7.7|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
-|Patch/Vulnerability & Change Management| |Patch/Vulnerability & Change Management-7.7|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
-|Anti-Phishing| |Anti-Phishing-14.1|[Azure Spring Cloud should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Patch/Vulnerability & Change Management| |Patch/Vulnerability & Change Management-7.7|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Patch/Vulnerability & Change Management| |Patch/Vulnerability & Change Management-7.7|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
+|Anti-Phishing| |Anti-Phishing-14.1|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 
 ### Appendix A: Checklists
