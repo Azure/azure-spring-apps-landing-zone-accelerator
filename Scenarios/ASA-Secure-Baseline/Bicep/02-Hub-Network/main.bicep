@@ -3,7 +3,11 @@ targetScope = 'subscription'
 @description('Azure Bastion Subnet Address Space')
 param azureBastionSubnetSpace string
 @description('Hub VNET Prefix')
-param hubVnetAddressSpace string
+param hubVnetAddressPrefixes string
+@description('Name of the hub VNET. Leave blank if you need one created')
+param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+@description('Name of the RG that has the hub VNET. Leave blank if you need one created')
+param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
 @description('The common prefix used when naming resources')
@@ -14,20 +18,21 @@ param tags object = {}
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
-resource networkRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: '${namePrefix}-network-hub-rg'
+
+resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: hubVnetResourceGroupName
   location: location
   tags: tags
 }
 
-module vnet '../Modules/vnet.bicep' = {
-  name: '${timeStamp}-${namePrefix}-vnet-hub'
-  scope: resourceGroup(networkRg.name)
+module hubVnet '../Modules/vnet.bicep' = {
+  name: '${timeStamp}-${hubVnetName}'
+  scope: resourceGroup(hubVnetRg.name)
   params: {
-    vnetName: '${namePrefix}-vnet-hub'
+    name: hubVnetName
     location: location
-    addressSpaces: [
-      hubVnetAddressSpace
+    addressPrefixes: [
+      hubVnetAddressPrefixes
     ]
     subnets: [
       {
@@ -40,11 +45,11 @@ module vnet '../Modules/vnet.bicep' = {
         }
       }
       {
-        name: 'spring-apps' //Note: this name must remain this value and cannot be customized for Azure Bastion to deploy correctly
+        name: 'spring-apps'
         properties: {
           addressPrefix: springAppsSubnetSpace
           networkSecurityGroup: {
-            id: azureBastionNsg.outputs.id
+            id: springAppsNsg.outputs.id
           }
         }
       }
@@ -56,7 +61,7 @@ module vnet '../Modules/vnet.bicep' = {
 // NSG for Azure Bastion subnet
 module azureBastionNsg '../Modules/nsg.bicep' = {
   name: '${timeStamp}-${namePrefix}-nsg-bastion'
-  scope: resourceGroup(networkRg.name)
+  scope: resourceGroup(hubVnetRg.name)
   params: {
     name: '${namePrefix}-nsg-bastion'
     location: location
@@ -183,7 +188,7 @@ module azureBastionNsg '../Modules/nsg.bicep' = {
 //TODO: Determine final NSG rules for the Spring Apps subnet
 module springAppsNsg '../Modules/nsg.bicep' = {
   name: '${timeStamp}-${namePrefix}-nsg-spring-apps'
-  scope: resourceGroup(networkRg.name)
+  scope: resourceGroup(hubVnetRg.name)
   params: {
     name: '${namePrefix}-nsg-spring-apps'
     location: location
@@ -203,5 +208,15 @@ module springAppsNsg '../Modules/nsg.bicep' = {
       }
     ]
     tags: tags
+  }
+}
+
+module azureBastion '../Modules/bastion.bicep' = {
+  name: '${timeStamp}-${namePrefix}-bastion'
+  scope: resourceGroup(hubVnetRg.name)
+  params: {
+    name: '${namePrefix}-bastion-${substring(uniqueString(timeStamp), 0, 4)}'
+    location: location
+    subnetId: '${hubVnet.outputs.id}/subnets/AzureBastionSubnet'
   }
 }

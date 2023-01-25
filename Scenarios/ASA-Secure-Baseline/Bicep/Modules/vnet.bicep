@@ -1,20 +1,20 @@
-param addressSpaces array
+param addressPrefixes array
+param name string
 param location string
 param subnets array
 param tags object
-param vnetName string
+
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
-  name: vnetName
+  name: name
   location: location
   properties: {
     addressSpace: {
-      addressPrefixes: addressSpaces
+      addressPrefixes: addressPrefixes
     }
     subnets: subnets
   }
   tags: tags
 }
 
-output name string = vnet.name
 output id string = vnet.id

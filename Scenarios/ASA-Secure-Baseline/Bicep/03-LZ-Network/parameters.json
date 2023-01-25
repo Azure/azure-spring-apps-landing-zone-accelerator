@@ -7,6 +7,9 @@
           "project": "SpringAppsLZA",
           "component": "02-Network-LZ"
         }
+      },
+      "spokeVnetAddressPrefixes": {
+        "value": "10.1.0.0/16"
       }
     }
   }
