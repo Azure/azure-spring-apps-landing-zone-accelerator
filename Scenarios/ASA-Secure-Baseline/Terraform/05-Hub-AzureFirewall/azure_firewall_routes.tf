@@ -96,6 +96,8 @@ resource "azurerm_subnet_route_table_association" "sc_shared_association" {
 
 
 resource "azurerm_route_table" "default_hub_route" {
+  provider = azurerm.hub-subscription
+
   name                          = "default_hub_route"
   resource_group_name           = data.azurerm_resource_group.hub_rg.name
   location                      = var.location
@@ -110,6 +112,8 @@ resource "azurerm_route_table" "default_hub_route" {
 }
 
 resource "azurerm_subnet_route_table_association" "hub_association" {
+  provider = azurerm.hub-subscription
+  
   subnet_id      = data.azurerm_subnet.defaulthubsubnet.id
   route_table_id = azurerm_route_table.default_hub_route.id
 

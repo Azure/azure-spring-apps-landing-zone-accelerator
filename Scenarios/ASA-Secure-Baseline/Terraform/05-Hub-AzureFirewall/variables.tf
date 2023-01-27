@@ -40,6 +40,12 @@ variable "Hub_Vnet_RG" {
     default =""
 }
 
+variable "Hub_Vnet_Subscription" {
+    type = string    
+    description = "The Subscription for the Hub VNET.  Leave empty if the same as Spoke Subscription"
+    default =""
+}
+
 
 
 # Subnets Info

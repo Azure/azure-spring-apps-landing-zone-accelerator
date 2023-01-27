@@ -119,16 +119,21 @@ variable "keyvault_dnszone_name" {
 ## Needed for the Peering
 variable "Hub_Vnet_Name" {
     type = string    
-    description = "The name of the Hub Vnet"
+    description = "The name of the Hub Vnet. Only specify if using bringing your own Hub"
     default =""
 } 
 
 variable "Hub_Vnet_RG" {
     type = string    
-    description = "The name of the Hub RG"
+    description = "The name of the Hub RG. Only specify if using bringing your own Hub"
     default =""
 }
 
+variable "Hub_Vnet_Subscription" {
+    type = string    
+    description = "The Subscription for the Hub VNET.  Leave empty if the same as Spoke Subscription"
+    default =""
+}
 
 
 ## This is required for retrieving state

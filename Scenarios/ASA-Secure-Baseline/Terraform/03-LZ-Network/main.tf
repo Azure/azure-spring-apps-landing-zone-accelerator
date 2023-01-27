@@ -6,18 +6,26 @@ locals  {
   hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
   hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
 
+  hub_subscriptionId        = ( var.Hub_Vnet_Subscription == "" ? data.azurerm_client_config.current.subscription_id : var.Hub_Vnet_Subscription )
 }
 
+data "azurerm_client_config" "current" {}
 
 # Get info about the existing Hub VNET
 data "azurerm_virtual_network" "hub_vnet" {
+
+  provider = azurerm.hub-subscription
+
   name                = local.hub_vnet_name
   resource_group_name = local.hub_rg 
 }
 
 # Get info about the existing Hub RG
 data "azurerm_resource_group" "hub_rg" {
+
+  provider            = azurerm.hub-subscription
   name                = local.hub_rg 
+
 }
 
 

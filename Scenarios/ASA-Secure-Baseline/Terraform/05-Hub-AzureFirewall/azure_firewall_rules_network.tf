@@ -1,6 +1,8 @@
 ## General Network rules
 
 resource "azurerm_firewall_network_rule_collection" "SpringAppsRefArchNetworkRules" {
+    provider = azurerm.hub-subscription
+    
     name                = "SpringAppsRefArchNetworkRules"
     azure_firewall_name = azurerm_firewall.azure_firewall_instance.name
     resource_group_name = data.azurerm_resource_group.hub_rg.name

@@ -33,9 +33,11 @@ locals  {
   spring_apps_name         = "spring-${var.name_prefix}-${var.environment}-${random_string.random.result}"
   springapps_rg            = "rg-${var.name_prefix}-APPS"
 
-  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
-  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
-   
+  # Hub Data can be read from existing state file or local variables
+  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_Name )     
+  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_RG )
+  hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
+
   spoke_vnet_name            = data.terraform_remote_state.lz-network.outputs.spoke_vnet_name
   spoke_rg                   = data.terraform_remote_state.lz-network.outputs.spoke_rg
   shared_rg                  = data.terraform_remote_state.lz-sharedresources.outputs.shared_rg
@@ -49,16 +51,23 @@ locals  {
   sc_cidr                  = var.sc_cidr
 }
 
+# We need the Hub info so that we can update the DNS zone which is located in the Hub RG
 # Get info about the existing Hub VNET
 data "azurerm_virtual_network" "hub_vnet" {
+
+  provider = azurerm.hub-subscription
+
   name                = local.hub_vnet_name
   resource_group_name = local.hub_rg
 }
 
 # Get info about the existing Hub RG
 data "azurerm_resource_group" "hub_rg" {
+  provider = azurerm.hub-subscription
+
   name                = local.hub_rg
 }
+
 
 # Get info about the existing Shared RG
 data "azurerm_resource_group" "shared_rg" {

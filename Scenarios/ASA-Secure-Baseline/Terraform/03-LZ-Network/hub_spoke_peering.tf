@@ -1,6 +1,8 @@
 
 # Spoke-Hub Peering
 resource "azurerm_virtual_network_peering" "spoke_hub_peering" {
+    provider = azurerm.hub-subscription
+    
     name                        = "spoke_hub_peer"
     resource_group_name         = azurerm_resource_group.spoke_rg.name
     virtual_network_name        = azurerm_virtual_network.spoke_vnet.name 

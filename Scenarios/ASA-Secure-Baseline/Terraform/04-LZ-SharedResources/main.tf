@@ -19,9 +19,11 @@ resource "random_string" "random" {
 
 
 locals  {
+  # Hub Data can be read from existing state file or local variables
   hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
   hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
-  
+  hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
+
   shared_rg                = "rg-${var.name_prefix}-SHARED"
 
   spoke_rg                 = data.terraform_remote_state.lz-network.outputs.spoke_rg
@@ -31,10 +33,17 @@ locals  {
 
   jumphost_name            = "vm${var.name_prefix}${var.environment}"
   
+  
 }
+
+# Get info about the current azurerm context
+data "azurerm_client_config" "current" {}
 
 # Get info about the existing Hub VNET
 data "azurerm_virtual_network" "hub_vnet" {
+
+  provider = azurerm.hub-subscription
+
   name                = local.hub_vnet_name
   resource_group_name = local.hub_rg
 }
@@ -64,9 +73,6 @@ data "azurerm_private_dns_zone" "keyvault_zone" {
   resource_group_name  =  local.hub_rg
 }
 
-
-# get info about current logged in account
-data "azurerm_client_config" "current" {}
 
 # get the local egress IP
 data "http" "myip" {

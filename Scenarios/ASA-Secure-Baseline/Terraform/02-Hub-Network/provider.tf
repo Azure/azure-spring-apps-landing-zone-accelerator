@@ -15,7 +15,15 @@ terraform {
 }
 
 provider "azurerm" {
+    
     features {} 
 }
+
+provider "azurerm" {
+    alias = "hub"
+    subscription_id = local.hub_subscriptionId
+    features {} 
+}
+  
   
   

@@ -26,6 +26,13 @@ provider "azurerm" {
      }
     } 
 }
+
+provider "azurerm" {
+    alias = "hub-subscription"
+    subscription_id = local.hub_subscriptionId
+    features {
+    } 
+}
   
 provider "azuread" {
   #use_microsoft_graph = true
