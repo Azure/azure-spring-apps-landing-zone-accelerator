@@ -19,7 +19,7 @@ cd c:\source-code
 #Clone GitHub Repo
 git clone https://github.com/azure-samples/spring-petclinic-microservices
 cd spring-petclinic-microservices
-C:\ProgramData\chocolatey\lib\maven\apache-maven-3.6.3\bin\mvn clean package -DskipTests -Denv=cloud
+.\mvnw clean package -DskipTests
 
 # ==== Service and App Instances ====
 $API_GATEWAY='api-gateway'
@@ -29,11 +29,11 @@ $VETS_SERVICE='vets-service'
 $VISITS_SERVICE='visits-service'
 
 # ==== JARS ====
-$API_GATEWAY_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-api-gateway\target\spring-petclinic-api-gateway-2.5.1.jar'
-$ADMIN_SERVER_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-admin-server\target\spring-petclinic-admin-server-2.5.1.jar'
-$CUSTOMERS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-customers-service\target\spring-petclinic-customers-service-2.5.1.jar'
-$VETS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-vets-service\target\spring-petclinic-vets-service-2.5.1.jar'
-$VISITS_SERVICE_JAR='C:\source-code\spring-petclinic-microservices\spring-petclinic-visits-service\target\spring-petclinic-visits-service-2.5.1.jar'
+$API_GATEWAY_JAR='spring-petclinic-api-gateway\target\spring-petclinic-api-gateway-2.5.1.jar'
+$ADMIN_SERVER_JAR='spring-petclinic-admin-server\target\spring-petclinic-admin-server-2.5.1.jar'
+$CUSTOMERS_SERVICE_JAR='spring-petclinic-customers-service\target\spring-petclinic-customers-service-2.5.1.jar'
+$VETS_SERVICE_JAR='spring-petclinic-vets-service\target\spring-petclinic-vets-service-2.5.1.jar'
+$VISITS_SERVICE_JAR='spring-petclinic-visits-service\target\spring-petclinic-visits-service-2.5.1.jar'
 
 # ==== MYSQL INFO ====
 $MYSQL_SERVER_FULL_NAME="$MYSQL_SERVER_NAME.privatelink.mysql.database.azure.com"
@@ -45,56 +45,70 @@ Set-Location 'C:\source-code\spring-petclinic-microservices'
 az login
 az account set --subscription $SUBSCRIPTION
 
-az configure --defaults group=$RESOURCE_GROUP location=$REGION spring-cloud=$SPRING_CLOUD_SERVICE
-az spring-cloud config-server set --config-file application.yml --name $SPRING_CLOUD_SERVICE
+az configure --defaults group=$RESOURCE_GROUP location=$REGION spring=$SPRING_CLOUD_SERVICE
+az spring config-server set --config-file application.yml --name $SPRING_CLOUD_SERVICE
 
-az spring-cloud app create --name $API_GATEWAY --instance-count 1 --is-public true `
-    --memory 2 --jvm-options='-Xms2048m -Xmx2048m'
-az spring-cloud app create --name $ADMIN_SERVER --instance-count 1 --is-public true `
-    --memory 2 --jvm-options='-Xms2048m -Xmx2048m'
-az spring-cloud app create --name $CUSTOMERS_SERVICE `
-    --instance-count 1 --memory 2 --jvm-options='-Xms2048m -Xmx2048m'
-az spring-cloud app create --name $VETS_SERVICE `
-    --instance-count 1 --memory 2 --jvm-options='-Xms2048m -Xmx2048m'
-az spring-cloud app create --name $VISITS_SERVICE `
-    --instance-count 1 --memory 2 --jvm-options='-Xms2048m -Xmx2048m'
+az spring app create --name $API_GATEWAY --instance-count 1 --assign-endpoint true `
+    --memory 2Gi --jvm-options='-Xms2048m -Xmx2048m' 
+az spring app create --name $ADMIN_SERVER --instance-count 1 --assign-endpoint true `
+    --memory 2Gi --jvm-options='-Xms2048m -Xmx2048m' 
+az spring app create --name $CUSTOMERS_SERVICE `
+    --instance-count 1 --memory 2Gi --jvm-options='-Xms2048m -Xmx2048m' 
+az spring app create --name $VETS_SERVICE `
+    --instance-count 1 --memory 2Gi --jvm-options='-Xms2048m -Xmx2048m' 
+az spring app create --name $VISITS_SERVICE `
+    --instance-count 1 --memory 2Gi --jvm-options='-Xms2048m -Xmx2048m' 
 
 # increase connection timeout
 az mysql server configuration set --name wait_timeout `
  --resource-group $RESOURCE_GROUP  `
  --server $MYSQL_SERVER_NAME --value 2147483
 
+$MY_IP=(invoke-webrequest http://whatismyip.akamai.com).Content
+az mysql server firewall-rule create `
+    --resource-group $RESOURCE_GROUP `
+    --server-name $MYSQL_SERVER_NAME `
+    --name AllowCurrentMachineToConnect `
+    --start-ip-address $MY_IP `
+    --end-ip-address $MY_IP
 #mysql Configuration 
-mysql -h"$MYSQL_SERVER_FULL_NAME" -u"$MYSQL_SERVER_ADMIN_LOGIN_NAME" `
+mysqlsh -h"$MYSQL_SERVER_FULL_NAME" -u"$MYSQL_SERVER_ADMIN_LOGIN_NAME" `
      -p"$MYSQL_SERVER_ADMIN_PASSWORD" `
-     -e  "CREATE DATABASE petclinic;CREATE USER 'root' IDENTIFIED BY 'petclinic';GRANT ALL PRIVILEGES ON petclinic.* TO 'root';"
+     -e  "CREATE DATABASE IF NOT EXISTS petclinic;CREATE USER IF NOT EXISTS 'root' IDENTIFIED BY 'petclinic';GRANT ALL PRIVILEGES ON petclinic.* TO 'root';CALL mysql.az_load_timezone();"
 
-mysql -h"$MYSQL_SERVER_FULL_NAME" -u"$MYSQL_SERVER_ADMIN_LOGIN_NAME" `
-     -p"$MYSQL_SERVER_ADMIN_PASSWORD" `
-     -e  "CALL mysql.az_load_timezone();"
+echo 'remove firewall rule for current machine in mysql server'
+az mysql server firewall-rule delete `
+    --resource-group $RESOURCE_GROUP `
+    --server-name $MYSQL_SERVER_NAME `
+    --yes `
+    --name AllowCurrentMachineToConnect
 
 az mysql server configuration set --name time_zone `
   --resource-group $RESOURCE_GROUP `
   --server $MYSQL_SERVER_NAME --value "US/Eastern"
 
-az spring-cloud app deploy --name $API_GATEWAY `
-    --jar-path $API_GATEWAY_JAR `
+az spring app deploy --name $API_GATEWAY `
+    --artifact-path $API_GATEWAY_JAR `
+    --runtime-version Java_17 `
     --jvm-options='-Xms2048m -Xmx2048m -Dspring.profiles.active=mysql'
 
-az spring-cloud app deploy --name $ADMIN_SERVER `
-    --jar-path $ADMIN_SERVER_JAR `
+az spring app deploy --name $ADMIN_SERVER `
+    --artifact-path $ADMIN_SERVER_JAR `
+    --runtime-version Java_17 `
     --jvm-options='-Xms2048m -Xmx2048m -Dspring.profiles.active=mysql'
 
-az spring-cloud app deploy --name $CUSTOMERS_SERVICE `
---jar-path $CUSTOMERS_SERVICE_JAR `
+az spring app deploy --name $CUSTOMERS_SERVICE `
+--artifact-path $CUSTOMERS_SERVICE_JAR `
+--runtime-version Java_17 `
 --jvm-options='-Xms2048m -Xmx2048m -Dspring.profiles.active=mysql' `
 --env MYSQL_SERVER_FULL_NAME=$MYSQL_SERVER_FULL_NAME `
       MYSQL_DATABASE_NAME=$MYSQL_DATABASE_NAME `
       MYSQL_SERVER_ADMIN_LOGIN_NAME=$MYSQL_SERVER_ADMIN_LOGIN_NAME `
       MYSQL_SERVER_ADMIN_PASSWORD=$MYSQL_SERVER_ADMIN_PASSWORD
 
-az spring-cloud app deploy --name $VETS_SERVICE `
---jar-path $VETS_SERVICE_JAR `
+az spring app deploy --name $VETS_SERVICE `
+--artifact-path $VETS_SERVICE_JAR `
+--runtime-version Java_17 `
 --jvm-options='-Xms2048m -Xmx2048m -Dspring.profiles.active=mysql' `
 --env MYSQL_SERVER_FULL_NAME=$MYSQL_SERVER_FULL_NAME `
       MYSQL_DATABASE_NAME=$MYSQL_DATABASE_NAME `
@@ -102,12 +116,13 @@ az spring-cloud app deploy --name $VETS_SERVICE `
       MYSQL_SERVER_ADMIN_PASSWORD=$MYSQL_SERVER_ADMIN_PASSWORD
       
 
-az spring-cloud app deploy --name $VISITS_SERVICE `
---jar-path $VISITS_SERVICE_JAR `
+az spring app deploy --name $VISITS_SERVICE `
+--artifact-path $VISITS_SERVICE_JAR `
+--runtime-version Java_17 `
 --jvm-options='-Xms2048m -Xmx2048m -Dspring.profiles.active=mysql' `
 --env MYSQL_SERVER_FULL_NAME=$MYSQL_SERVER_FULL_NAME `
       MYSQL_DATABASE_NAME=$MYSQL_DATABASE_NAME `
       MYSQL_SERVER_ADMIN_LOGIN_NAME=$MYSQL_SERVER_ADMIN_LOGIN_NAME `
       MYSQL_SERVER_ADMIN_PASSWORD=$MYSQL_SERVER_ADMIN_PASSWORD
 
-az spring-cloud app show --name $API_GATEWAY
+az spring app show --name $API_GATEWAY
