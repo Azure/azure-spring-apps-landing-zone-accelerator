@@ -4,6 +4,8 @@ resource "azurerm_subnet" "azure_firewall" {
     resource_group_name         = data.azurerm_resource_group.hub_rg.name
     virtual_network_name        = data.azurerm_virtual_network.hub_vnet.name
     address_prefixes            = [var.azurefw_addr_prefix]
+
+    
 } 
 
 resource "azurerm_public_ip" "azure_firewall" {
@@ -36,6 +38,11 @@ resource "azurerm_firewall" "azure_firewall_instance" {
       create = "60m"
       delete = "2h"
   }
+
+  # Uncomment the zones attribute to make your deployment zone redundant!
+  # if setting to true, also consider making Spring Apps and App Gateway Zone Redundant
+  # zones = [1,2,3]
+
   depends_on = [ azurerm_public_ip.azure_firewall ]
 }
 

@@ -131,7 +131,7 @@ https://github.com/hashicorp/terraform-provider-azurerm/issues/19949
 
 - To get around this and complete the destruction, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal
 Portal > Azure Spring Apps instance > API Portal > Assign endpoint -> Set to No
-Then run attempt the destruction
+Then attempt the destruction
 
 # Project
 

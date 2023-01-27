@@ -75,6 +75,10 @@ resource "azurerm_application_gateway" "azure_appgw" {
     rule_set_version           = "3.2" 
   }
 
+  # Uncomment the zones attribute to make your deployment zone redundant!
+  # if setting to true, also consider making Spring Apps and Azure Firewall Zone Redundant
+  # zones = [1,2,3]
+
   depends_on = [ azurerm_public_ip.azure_appgw ]
 }
 
