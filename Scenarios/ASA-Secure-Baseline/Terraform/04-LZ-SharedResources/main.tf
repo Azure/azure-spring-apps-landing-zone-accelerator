@@ -17,11 +17,18 @@ resource "random_string" "random" {
   special = false
 }
 
+#Random password for Jump Host
+resource "random_password" "jumphostpass" {
+  length = 15
+  upper = true
+  special = true  
+}
+
 
 locals  {
   # Hub Data can be read from existing state file or local variables
-  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
-  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
+  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_Name )     
+  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? data.terraform_remote_state.lz-network.outputs.hub_rg : var.Hub_Vnet_RG )
   hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
 
   shared_rg                = "rg-${var.name_prefix}-SHARED"
@@ -32,7 +39,8 @@ locals  {
   subnet_cloudsupport_name = var.springboot-support-subnet-name
 
   jumphost_name            = "vm${var.name_prefix}${var.environment}"
-  
+  jumphost_user            = var.jump_host_admin_username
+  jumphost_pass            = ( var.jump_host_password == "" ? random_password.jumphostpass.result  : var.jump_host_password )
   
 }
 

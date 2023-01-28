@@ -77,12 +77,15 @@ variable "jump_host_vm_size" {
 variable "jump_host_admin_username" {
     type        = string 
     description = "Admin Username, used by Jump Host"
+    default     = "ITADMIN"
 }
+
+# A random password will be created if not specified
 variable "jump_host_password" {
     sensitive   = true
     type        = string
     description = "Admin Password, used by Jump Host"
-
+    default     = ""
 }
 
 # For Azure KeyVault
