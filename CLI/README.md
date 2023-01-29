@@ -14,22 +14,6 @@
 
 3. The script has been tested using `Azure CLI version 2.42.0`
 
-# Azure CLI Quickstart - Azure Spring Apps Reference Architecture
-
-## Overview
-
-## Prerequisites
-
-1. [Install Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
-
-2. Run the two commands below to add the required extensions to Azure CLI if they are not installed already
-
-    `az extension add --name azure-firewall`
-
-    `az extension add --name spring-cloud`
-
-3. The script has been tested using `Azure CLI version 2.42.0`
-
 ## Deployment
 
 1. Run `az login` to log into Azure
