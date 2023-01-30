@@ -14,7 +14,7 @@ Get-ChildItem -Directory | ForEach-Object {
         if ($lastexitcode -ne 0) { exit }
   
         # Wait 150 seconds between Apply
-        #Write-Warning "Waiting 15 seconds...."
-        #Start-Sleep 15
+        Write-Warning "Waiting 15 seconds...."
+        Start-Sleep 15
     }
 }

@@ -10,6 +10,21 @@
       },
       "spokeVnetAddressPrefixes": {
         "value": "10.1.0.0/16"
+      },
+      "springBootServiceSubnetSpace": {
+        "value": "10.1.0.0/24"
+      },
+      "springBootAppsSubnetSpace": {
+        "value": "10.1.1.0/24"
+      },
+      "springBootSupportSubnetSpace": {
+        "value": "10.1.2.0/24"
+      },
+      "sharedSubnetSpace": {
+        "value": "10.1.0.0/24"
+      },
+      "appGwSubnetSpace": {
+        "value": "10.1.0.0/24"
       }
     }
   }

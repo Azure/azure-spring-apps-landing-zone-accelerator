@@ -18,7 +18,6 @@ param tags object = {}
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
-
 resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: hubVnetResourceGroupName
   location: location
@@ -45,12 +44,9 @@ module hubVnet '../Modules/vnet.bicep' = {
         }
       }
       {
-        name: 'spring-apps'
+        name: 'default'
         properties: {
           addressPrefix: springAppsSubnetSpace
-          networkSecurityGroup: {
-            id: springAppsNsg.outputs.id
-          }
         }
       }
     ]
@@ -63,7 +59,7 @@ module azureBastionNsg '../Modules/nsg.bicep' = {
   name: '${timeStamp}-${namePrefix}-nsg-bastion'
   scope: resourceGroup(hubVnetRg.name)
   params: {
-    name: '${namePrefix}-nsg-bastion'
+    name: 'bastion-nsg'
     location: location
     securityRules: [
       {
@@ -184,38 +180,11 @@ module azureBastionNsg '../Modules/nsg.bicep' = {
   }
 }
 
-// NSG for Spring Apps subnet
-//TODO: Determine final NSG rules for the Spring Apps subnet
-module springAppsNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-nsg-spring-apps'
-  scope: resourceGroup(hubVnetRg.name)
-  params: {
-    name: '${namePrefix}-nsg-spring-apps'
-    location: location
-    securityRules: [
-      {
-        name: 'AllowHTTPSInbound'
-        properties: {
-          priority: 100
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: 'Internet'
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
-    tags: tags
-  }
-}
-
 module azureBastion '../Modules/bastion.bicep' = {
-  name: '${timeStamp}-${namePrefix}-bastion'
+  name: '${timeStamp}-bastion-${namePrefix}'
   scope: resourceGroup(hubVnetRg.name)
   params: {
-    name: '${namePrefix}-bastion-${substring(uniqueString(timeStamp), 0, 4)}'
+    name: 'bastion-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
     location: location
     subnetId: '${hubVnet.outputs.id}/subnets/AzureBastionSubnet'
   }

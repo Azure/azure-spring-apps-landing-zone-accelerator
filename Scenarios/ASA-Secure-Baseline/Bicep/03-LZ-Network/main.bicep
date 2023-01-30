@@ -10,6 +10,9 @@ param location string
 param namePrefix string
 @description('Spoke VNET Prefix')
 param spokeVnetAddressPrefixes string
+@description('Spring Apps Service Subnet')
+param springBootServiceSubnetSpace string
+
 param tags object = {}
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
@@ -31,14 +34,61 @@ resource spokeRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 
 module spokeVnet '../Modules/vnet.bicep' = {
   name: '${timeStamp}-${hubVnetName}'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(spokeRg.name)
   params: {
     name: hubVnetName
     location: location
     addressPrefixes: [
       spokeVnetAddressPrefixes
     ]
-    subnets: []
+    subnets: [
+      {
+        name: 'snet-runtime'
+        properties: {
+          addressPrefix: springBootServiceSubnetSpace
+        }
+      }
+      {
+        name: 'snet-support'
+        properties: {
+          addressPrefix: 'TODO'
+        }
+        networkSecurityGroup: {
+          id: supportNsg.outputs.id
+        }
+      }
+      {
+        name: 'snet-support'
+        properties: {
+          addressPrefix: 'TODO'
+        }
+        networkSecurityGroup: {
+          id: supportNsg.outputs.id
+        }
+      }
+    ]
+    tags: tags
+  }
+}
+
+module supportNsg '../Modules/nsg.bicep' = {
+  name: '${timeStamp}-${namePrefix}-snet-support-nsg'
+  scope: resourceGroup(hubVnetRg.name)
+  params: {
+    name: 'snet-support-nsg'
+    location: location
+    securityRules: []
+    tags: tags
+  }
+}
+
+module sharedNsg '../Modules/nsg.bicep' = {
+  name: '${timeStamp}-${namePrefix}-snet-shared-nsg'
+  scope: resourceGroup(hubVnetRg.name)
+  params: {
+    name: 'snet-shared-nsg'
+    location: location
+    securityRules: []
     tags: tags
   }
 }
