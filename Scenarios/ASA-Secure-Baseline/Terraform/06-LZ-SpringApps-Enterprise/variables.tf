@@ -100,6 +100,13 @@ variable "private_dns_a_record_a_record_ttl" {
   default = 3600
 }
 
+variable "spring_apps_zone_redundant" {
+  type    = bool
+  description = "Should I make Spring Apps Zone Redundant?"
+  default = false
+}
+
+
 
 ## This is required for retrieving state
 variable "state_sa_name" {}

@@ -7,9 +7,7 @@ resource "azurerm_spring_cloud_service" "sc_standard" {
     
   sku_name = "S0"
 
-  # Change this to true to make your deployment zone redundant!
-  # if setting to true, also consider making Azure Firewall and App Gateway Zone Redundant
-  zone_redundant = false
+  zone_redundant = var.spring_apps_zone_redundant
 
   network {
     app_subnet_id                               = data.azurerm_subnet.azuresbcloudapps.id

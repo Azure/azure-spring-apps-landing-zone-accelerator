@@ -5,9 +5,7 @@ resource "azurerm_spring_cloud_service" "sc_enterprise" {
   resource_group_name = azurerm_resource_group.springapps_rg.name
   location            = var.location
 
-  # Change this to true to make your deployment zone redundant!
-  # if setting to true, also consider making Azure Firewall and App Gateway Zone Redundant
-  zone_redundant = false
+  zone_redundant = var.spring_apps_zone_redundant
 
   # SKU - Set to E0 if  Enterprise Tier
   sku_name = "E0"

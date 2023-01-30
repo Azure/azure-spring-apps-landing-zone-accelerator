@@ -128,6 +128,15 @@ Sample:
     # springboot-support-subnet-name = "snet-support"
     # shared-subnet-name             = "snet-shared"
     # appgw-subnet-name              = "snet-agw"
+    
+
+    ##################################################
+    # Optional - Zone Redundancy
+    ##################################################
+        # spring_apps_zone_redundant     = true
+        # azure_firewall_zones           = [1,2,3]
+        # azure_app_gateway_zones        = [1,2,3]
+
 ```
 
 ## Deploy all components at once

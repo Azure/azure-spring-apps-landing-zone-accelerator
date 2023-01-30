@@ -31,12 +31,6 @@ data "azurerm_subnet" "appgwsubnet" {
 }
 
 
-
-# # Get info about Log Analytics workspace
-# data "azurerm_log_analytics_workspace" "sc_law" {
-#   name = "${var.name_prefix}-law"
-# }
-
 # Create the APPGW Resource group 
 resource "azurerm_resource_group" "appgw_rg" {
     name                        = local.appgw_rg 

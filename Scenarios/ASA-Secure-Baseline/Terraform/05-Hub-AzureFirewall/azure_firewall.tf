@@ -46,9 +46,8 @@ resource "azurerm_firewall" "azure_firewall_instance" {
       delete = "2h"
   }
 
-  # Uncomment the zones attribute to make your deployment zone redundant!
-  # if setting to true, also consider making Spring Apps and App Gateway Zone Redundant
-  # zones = [1,2,3]
+
+  zones = var.azure_firewall_zones
 
   depends_on = [ azurerm_public_ip.azure_firewall ]
 }
