@@ -30,16 +30,21 @@ variable "tags" {
 
 variable "Hub_Vnet_Name" {
     type = string    
-    description = "The name of the Hub Vnet"
-    default     = ""
+    description = "The name of the Hub Vnet.  Leave empty and will be read from state files"
+    default =""
 } 
 
 variable "Hub_Vnet_RG" {
     type = string    
-    description = "The name of the Hub RG"
-    default     = ""
+    description = "The name of the Hub RG.  Leave empty and will be read from state files"
+    default =""
 }
 
+variable "Hub_Vnet_Subscription" {
+    type = string    
+    description = "The Subscription for the Hub VNET.  Leave empty and will be read from state files"
+    default =""
+}
 
 
 # Subnets Info
@@ -93,6 +98,12 @@ variable "private_dns_a_record_a_record_name" {
 variable "private_dns_a_record_a_record_ttl" {
   type    = number
   default = 3600
+}
+
+variable "spring_apps_zone_redundant" {
+  type    = bool
+  description = "Should I make Spring Apps Zone Redundant?"
+  default = false
 }
 
 

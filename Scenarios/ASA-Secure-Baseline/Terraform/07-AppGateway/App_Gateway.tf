@@ -75,6 +75,8 @@ resource "azurerm_application_gateway" "azure_appgw" {
     rule_set_version           = "3.2" 
   }
 
+  zones = var.azure_app_gateway_zones
+
   depends_on = [ azurerm_public_ip.azure_appgw ]
 }
 

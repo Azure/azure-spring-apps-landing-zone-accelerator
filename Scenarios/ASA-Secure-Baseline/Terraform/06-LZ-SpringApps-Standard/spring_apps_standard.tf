@@ -7,8 +7,9 @@ resource "azurerm_spring_cloud_service" "sc_standard" {
     
   sku_name = "S0"
 
+  zone_redundant = var.spring_apps_zone_redundant
+
   network {
-    
     app_subnet_id                               = data.azurerm_subnet.azuresbcloudapps.id
     service_runtime_subnet_id                   = data.azurerm_subnet.azuresbcloudsvc.id
     cidr_ranges                                 = local.sc_cidr
@@ -76,12 +77,5 @@ data "azurerm_lb" "svc_load_balancer_standard" {
   depends_on = [azurerm_spring_cloud_service.sc_standard]
 }
 
-resource "azurerm_private_dns_a_record" "a_record_standard" {
-  name                = var.private_dns_a_record_a_record_name
-  zone_name           = var.springapps_dnszone_name
-  resource_group_name = data.azurerm_resource_group.hub_rg.name
-  ttl                 = var.private_dns_a_record_a_record_ttl
-  records             = [data.azurerm_lb.svc_load_balancer_standard.frontend_ip_configuration[0].private_ip_address]
-}
 
 

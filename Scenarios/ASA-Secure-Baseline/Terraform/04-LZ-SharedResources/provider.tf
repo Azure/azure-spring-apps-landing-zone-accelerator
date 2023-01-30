@@ -31,3 +31,10 @@ provider "azurerm" {
      }
     } 
 }
+
+provider "azurerm" {
+    alias = "hub-subscription"
+    subscription_id = local.hub_subscriptionId
+    features {
+    } 
+}

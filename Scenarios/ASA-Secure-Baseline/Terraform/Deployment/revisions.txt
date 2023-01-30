@@ -1,1 +1,7 @@
-1/9/2023 - key_vault.tf - Removed Adding your own IP to IPrules because many customers block sites like ipv4.icanhazip.com
+Design changes:
+1/9/2023 - The plan has been broken up into smaller steps to faciliate phased deployment.
+1/9/2023 - Removed Adding your own IP to IPrules because many customers block sites like ipv4.icanhazip.com
+1/25/22023 - Brought back Adding your Own IP to the Key vault firewall. Provided a variable for the customer to specify an IP range if desired or if the Check IP services are unaccesible.
+1/25/22023 - Moved all the "Get your External IP" code to get_external_ip.tf 
+1/25/22023 - Modified all plans to allow for the Hub Subscription to deployed to separate Subscription via a new variable
+1/25/22023 - Jumpbox password is now randomly chosen and stored in Key Vault.  The customer can still provide a custom password via a variable.

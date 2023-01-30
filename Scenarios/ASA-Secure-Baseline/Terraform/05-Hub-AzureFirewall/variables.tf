@@ -40,6 +40,12 @@ variable "Hub_Vnet_RG" {
     default =""
 }
 
+variable "Hub_Vnet_Subscription" {
+    type = string    
+    description = "The Subscription for the Hub VNET.  Leave empty if the same as Spoke Subscription"
+    default =""
+}
+
 
 
 # Subnets Info
@@ -83,6 +89,11 @@ variable "azurefw_addr_prefix" {
     default     = "10.0.1.0/24"
 }
 
+variable "azure_firewall_zones" {
+    type = set(string)
+    description = "Deploy Azure Firewall to these zones"
+    default = []
+}
 
 ## This is required for retrieving state
 variable "state_sa_name" {}

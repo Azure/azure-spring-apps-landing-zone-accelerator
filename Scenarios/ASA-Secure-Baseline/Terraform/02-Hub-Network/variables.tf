@@ -16,7 +16,14 @@ variable "location" {
 variable "environment" {
     type = string    
     description = "Deployment environment, example: dev,prod,stg etc."
-} 
+}
+
+variable "Hub_Vnet_Subscription" {
+    type = string    
+    description = "The Subscription for the Hub VNET.  Leave empty if the same as Spoke Subscription"
+    default =""
+}
+
 
 variable "tags" {
     type        = map 

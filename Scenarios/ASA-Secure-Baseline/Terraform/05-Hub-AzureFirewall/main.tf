@@ -24,9 +24,11 @@ data "terraform_remote_state" "lz-sharedresources" {
 
 
 locals  {
-  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
-  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
-  
+  # Hub Data can be read from existing state file or local variables
+  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_Name )     
+  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? data.terraform_remote_state.lz-network.outputs.hub_rg : var.Hub_Vnet_RG )
+  hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
+
   spoke_vnet_name            = data.terraform_remote_state.lz-network.outputs.spoke_vnet_name
   spoke_rg                   = data.terraform_remote_state.lz-network.outputs.spoke_rg
   shared_rg                  = data.terraform_remote_state.lz-sharedresources.outputs.shared_rg
@@ -44,16 +46,26 @@ locals  {
   address_range_cloudsupport = data.azurerm_subnet.azuresbcloudsupport.address_prefix
   address_range_shared       = data.azurerm_subnet.snetsharedsubnet.address_prefix
   
+  
 }
+
+# Get info about the current azurerm context
+data "azurerm_client_config" "current" {}
+
 
 # Get info about the existing Hub VNET
 data "azurerm_virtual_network" "hub_vnet" {
+
+  provider = azurerm.hub-subscription
+
   name                = local.hub_vnet_name
   resource_group_name = local.hub_rg
 }
 
 # Get info about the existing Hub RG
 data "azurerm_resource_group" "hub_rg" {
+  provider = azurerm.hub-subscription
+
   name                = local.hub_rg
 }
 
@@ -93,6 +105,8 @@ data "azurerm_subnet" "azuresbcloudsupport" {
 }
 
 data "azurerm_subnet" "defaulthubsubnet" {
+  provider = azurerm.hub-subscription
+
   name                 =  local.subnet_hubdefault_name
   virtual_network_name =  local.hub_vnet_name
   resource_group_name  =  local.hub_rg

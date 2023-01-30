@@ -52,3 +52,9 @@ variable "certfilename" {
     type        = string
     description = "filename of the PFX certificate file within this directory"
 }
+
+variable "azure_app_gateway_zones" {
+    type = set(string)
+    description = "Deploy Azure App Gateway to these zones"
+    default = []
+}

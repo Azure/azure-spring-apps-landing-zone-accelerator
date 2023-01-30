@@ -41,8 +41,8 @@ resource "azurerm_virtual_machine" "jump_host" {
  
   os_profile {
     computer_name      = local.jumphost_name
-    admin_username     = var.jump_host_admin_username
-    admin_password     = var.jump_host_password
+    admin_username     = local.jumphost_user  
+    admin_password     = local.jumphost_pass 
   }
  
   os_profile_windows_config {
@@ -82,3 +82,15 @@ SETTINGS
   
 }
 
+resource "azurerm_key_vault_secret" "jumphostsecret" {
+  name         = "jumphost-password"
+
+  value        = local.jumphost_pass
+  key_vault_id = azurerm_key_vault.sc_vault.id
+}
+
+resource "azurerm_key_vault_secret" "jumphostuser" {
+  name         = "jumphost-user"
+  value        = local.jumphost_user
+  key_vault_id = azurerm_key_vault.sc_vault.id
+}

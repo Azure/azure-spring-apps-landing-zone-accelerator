@@ -4,7 +4,9 @@ resource "azurerm_spring_cloud_service" "sc_enterprise" {
   name                = local.spring_apps_name
   resource_group_name = azurerm_resource_group.springapps_rg.name
   location            = var.location
-    
+
+  zone_redundant = var.spring_apps_zone_redundant
+
   # SKU - Set to E0 if  Enterprise Tier
   sku_name = "E0"
 
@@ -79,12 +81,5 @@ data "azurerm_lb" "svc_load_balancer_standard" {
   depends_on = [azurerm_spring_cloud_service.sc_enterprise]
 }
 
-resource "azurerm_private_dns_a_record" "a_record_standard" {
-  name                = var.private_dns_a_record_a_record_name
-  zone_name           = var.springapps_dnszone_name
-  resource_group_name = data.azurerm_resource_group.hub_rg.name
-  ttl                 = var.private_dns_a_record_a_record_ttl
-  records             = [data.azurerm_lb.svc_load_balancer_standard.frontend_ip_configuration[0].private_ip_address]
-}
 
 

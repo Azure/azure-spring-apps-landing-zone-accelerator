@@ -31,17 +31,21 @@ variable "tags" {
 
 variable "Hub_Vnet_Name" {
     type = string    
-    description = "The name of the Hub Vnet"
+    description = "The name of the Hub Vnet.  Leave empty and will be read from state files"
     default =""
 } 
 
 variable "Hub_Vnet_RG" {
     type = string    
-    description = "The name of the Hub RG"
+    description = "The name of the Hub RG.  Leave empty and will be read from state files"
     default =""
 }
 
-
+variable "Hub_Vnet_Subscription" {
+    type = string    
+    description = "The Subscription for the Hub VNET.  Leave empty and will be read from state files"
+    default =""
+}
 
 # Subnets Info
 
@@ -73,12 +77,15 @@ variable "jump_host_vm_size" {
 variable "jump_host_admin_username" {
     type        = string 
     description = "Admin Username, used by Jump Host"
+    default     = "ITADMIN"
 }
+
+# A random password will be created if not specified
 variable "jump_host_password" {
     sensitive   = true
     type        = string
     description = "Admin Password, used by Jump Host"
-
+    default     = ""
 }
 
 # For Azure KeyVault
@@ -86,6 +93,14 @@ variable "keyvault_dnszone_name" {
     type = string
     description = "The Azure KeyVault Private DNS Zone name"
     default = "privatelink.vaultcore.azure.net"
+}
+
+# Specify your External IP range in CIDR format  1.2.3.4/32
+# Leave this empty to have the plan get your external IP using an external Web Service
+variable "My_External_IP" {
+    type = string
+    description = "Specify your External IP range in CIDR format 1.2.3.4/32.  Leave this empty to have the plan get your external IP using an external Web Service"
+    default = ""
 }
 
 

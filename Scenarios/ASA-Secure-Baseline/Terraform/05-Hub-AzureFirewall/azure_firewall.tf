@@ -1,12 +1,19 @@
 # Azure Firewall
 resource "azurerm_subnet" "azure_firewall" {
+
+    provider = azurerm.hub-subscription
+
     name                        = "AzureFirewallSubnet"
     resource_group_name         = data.azurerm_resource_group.hub_rg.name
     virtual_network_name        = data.azurerm_virtual_network.hub_vnet.name
     address_prefixes            = [var.azurefw_addr_prefix]
+
+    
 } 
 
 resource "azurerm_public_ip" "azure_firewall" {
+    provider = azurerm.hub-subscription
+
     name                        = "azure-firewall-ip"
     location                    = var.location
     resource_group_name         = data.azurerm_resource_group.hub_rg.name
@@ -16,7 +23,9 @@ resource "azurerm_public_ip" "azure_firewall" {
 
 
 
-resource "azurerm_firewall" "azure_firewall_instance" { 
+resource "azurerm_firewall" "azure_firewall_instance" {
+    provider = azurerm.hub-subscription
+
     name                        = local.fw_name
     location                    = var.location
     resource_group_name         = data.azurerm_resource_group.hub_rg.name
@@ -36,10 +45,16 @@ resource "azurerm_firewall" "azure_firewall_instance" {
       create = "60m"
       delete = "2h"
   }
+
+
+  zones = var.azure_firewall_zones
+
   depends_on = [ azurerm_public_ip.azure_firewall ]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "azfw_diag" {
+  provider = azurerm.hub-subscription
+  
   name                        = "monitoring"
   target_resource_id          = azurerm_firewall.azure_firewall_instance.id
   log_analytics_workspace_id  = data.azurerm_log_analytics_workspace.sc_law.id
