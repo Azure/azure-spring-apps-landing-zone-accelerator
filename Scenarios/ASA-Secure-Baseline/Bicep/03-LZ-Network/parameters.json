@@ -5,7 +5,7 @@
       "tags": {
         "value": {
           "project": "SpringAppsLZA",
-          "component": "02-Network-LZ"
+          "component": "03-LZ-Network"
         }
       },
       "spokeVnetAddressPrefixes": {
@@ -21,10 +21,10 @@
         "value": "10.1.2.0/24"
       },
       "sharedSubnetSpace": {
-        "value": "10.1.0.0/24"
+        "value": "10.1.4.0/24"
       },
       "appGwSubnetSpace": {
-        "value": "10.1.0.0/24"
+        "value": "10.1.5.0/24"
       }
     }
   }

@@ -5,7 +5,7 @@
     "tags": {
       "value": {
         "project": "SpringAppsLZA",
-        "component": "02-Network-Hub"
+        "component": "02-Hub-Network"
       }
     },
     "hubVnetAddressPrefixes": {
