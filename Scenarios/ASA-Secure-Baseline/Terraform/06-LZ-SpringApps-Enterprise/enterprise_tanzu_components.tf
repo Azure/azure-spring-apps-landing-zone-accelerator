@@ -43,4 +43,12 @@ resource "azurerm_spring_cloud_api_portal" "apiportal" {
   https_only_enabled            = false
   public_network_access_enabled = true
   instance_count                = 1
+
+  # Set this to false and apply before DESTROY
+  # To prevent an issue with the destruction
+  # see https://github.com/hashicorp/terraform-provider-azurerm/issues/19949
+  #
+  #    public_network_access_enabled = false
+
+
 }

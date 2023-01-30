@@ -95,6 +95,14 @@ variable "keyvault_dnszone_name" {
     default = "privatelink.vaultcore.azure.net"
 }
 
+# Specify your External IP range in CIDR format  1.2.3.4/32
+# Leave this empty to have the plan get your external IP using an external Web Service
+variable "My_External_IP" {
+    type = string
+    description = "Specify your External IP range in CIDR format 1.2.3.4/32.  Leave this empty to have the plan get your external IP using an external Web Service"
+    default = ""
+}
+
 
 ## This is required for retrieving state
 variable "state_sa_name" {}

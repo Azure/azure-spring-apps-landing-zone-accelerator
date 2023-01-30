@@ -77,15 +77,14 @@ data "azurerm_subnet" "azuresbcloudsupport" {
 
 # Get info about Private DNS Zones
 data "azurerm_private_dns_zone" "keyvault_zone" {
+  provider = azurerm.hub-subscription
+  
   name                 =  var.keyvault_dnszone_name
   resource_group_name  =  local.hub_rg
 }
 
 
-# get the local egress IP
-data "http" "myip" {
-  url = "http://ipv4.icanhazip.com"
-}
+
 
 
 # Create the Shared Resource group 
