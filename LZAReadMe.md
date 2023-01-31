@@ -55,14 +55,13 @@ For Azure Spring Apps Standard SKU:
 * Instance of Azure Database for MySQL flexible server deployed with VNET Integration.  This can be used to deploy the PetClinic sample app described in this document.
 
 For Azure Spring Apps Enterprise SKU:
-* Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  This can be used to deploy the ACME Fitness sample app described in this document.
-Architectural Diagram:
+* Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  
 
 Deployment Details:
 | Deployment Methodology | GitHub Actions
 |--------------|--------------|
-|[Terraform]||
-|[Bicep]||
+|[Terraform]|Coming soon|
+|[Bicep]|Coming soon|
 
 Cost estimation:
 
