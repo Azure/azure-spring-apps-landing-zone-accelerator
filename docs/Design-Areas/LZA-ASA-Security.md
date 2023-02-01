@@ -13,11 +13,11 @@ A security control is a quality or feature of an Azure service that contributes 
 ### Azure Spring Apps Landing Zone - Topology
 Public:
 
-<img width="1042" alt="petclinic-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-public.svg">
+<img width="1042" alt="ASA-LZA-Public-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-public.svg">
 
 Private:
 
-<img width="1042" alt="petclinic-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-private.svg">
+<img width="1042" alt="ASA-LZA-Private-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-private.svg">
 
 
 ### Azure Spring Apps Landing Zone - Azure Components
