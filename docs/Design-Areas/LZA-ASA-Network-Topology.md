@@ -11,7 +11,7 @@ This article provides design considerations and recommendations for network topo
 - Consider the use of a Hub and Spoke topology.  The hub virtual network acts as a central point of connectivity to many spoke virtual networks. The hub can also be used as the connectivity point to your on-premises networks. The spoke virtual networks peer with the hub and can be used to isolate workloads. 
 - Azure Spring Apps requires two dedicated subnets – one for the service runtime and another for the applications themselves. These subnets should be sized  according to the number of applications and scalability requirements of these applications.
 - Azure Spring Apps supports deploying spring apps in your own managed virtual network. Consider this approach to isolate Azure Spring Apps    service runtime and/or app instances from the internet, enable Azure Spring apps to interact with on-premises datacenters or with Azure services in another virtual network. 
-- If you are planning to use existing subnets or decide to bring your own route tables, make sure that rules added by Azure  Spring Apps are not updated or deleted. ￼    .
+- If you are planning to use existing subnets or decide to bring your own route tables, make sure that rules added by Azure  Spring Apps are not updated or deleted.
 - If your application requires restricted and secured connectivity to your Azure Spring Apps, consider using a service like Azure Bastion to securely connect and manage your application instances. 
 
 #### Considerations for traffic from and to Azure Spring Apps
