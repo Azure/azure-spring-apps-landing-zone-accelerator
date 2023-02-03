@@ -36,6 +36,13 @@
     # Hub_Vnet_Subscription = ""
 
 ##################################################
+# Optional - Hub VNET / Bring your own Firewall/NVA
+##################################################
+# Specify IP of existing Firewall/NVA in BYO Hub
+
+   # FW_IP = "10.0.1.4"
+
+##################################################
 # Optional - Jumpbox
 ##################################################
 # The Jumpbox username defaults to "lzadmin"
