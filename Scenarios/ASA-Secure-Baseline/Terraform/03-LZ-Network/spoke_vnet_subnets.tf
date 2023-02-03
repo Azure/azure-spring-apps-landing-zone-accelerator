@@ -40,10 +40,6 @@ resource "azurerm_subnet" "appgwsubnet" {
 }
 
 
-
-
-
-
 # NSG for Support Services Subnet subnet
 resource "azurerm_network_security_group" "support_svc_nsg" { 
     name                        = "${var.springboot-support-subnet-name}-nsg"
@@ -69,4 +65,63 @@ resource "azurerm_network_security_group" "snetshared_nsg" {
 resource "azurerm_subnet_network_security_group_association" "shared_nsg_assoc" {
   subnet_id                 = azurerm_subnet.snetsharedsubnet.id 
   network_security_group_id = azurerm_network_security_group.snetshared_nsg.id
+}
+
+# NSG for Appplication Gateway V2
+
+resource "azurerm_network_security_group" "appgw_nsg" { 
+    name                        = "${var.appgw-subnet-name}-nsg"
+    location                    = var.location
+    resource_group_name         = azurerm_resource_group.spoke_rg.name
+
+    security_rule {      
+      name                        = "AllowHTTPSInbound"
+      priority                    = 100
+      direction                   = "Inbound"
+      access                      = "Allow"
+      protocol                    = "Tcp"
+      source_port_range           = "*"
+      destination_port_range      = "443"
+      source_address_prefix       = "Internet"
+      destination_address_prefix  = "*"
+    }
+    security_rule {      
+      name                        = "AllowHTTPInbound"
+      priority                    = 200
+      direction                   = "Inbound"
+      access                      = "Allow"
+      protocol                    = "Tcp"
+      source_port_range           = "*"
+      destination_port_range      = "80"
+      source_address_prefix       = "Internet"
+      destination_address_prefix  = "*"
+    }
+    security_rule {
+      name                        = "AllowGatewayManagerInbound"
+      priority                    = 300
+      direction                   = "Inbound"
+      access                      = "Allow"
+      protocol                    = "Tcp"
+      source_port_range           = "*"
+      destination_port_range      = "65200-65535"
+      source_address_prefix       = "GatewayManager"
+      destination_address_prefix  = "*"
+    }
+    security_rule {
+      name                        = "AllowAzureLBInbound"
+      priority                    = 400
+      direction                   = "Inbound"
+      access                      = "Allow"
+      protocol                    = "Tcp"
+      source_port_range           = "*"
+      destination_port_range      = "443"
+      source_address_prefix       = "AzureLoadBalancer"
+      destination_address_prefix  = "*"
+    }  
+        
+}
+
+resource "azurerm_subnet_network_security_group_association" "appgw_nsg_assoc" {
+  subnet_id                 = azurerm_subnet.appgwsubnet.id 
+  network_security_group_id = azurerm_network_security_group.appgw_nsg.id
 }

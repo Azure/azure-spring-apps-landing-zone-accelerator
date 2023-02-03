@@ -67,17 +67,6 @@ variable "springboot-support-subnet-addr" {
     default     = "10.1.2.0/24"
 }
 
-variable "springboot-data-subnet-name" {
-    type        = string
-    description = "Spring Apps Data Services Subnet"
-    default     = "snet-data"
-}
-variable "springboot-data-subnet-addr" {
-    type        = string
-    description = "Spring Apps Data Services Subnet"
-    default     = "10.1.3.0/24"
-}
-
 variable "shared-subnet-name" {
     type        = string
     description = "Shared Services Subnet Name"
