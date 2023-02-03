@@ -111,16 +111,5 @@ resource "azurerm_route_table" "default_hub_route" {
  
 }
 
-resource "azurerm_subnet_route_table_association" "hub_association" {
-  provider = azurerm.hub-subscription
-  
-  subnet_id      = data.azurerm_subnet.defaulthubsubnet.id
-  route_table_id = azurerm_route_table.default_hub_route.id
-
-  depends_on = [
-    #Last Firewall rule is in!
-    azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
-  ]
-}
 
 

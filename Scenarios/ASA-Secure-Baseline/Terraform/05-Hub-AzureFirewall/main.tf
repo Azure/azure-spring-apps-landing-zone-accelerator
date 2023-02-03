@@ -104,21 +104,10 @@ data "azurerm_subnet" "azuresbcloudsupport" {
   resource_group_name  =  local.spoke_rg
 }
 
-data "azurerm_subnet" "defaulthubsubnet" {
-  provider = azurerm.hub-subscription
-
-  name                 =  local.subnet_hubdefault_name
-  virtual_network_name =  local.hub_vnet_name
-  resource_group_name  =  local.hub_rg
-}
-
-
 # Get info about the existing Shared RG
 data "azurerm_resource_group" "shared_rg" {
   name                = local.shared_rg 
 }
-
-
 
 
 # Get info about Log Analytics workspace
