@@ -39,16 +39,19 @@ variable "springboot-service-subnet-name" {
     description = "Spring Apps Service Subnet"
     default     = "snet-runtime"
 }
+
 variable "springboot-service-subnet-addr" {
     type        = string
     description = "Spring Apps CIDR Subnet"
     default     = "10.1.0.0/24"
 }
+
 variable "springboot-apps-subnet-name" {
     type        = string
     description = "Spring Apps Service Subnet"
     default     = "snet-app"
 }
+
 variable "springboot-apps-subnet-addr" {
     type        = string
     description = "Spring Apps Apps CIDR Subnet"
@@ -72,6 +75,7 @@ variable "shared-subnet-name" {
     description = "Shared Services Subnet Name"
     default     = "snet-shared"
 }
+
 variable "shared-subnet-addr" {
     type        = string
     description = "Shared Services Subnet Address Range"
@@ -83,15 +87,12 @@ variable "appgw-subnet-name" {
     description = "App Gateway Subnet Name"
     default     = "snet-agw"
 }
+
 variable "appgw-subnet-addr" {
     type        = string
     description = "App Gateway Subnet Address"
     default     = "10.1.5.0/24"
 }
-
-
-
-
 
 variable "springapps_dnszone_name" {
     type = string
