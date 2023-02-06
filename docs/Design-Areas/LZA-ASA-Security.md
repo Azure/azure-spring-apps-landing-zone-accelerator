@@ -25,6 +25,7 @@ Pending
 | Component | Version | Location |
 |-------------|---------------|---------------|
 
+------------
 
 ### Design Considerations
 #### 1. Azure Security Baseline for Azure Spring Apps Service
@@ -60,6 +61,8 @@ The [Azure Security Benchmark](https://learn.microsoft.com/en-us/azure/governanc
 | Name| Description | Effect(s) | Version |
 |-------------|---------------|---------------|---------------|
 |[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|Azure Spring App instances should use virtual network injection for the following purposes: 1. Isolate Azure Spring App from Internet. 2. Enable Azure Spring App to interact with systems in either on premises data centers or Azure service in other virtual networks. 3. Empower customers to control inbound and outbound network communications for Azure Spring App.|Audit, Disabled, Deny| 1.0.0|
+
+------------
 
 ### Design Recommendations
 #### 1. Azure Policy Regulatory Compliance Controls for Azure Spring Apps
@@ -129,6 +132,7 @@ To review how the available Azure Policy built-ins for all Azure services map to
 |Patch/Vulnerability & Change Management| |Patch/Vulnerability & Change Management-7.7|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 |Anti-Phishing| |Anti-Phishing-14.1|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
+------------
 
 ### Appendix A: Checklists
 Pending Review.  I will add a link to the various Checklist. 
