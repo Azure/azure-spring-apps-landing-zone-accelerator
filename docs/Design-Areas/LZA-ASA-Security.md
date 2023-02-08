@@ -62,6 +62,26 @@ The [Azure Security Benchmark](https://learn.microsoft.com/en-us/azure/governanc
 |-------------|---------------|---------------|---------------|
 |[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|Azure Spring App instances should use virtual network injection for the following purposes: 1. Isolate Azure Spring App from Internet. 2. Enable Azure Spring App to interact with systems in either on premises data centers or Azure service in other virtual networks. 3. Empower customers to control inbound and outbound network communications for Azure Spring App.|Audit, Disabled, Deny| 1.0.0|
 
+
+#### 6. Secure Internet Communications
+The TLS/SSL protocol establishes identity and trust, and encrypts communications of all types. TLS/SSL makes secure communications possible, particularly web traffic carrying commerce and customer data.
+
+You can use any type of TLS/SSL certificate. For example, you can use certificates issued by a certificate authority, extended validation certificates, wildcard certificates with support for any number of subdomains, or self-signed certificates for dev and testing environments.
+
+
+#### 7. Load Certificates Securitty with Zero Trust
+Zero Trust is based on the principle of "never trust, always verify, and credential-free". Zero Trust helps to secure all communications by eliminating unknown and unmanaged certificates. Zero Trust involves trusting only certificates that are shared by verifying identity prior to granting access to those certificates. For more information, see the [Zero Trust Guidance Center](https://learn.microsoft.com/en-us/security/zero-trust/).
+
+To securely load certificates from [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/), Spring Boot apps use [managed identities](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) and [Azure role-based access control (RBAC)](https://learn.microsoft.com/en-us/azure/role-based-access-control/). Azure Spring Apps uses a provider service principal and Azure role-based access control. This secure loading is powered using the Azure Key Vault Java Cryptography Architecture (JCA) Provider. For more information, see [Azure Key Vault JCA client library for Java](https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/keyvault/azure-security-keyvault-jca).
+
+If your Spring code, Java code, or open-source libraries, such as OpenSSL, rely on the JVM default JCA chain to implicitly load certificates into the JVM's trust store, then you can import your TLS/SSL certificates from Key Vault into Azure Spring Apps and use those certificates within the app. For more information, see [Use TLS/SSL certificates in your application in Azure Spring Apps](https://learn.microsoft.com/en-us/azure/spring-apps/how-to-use-tls-certificate).
+
+#### 8. Upload well known public TLS/SSL certificates for Backend Systems
+For an app to communicate to backend services in the cloud or in on-premises systems, it may require the use of public TLS/SSL certificates to secure communication. You can upload those TLS/SSL certificates for securing outbound communications. For more information, see [Use TLS/SSL certificates in your application in Azure Spring Apps](https://learn.microsoft.com/en-us/azure/spring-apps/how-to-use-tls-certificate).
+
+#### 9. Automate provisioning and configuration for Securing Communications
+Using an ARM Template, Bicep, or Terraform, you can automate the provisioning and configuration of all the Azure resources mentioned above for securing communications.
+
 ------------
 
 ### Design Recommendations
