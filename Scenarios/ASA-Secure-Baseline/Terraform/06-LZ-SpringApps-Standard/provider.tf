@@ -21,7 +21,9 @@ provider "azurerm" {
       resource_group {
        prevent_deletion_if_contains_resources = false
      }
-    } 
+    }
+    disable_terraform_partner_id = false
+    partner_id                   = "76581e27-e985-41a0-a44d-dacc1b995aa1"  
 }
 
 provider "azurerm" {
