@@ -32,16 +32,18 @@ spring_cloud_service = "spring-springlza-dev-xxxx"
 
 
 ```bash
+    # Define the state variables (PowerShell Shown)
+    $STORAGEACCOUNTNAME="<UNIQUENAME>"
+    $CONTAINERNAME="springappsterraform"
+    $TFSTATE_RG="springappsterraform"
 
     # Login to Azure CLI
     az login
 
     # Change directory in the component and init terraform
     cd <xx-FolderName>
-    terraform init
-
-    # Update for backend coming soon
-    #terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config="storage_account_name=$STORAGEACCOUNTNAME" #-backend-config="container_name=$CONTAINERNAME"
+    
+    terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config="storage_account_name=$STORAGEACCOUNTNAME" -backend-config="container_name=$CONTAINERNAME"
 
     # Plan and apply
     terraform plan -out my.plan --var-file parameters.tfvars
