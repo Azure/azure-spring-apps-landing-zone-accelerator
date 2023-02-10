@@ -7,7 +7,7 @@
 # The Region to deploy to
     location              = "westus3"
 
-# This Prefix will be used on most deployed resources.
+# This Prefix will be used on most deployed resources.  10 Characters max.
 # The environment will also be used as part of the name
     name_prefix           = "springlza"
     environment           = "dev"
@@ -34,6 +34,13 @@
     # Hub_Vnet_Name         = ""
     # Hub_Vnet_RG           = ""
     # Hub_Vnet_Subscription = ""
+
+##################################################
+# Optional - Hub VNET / Bring your own Firewall/NVA
+##################################################
+# Specify IP of existing Firewall/NVA in BYO Hub
+
+   # FW_IP = "10.0.1.4"
 
 ##################################################
 # Optional - Jumpbox

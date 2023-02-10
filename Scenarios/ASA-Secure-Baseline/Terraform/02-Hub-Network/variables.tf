@@ -4,7 +4,11 @@
 
 variable "name_prefix" {
     type= string
-    description = "This prefix will be used when naming resources"
+    description = "This prefix will be used when naming resources. 10 characters max."
+    validation {
+      condition = length(var.name_prefix)<=10
+      error_message = "name_prefix: 10 characters max allowed."
+    }
 
 }
 
@@ -24,7 +28,6 @@ variable "Hub_Vnet_Subscription" {
     default =""
 }
 
-
 variable "tags" {
     type        = map 
     default     = { 
@@ -39,17 +42,10 @@ variable "hub_vnet_addr_prefix" {
     default     = "10.0.0.0/16"
 }
 
-# Hub Subnets
-variable "default-subnet-addr" {
-    type        = string
-    description = "Spring Apps CIDR Subnet"
-    default     = "10.0.0.0/24"
-}
-
 variable "azurebastion_addr_prefix" {
     type        = string 
     description = "Azure Bastion Address Prefix"
-    default     = "10.0.2.0/24"
+    default     = "10.0.0.0/24"
 }
 
 

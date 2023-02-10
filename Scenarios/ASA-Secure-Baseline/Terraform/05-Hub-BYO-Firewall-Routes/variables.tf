@@ -31,12 +31,12 @@ variable "tags" {
 
 
 # Info about Precreated Hub 
-variable "Hub_Vnet_Name" {
-    type = string    
-    description = "The name of the Hub Vnet"
-    default =""
-} 
-
+#variable "Hub_Vnet_Name" {
+#   type = string    
+#    description = "The name of the Hub Vnet"
+#    default =""
+#} 
+#
 variable "Hub_Vnet_RG" {
     type = string    
     description = "The name of the Hub RG"
@@ -84,20 +84,6 @@ variable "shared-subnet-name" {
 }
 
 
-
-# Azure Firewall
-variable "azurefw_addr_prefix" {
-    type        = string 
-    description = "Azure Firewall VNET prefix"
-    default     = "10.0.1.0/24"
-}
-
-variable "azure_firewall_zones" {
-    type = set(string)
-    description = "Deploy Azure Firewall to these zones"
-    default = []
-}
-
 ## This is required for retrieving state
 variable "state_sa_name" {}
 
@@ -105,3 +91,6 @@ variable "container_name" {}
 
 # Storage Account Access Key
 variable "access_key" {}
+
+# BYO FW IP address
+variable "FW_IP" {}
