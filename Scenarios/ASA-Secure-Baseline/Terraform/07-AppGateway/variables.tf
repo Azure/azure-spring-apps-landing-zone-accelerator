@@ -4,8 +4,11 @@
 
 variable "name_prefix" {
     type= string
-    description = "This prefix will be used when naming resources"
-
+    description = "This prefix will be used when naming resources. 10 characters max."
+    validation {
+      condition = length(var.name_prefix)<=10
+      error_message = "name_prefix: 10 characters max allowed."
+    }
 }
 
 variable "location" {
