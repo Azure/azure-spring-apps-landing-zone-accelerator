@@ -1,6 +1,6 @@
 # Azure Spring Apps Secure Baseline with VNet Injection
 
-Insert description of scenario here
+Insert description of scenario here along with diagram
 
 ## Core architecture components
 
