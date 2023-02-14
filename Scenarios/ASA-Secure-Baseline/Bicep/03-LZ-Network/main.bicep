@@ -235,6 +235,7 @@ module privateZoneSpringApps '../Modules/privateDnsZone.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-private-springapps'
   scope: resourceGroup(hubVnetRg.name)
   params: {
+    tags: tags
     zoneName: 'private.azuremicroservices.io'
   }
 }
@@ -272,6 +273,7 @@ module privateZoneKv '../Modules/privateDnsZone.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-private-kv'
   scope: resourceGroup(hubVnetRg.name)
   params: {
+    tags: tags
     zoneName: 'privatelink.vaultcore.azure.net'
   }
 }

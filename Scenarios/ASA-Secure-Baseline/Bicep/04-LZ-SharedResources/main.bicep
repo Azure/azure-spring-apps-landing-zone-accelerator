@@ -55,6 +55,7 @@ module keyVault '../Modules/keyVault.bicep' = {
     name: 'kv-${namePrefix}-${randomSufix}'
     networkResourceGroupName: spokeRgName
     subnetName: 'snet-support'
+    tags: tags
     targetResourceGroupName: sharedRg.name
     timeStamp: timeStamp
     vnetName: spokeVnetName
@@ -77,6 +78,7 @@ module logAnalyticsWorkspace '../Modules/logAnalyticsWorkspace.bicep' = {
   params: {
     location: location
     name: 'kv-${namePrefix}-${randomSufix}'
+    tags: tags
   }
 }
 
@@ -89,30 +91,9 @@ module jumpHost '../Modules/virtualMachine.bicep' = {
     location: location
     networkResourceGroupName: spokeRgName
     subnetName: 'snet-shared'
+    tags: tags
     vmName: substring('vm${namePrefix}${environment}', 0, 14)
     vmSize: 'Standard_DS3_v2'
     vnetName: spokeVnetName
   }
 }
-
-/*
-module dnsServer 'modules/virtualMachine.bicep' = {
-  name: 'dns-server-consoso-com'
-  scope: resourceGroup(utilRg.name)
-  dependsOn: [
-    applyHubRoutes
-  ]
-  params: {
-    adminUserName: vmAdminUserName
-    adminPassword: vmAdminPwd
-    networkResourceGroupName: netrg.name
-    location: region
-    vnetName: hubVnet.outputs.name
-    subnetName: 'dns'
-    os: 'linux'
-    vmName: '${resourcePrefix}-dns01'
-    vmSize: 'Standard_B2ms'
-    initScriptBase64: loadFileAsBase64('dnsserver.yml')
-  }
-}
-*/

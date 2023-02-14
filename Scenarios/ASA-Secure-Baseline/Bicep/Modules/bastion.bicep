@@ -1,6 +1,7 @@
 param location string
 param name string
 param subnetId string
+param tags object
 
 resource bastionIP 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
   name: 'azure-bastion-ip'
@@ -12,6 +13,7 @@ resource bastionIP 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
   sku: {
     name: 'Standard'
   }
+  tags: tags
 }
 
 resource bastion 'Microsoft.Network/bastionHosts@2022-07-01' = {
@@ -30,4 +32,5 @@ resource bastion 'Microsoft.Network/bastionHosts@2022-07-01' = {
       }
     ]
   }
+  tags: tags
 }

@@ -195,5 +195,6 @@ module azureBastion '../Modules/bastion.bicep' = {
     name: 'bastion-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
     location: location
     subnetId: '${hubVnet.outputs.id}/subnets/AzureBastionSubnet'
+    tags: tags
   }
 }

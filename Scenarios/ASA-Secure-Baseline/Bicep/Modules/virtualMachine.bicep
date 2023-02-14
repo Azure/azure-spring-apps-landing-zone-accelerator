@@ -7,6 +7,7 @@ param initScriptBase64 string = ''
 param location string = resourceGroup().location
 param networkResourceGroupName string
 param subnetName string
+param tags object
 param vmName string
 @description('Size of the virtual machine.')
 param vmSize string
@@ -38,6 +39,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2022-07-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
@@ -75,6 +77,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       }
     }
   }
+  tags: tags
 }
 
 output id string = vm.id

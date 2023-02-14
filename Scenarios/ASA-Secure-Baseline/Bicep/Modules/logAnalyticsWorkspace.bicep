@@ -1,5 +1,6 @@
 param name string
 param location string
+param tags object
 
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: name
@@ -10,4 +11,5 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
       name: 'PerGB2018'
     }
   }
+  tags: tags
 }

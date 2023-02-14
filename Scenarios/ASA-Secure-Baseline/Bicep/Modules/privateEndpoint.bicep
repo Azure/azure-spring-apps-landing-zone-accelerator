@@ -6,6 +6,7 @@ param networkResourceGroupName string
 param privateEndpointName string
 param subnetName string
 param serviceResourceId string
+param tags object
 param vnetName string
 
 var subscriptionId = subscription().subscriptionId
@@ -31,6 +32,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-07-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource privateDnsZoneConfig 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-07-01' = {
