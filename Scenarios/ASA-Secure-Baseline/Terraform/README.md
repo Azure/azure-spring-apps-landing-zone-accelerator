@@ -1,50 +1,65 @@
-# Temporary testing Intructions 
+# Azure Spring Apps Landing Zone Accelerator - Vnet Injection Scenario for Terraform
 
+## Accounting for Separation of Duties 
+While the code here is located in one folder in a single repo, the steps are designed to mimic how an organization may break up the deployment of various Azure components across teams, into different code repos or have them run by different pipelines with specific credentials. 
 
-## Create a remote state storage account
+## Terraform State Management
+In this example, state is stored in an Azure Storage account that was created out-of-band.  All deployments reference this storage account to either store state or reference variables from other parts of the deployment however you may choose to use other tools for state management, like Terraform Cloud after making the necessary code changes.
 
-Create some variables to start with
+## Getting Started 
+This section is organized using folders that match the steps outlined below. Make any necessary adjustments to the variables and settings within that folder to match the needs of your deployment. 
 
+### Prerequisites 
+1. Clone this repo, install Azure CLI, install Terraform
+
+2. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
+
+    `az provider register --namespace 'Microsoft.AppPlatform'`
+
+    `az provider register --namespace 'Microsoft.ContainerService'`
+
+3. Modify the variables within the Global section of the variable definitons file paramaters.tfvars as needed
+
+Sample:
 ```bash
-# Bash
-REGION=<REGION>
-STORAGEACCOUNTNAME=<UNIQUENAME>
-CONTAINERNAME=springappsterraform
-TFSTATE_RG=springappsterraform
 
-#      -- or --
+##################################################
+## Global
+##################################################
+# The Region to deploy to
+    location              = "westus3"
 
-## PowerShell
-$REGION="<REGION>"
-$STORAGEACCOUNTNAME="<UNIQUENAME>"
-$CONTAINERNAME="springappsterraform"
-$TFSTATE_RG="springappsterraform"
+# This Prefix will be used on most deployed resources.  10 Characters max.
+# The environment will also be used as part of the name
+    name_prefix           = "springlza"
+    environment           = "dev"
+
+# tags = { 
+#    project = "ASA-Accelerator"
+#    deployenv = "dev"
+# }
+
 ```
 
 
-Create a Resource Group:
-```bash
-az group create --name $TFSTATE_RG --location $REGION
-```
+### Deployment
+1. [Creation of Azure Storage Account for State Management](./01-State-Storage.md)
 
-Create a Storage Account:
-```bash
-az storage account create -n $STORAGEACCOUNTNAME -g $TFSTATE_RG -l $REGION --sku Standard_LRS
-```
+2. [Creation of the Hub Virtual Network & its respective components](./02-Hub-Network.md)
 
-Create a Storage Container within the Storage Account:
+3. [Creation of Landing Zone (Spoke) Network & its respective Components](./03-LZ-Network.md)
 
-```bash
-az storage container-rm create --storage-account $STORAGEACCOUNTNAME --name $CONTAINERNAME
-```
+4. [Creation of Shared components for this deployment](./04-LZ-SharedResources.md)
+ 
+5. [Creation of Azure Firewall with UDRs](./05-Hub-Firewall.md)
 
-Obtain the access keys
+6. [Creation of Azure Spring Apps](./06-LZ-SpringApps.md)
 
-```bash
- az storage account keys list -g $TFSTATE_RG  -n $STORAGEACCOUNTNAME 
+7. [Optional: Creation of Application Gateway](./07-LZ-AppGateway.md)
 
-```
 
+
+BELOW IS LEGACY AND NEEDS TO BE SHUFFLED
 
 ## Configure deployment parameters
 Modify parameters.tfvars as needed
@@ -194,52 +209,3 @@ This will run a PowerShell script that will destroy the terraform deployment
     ./_destroy.ps1
 ```
 
-## Known Issues / Notes
-  - When destroying Azure Spring Apps **Enterprise**, there is an issue with the API Portal destruction where destruction will fail with error "Please unassign public endpoint before deleting API Portal.".  This issues does not apply to Spring Apps Standard Edition.
-    - A bug has been filed with the AZURERM terraform provider Github
-    https://github.com/hashicorp/terraform-provider-azurerm/issues/19949
-
-    - To get around this and complete the destruction, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal
-        - To do this via the Azure Portal, do this:
-    Azure Portal > Azure Spring Apps instance > API Portal > Assign endpoint -> Set to No
-
-        - To do this via Terraform
-    Modify file 06-LZ-SpringApps-Enterprise\enterprise_tanzu_components.tf
-    Line 44 - public_network_access_enabled , set it to False
-    Then Apply
-
-    - Then you can destroy the deployment
-
-# Project
-
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
-
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
-
-## Contributing
-
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
-
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-## Trademarks
-
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
