@@ -1,39 +1,22 @@
-param vmName string
-param networkResourceGroupName string
-param vnetName string
-param subnetName string
-param adminUserName string
 @secure()
 param adminPassword string
-@description('Size of the virtual machine.')
-param vmSize string
-@description('location for all resources')
-param location string = resourceGroup().location
+param adminUserName string
 @description('Base64 encocded string to be run at VM startup')
 param initScriptBase64 string = ''
+@description('location for all resources')
+param location string = resourceGroup().location
+param networkResourceGroupName string
+param subnetName string
+param vmName string
+@description('Size of the virtual machine.')
+param vmSize string
+param vnetName string
 
-@allowed([
-  'windows10'
-  'linux'
-])
-param os string
-
-var linuxImage = {
-  publisher: 'canonical'
-  offer: '0001-com-ubuntu-server-focal'
-  sku: '20_04-lts-gen2'
+var windowsImageDetails = {
+  publisher: 'MicrosoftWindowsServer'
+  offer: 'WindowsServer'
+  sku: '2022-Datacenter'
   version: 'latest'
-}
-
-var windows10Image = {
-  publisher: 'MicrosoftWindowsDesktop'
-  offer: 'Windows-10'
-  sku: '20h2-pro'
-  version: 'latest'
-}
-
-var linuxConfiguration = {
-  disablePasswordAuthentication: false
 }
 
 var subscriptionId = subscription().subscriptionId
@@ -68,24 +51,16 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       computerName: vmName
       adminUsername: adminUserName
       adminPassword: adminPassword
-      linuxConfiguration: (os =~ 'linux') ? linuxConfiguration : null
-      customData: ( !empty(initScriptBase64) ? initScriptBase64 : null )
+      customData: (!empty(initScriptBase64) ? initScriptBase64 : null)
     }
     storageProfile: {
-      imageReference: (os =~ 'linux') ? linuxImage : windows10Image
+      imageReference: windowsImageDetails
       osDisk: {
-        name: '${vmName}-os'
+        name: '${vmName}-os-disk'
         caching: 'ReadWrite'
         createOption: 'FromImage'
       }
-      dataDisks: [
-        {
-          name: '${vmName}-dataDisk'
-          diskSizeGB: 1023
-          lun: 0
-          createOption: 'Empty'
-        }
-      ]
+      dataDisks: [ ]
     }
     networkProfile: {
       networkInterfaces: [
