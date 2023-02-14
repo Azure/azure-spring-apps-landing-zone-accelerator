@@ -10,3 +10,4 @@ Design changes:
 2/3/2023 - Add NSG for App Gateway subnet in spoke and removing data subnet. 
 2/3/2023 - Add variable to parameters.tfvars for Bring your own Firewall/NVA IP
 2/6/2023 - Added Default NSGs to ASA subnets
+2/13/2023 - Moving 04 outputs to jump_host.tf and removing legacy script files from VM Custom script extension
