@@ -3,7 +3,7 @@ param vnetId string
 param vnetName string
 param zoneName string
 
-resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+resource virtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   name: '${zoneName}/${vnetName}-link'
   location: 'global'
   properties: {

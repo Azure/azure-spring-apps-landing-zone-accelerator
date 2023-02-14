@@ -5,7 +5,7 @@ param subnets array
 param tags object
 
 
-resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: name
   location: location
   properties: {

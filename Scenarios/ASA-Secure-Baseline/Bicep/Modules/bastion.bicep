@@ -2,7 +2,7 @@ param location string
 param name string
 param subnetId string
 
-resource bastionIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+resource bastionIP 'Microsoft.Network/publicIPAddresses@2022-07-01' = {
   name: 'azure-bastion-ip'
   location: location
   properties: {
@@ -14,7 +14,7 @@ resource bastionIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   }
 }
 
-resource bastion 'Microsoft.Network/bastionHosts@2020-06-01' = {
+resource bastion 'Microsoft.Network/bastionHosts@2022-07-01' = {
   name: name
   location: location
   properties: {

@@ -1,23 +1,37 @@
 targetScope = 'subscription'
 
+
+/******************************/
+/*         PARAMETERS         */
+/******************************/
 @description('Azure Bastion Subnet Address Space')
 param azureBastionSubnetSpace string
+
 @description('Hub VNET Prefix')
 param hubVnetAddressPrefixes string
+
 @description('Name of the hub VNET. Leave blank if you need one created')
 param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+
 @description('Name of the RG that has the hub VNET. Leave blank if you need one created')
 param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
+
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
+
 @description('The common prefix used when naming resources')
 param namePrefix string
-@description('Spring Apps Subnet Address Space')
-param springAppsSubnetSpace string
+
+@description('Azure Resource Tags')
 param tags object = {}
+
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
+
+/******************************/
+/*     RESOURCES & MODULES    */
+/******************************/
 resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: hubVnetResourceGroupName
   location: location
@@ -43,12 +57,6 @@ module hubVnet '../Modules/vnet.bicep' = {
           }
         }
       }
-      {
-        name: 'default'
-        properties: {
-          addressPrefix: springAppsSubnetSpace
-        }
-      }
     ]
     tags: tags
   }
@@ -70,7 +78,7 @@ module azureBastionNsg '../Modules/nsg.bicep' = {
           access: 'Allow'
           protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRange: '*'
+          destinationPortRange: '443'
           sourceAddressPrefix: 'Internet'
           destinationAddressPrefix: '*'
         }

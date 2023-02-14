@@ -3,7 +3,7 @@ param name string
 param securityRules array
 param tags object
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
   name: name
   location: location
   properties: {

@@ -1,31 +1,52 @@
 targetScope = 'subscription'
 
+/******************************/
+/*         PARAMETERS         */
+/******************************/
 @description('IP CIDR Block for the App Gateway Subnet')
 param appGwSubnetSpace string
+
 @description('Name of the hub VNET. Leave blank if you need one created')
 param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+
 @description('Name of the RG that has the hub VNET. Leave blank if you need one created')
 param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
+
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
+
 @description('The common prefix used when naming resources')
 param namePrefix string
+
 @description('IP CIDR Block for the Shared Subnet')
 param sharedSubnetSpace string
+
 @description('Spoke VNET Prefix')
 param spokeVnetAddressPrefixes string
+
 @description('Name of the RG that has the spoke VNET. Leave blank if you need one created')
-param spokeVnetName string = 'rg-${namePrefix}-SPOKE'
+param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
+
 @description('IP CIDR Block for the Spring Apps Subnet')
 param springBootAppsSubnetSpace string
+
 @description('IP CIDR Block for the Spring Apps Service Subnet')
 param springBootServiceSubnetSpace string
+
 @description(' for the Spring Apps SUpport Subnet')
 param springBootSupportSubnetSpace string
+
+@description('Azure Resource Tags')
 param tags object = {}
+
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
+
+
+/******************************/
+/*     RESOURCES & MODULES    */
+/******************************/
 resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
   name: hubVnetResourceGroupName
 }
@@ -55,6 +76,9 @@ module spokeVnet '../Modules/vnet.bicep' = {
         name: 'snet-runtime'
         properties: {
           addressPrefix: springBootServiceSubnetSpace
+          networkSecurityGroup: {
+            id: runtimeNsg.outputs.id
+          }
         }
       }
       {
@@ -65,7 +89,6 @@ module spokeVnet '../Modules/vnet.bicep' = {
             id: appNsg.outputs.id
           }
         }
-
       }
       {
         name: 'snet-support'
@@ -105,34 +128,18 @@ module appNsg '../Modules/nsg.bicep' = {
   params: {
     name: 'snet-app-nsg'
     location: location
-    securityRules: [
-      {
-        name: 'AllowCorpnet'
-        properties: {
-          priority: 2700
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: 'CorpNetPublic'
-          destinationAddressPrefix: '*'
-        }
-      }
-      {
-        name: 'AllowSAW'
-        properties: {
-          priority: 2701
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: '*'
-          sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: 'CorpNetSaw'
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
+    securityRules: [ ]
+    tags: tags
+  }
+}
+
+module runtimeNsg '../Modules/nsg.bicep' = {
+  name: '${timeStamp}-${namePrefix}-snet-runtime-nsg'
+  scope: resourceGroup(spokeRg.name)
+  params: {
+    name: 'snet-runtime-nsg'
+    location: location
+    securityRules: [ ]
     tags: tags
   }
 }
@@ -167,28 +174,54 @@ module agwNsg '../Modules/nsg.bicep' = {
     location: location
     securityRules: [
       {
-        name: 'AllowCorpnet'
+        name: 'AllowHTTPSInbound'
         properties: {
-          priority: 2700
+          priority: 100
           direction: 'Inbound'
           access: 'Allow'
-          protocol: '*'
+          protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: 'CorpNetPublic'
+          destinationPortRange: '443'
+          sourceAddressPrefix: 'Internet'
           destinationAddressPrefix: '*'
         }
       }
       {
-        name: 'AllowSAW'
+        name: 'AllowHTTPInbound'
         properties: {
-          priority: 2701
+          priority: 200
           direction: 'Inbound'
           access: 'Allow'
-          protocol: '*'
+          protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRange: '*'
-          sourceAddressPrefix: 'CorpNetSaw'
+          destinationPortRange: '80'
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'AllowGatewayManagerInbound'
+        properties: {
+          priority: 300
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '65200-65535'
+          sourceAddressPrefix: 'GatewayManager'
+          destinationAddressPrefix: '*'
+        }
+      }
+      {
+        name: 'AllowAzureLBInbound'
+        properties: {
+          priority: 400
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '443'
+          sourceAddressPrefix: 'AzureLoadBalancer'
           destinationAddressPrefix: '*'
         }
       }
@@ -270,3 +303,25 @@ module spokeVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
     autoRegistration: false
   }
 }
+
+module hubToSpokePeering '../Modules/virtualNetworkPeering.bicep' = {
+  name: '${timeStamp}-${namePrefix}-vnet-hubToSpokePeering'
+  scope: resourceGroup(hubVnetRg.name)
+  params: {
+    localVnetName: hubVnet.name
+    remoteVnetName: spokeVnet.outputs.name
+    remoteVnetId: spokeVnet.outputs.id
+  }
+}
+
+module spokeToHubPeering '../Modules/virtualNetworkPeering.bicep' = {
+  name: '${timeStamp}-${namePrefix}-vnet-spokeToHubPeering'
+  scope: resourceGroup(spokeRg.name)
+  params: {
+    localVnetName: spokeVnet.outputs.name
+    remoteVnetName: hubVnet.name
+    remoteVnetId: hubVnet.id
+  }
+}
+
+//TODO Grant owner to Azure AD Service Principle to Spoke VNET
