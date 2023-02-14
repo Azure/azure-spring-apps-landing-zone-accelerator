@@ -7,7 +7,7 @@
 # The Region to deploy to
     location              = "westus3"
 
-# This Prefix will be used on most deployed resources.
+# This Prefix will be used on most deployed resources.  10 Characters max.
 # The environment will also be used as part of the name
     name_prefix           = "springlza"
     environment           = "dev"

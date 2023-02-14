@@ -1,5 +1,5 @@
 Design changes:
-1/9/2023 - The plan has been broken up into smaller steps to faciliate phased deployment.
+1/9/2023 - The plan has been broken up into smaller steps to facilitate phased deployment.
 1/9/2023 - Removed Adding your own IP to IPrules because many customers block sites like ipv4.icanhazip.com
 1/25/2023 - Brought back Adding your Own IP to the Key vault firewall. Provided a variable for the customer to specify an IP range if desired or if the Check IP services are unaccesible.
 1/25/2023 - Moved all the "Get your External IP" code to get_external_ip.tf 
@@ -9,3 +9,6 @@ Design changes:
 2/3/2023 - Adding UDR Support for BYO HUB with NVA for Azure Spring Apps subnets. 
 2/3/2023 - Add NSG for App Gateway subnet in spoke and removing data subnet. 
 2/3/2023 - Add variable to parameters.tfvars for Bring your own Firewall/NVA IP
+2/6/2023 - Added Default NSGs to ASA subnets
+2/13/2023 - Moving 04 outputs to jump_host.tf and removing legacy script files from VM Custom script extension
+2/13/2023 - ASA UDRs RBAC. Changing lookup value for "Azure Spring Apps Resource Provider" from name to application_id

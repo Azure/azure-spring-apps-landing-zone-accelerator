@@ -38,7 +38,7 @@ locals  {
   subnet_shared_name       = var.shared-subnet-name
   subnet_cloudsupport_name = var.springboot-support-subnet-name
 
-  jumphost_name            = "vm${var.name_prefix}${var.environment}"
+  jumphost_name            = substr("vm${var.name_prefix}${var.environment}",0,14)
   jumphost_user            = var.jump_host_admin_username
   jumphost_pass            = ( var.jump_host_password == "" ? random_password.jumphostpass.result  : var.jump_host_password )
   
