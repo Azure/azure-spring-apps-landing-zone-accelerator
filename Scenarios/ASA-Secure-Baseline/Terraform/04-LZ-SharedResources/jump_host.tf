@@ -72,10 +72,8 @@ resource "azurerm_virtual_machine_extension" "Installdependencies" {
   settings = <<SETTINGS
     {
         "fileUris": [
-           "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/greenfield-deployment/scripts/DeployDeveloperConfig.ps1",
-           "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.ps1",
-           "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.sh"
-
+           "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/greenfield-deployment/scripts/DeployDeveloperConfig.ps1"
+    
            ]
     }
 SETTINGS
@@ -93,4 +91,18 @@ resource "azurerm_key_vault_secret" "jumphostuser" {
   name         = "jumphost-user"
   value        = local.jumphost_user
   key_vault_id = azurerm_key_vault.sc_vault.id
+}
+
+output jump_host_name {
+    value = local.jumphost_name
+}
+output jump_host_IP {
+    value = var.jump_host_private_ip_addr
+}
+output jump_host_user {
+    value = local.jumphost_user
+}
+
+output jump_host_pass {
+    value = "To get Password, run: az keyvault secret show --name jumphost-password --vault-name ${azurerm_key_vault.sc_vault.name} -o table"
 }
