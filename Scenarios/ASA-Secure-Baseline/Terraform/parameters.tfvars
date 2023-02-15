@@ -1,11 +1,9 @@
 
 ##################################################
-# REQUIRED
-##################################################
-
 ## Global
+##################################################
 # The Region to deploy to
-    location              = "westus3"
+    location              = "eastus"
 
 # This Prefix will be used on most deployed resources.  10 Characters max.
 # The environment will also be used as part of the name
@@ -17,7 +15,10 @@
 #    deployenv = "dev"
 # }
 
+
+##################################################
 ## 01 Remote Storage State configuration
+##################################################
 
 # Deployment state storage information
     state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
