@@ -1,11 +1,11 @@
-# Create the Hub Network
+# Create the Hub Virtual Network
 
 The following will be created:
 * Resource Group for Hub Networking (main.tf)
 * Hub Network (main.tf)
 * Azure Bastion Host (azure_bastion.tf)
 
-Review and if needed, comment out and modify the variables within the "02 Hub Virtual Network" section of the variable definitons file paramaters.tfvars. Do not modify to use the default values. 
+Review and if needed, comment out and modify the variables within the "02 Hub Virtual Network" section of the common variable definitons file [parameters.tfvars](./parameters.tfvars). Do not modify if you plan to use the default values. 
 
 If you wish to bring your own Hub Virtual Network, skip to the [step](#optional-bring-your-own-hub-virtual-network) below (Bring your own Hub Virtual Network). 
 

@@ -7,7 +7,7 @@ The following will be created:
 * Virtual Machine for testing the application/s (jump_host.tf)
 * Luis add infor here on the IP firewall rule on KeyVault
 
-Review and if needed, comment out and modify the variables within the "Optional - 04 Shared - Jumpbox" section of the variable definitons file paramaters.tfvars. 
+Review and if needed, comment out and modify the variables within the "Optional - 04 Shared - Jumpbox" section of the common variable definitons file [parameters.tfvars](./parameters.tfvars). 
 
 If you do not wish to deploy the Virtual machine for testing, remove the jump_host.tf file from the directory
 

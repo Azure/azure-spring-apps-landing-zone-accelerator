@@ -1,13 +1,13 @@
-# Create the Landing Zone Network (Spoke)
+# Create the Landing Zone Virtual Network (Spoke)
 
 The following will be created:
 * Resource Group for Landing Zone Networking (main.tf)
 * Peering of Hub and Spoke Networks (hub_spoke_peering.tf)
 * Private DNS Zones (private_dns-zones.tf)
 * Subnets for Azure Spring Apps and supporting components (spoke_vnet_subnets.tf)
-* RBAC for the Azure Spring Apps Resource Provider applied to the Spoke Virtual Network (spoke_vnet_rbac.tf)
+* RBAC for the Azure Spring Apps Resource Provider applied to the Spoke Virtual Network (spoke_vnet_rbac.tf) see [docs]](https://learn.microsoft.com/en-us/azure/spring-apps/how-to-deploy-in-azure-virtual-network?tabs=azure-portal#grant-service-permission-to-the-virtual-network)
 
-Review and if needed, comment out and modify the variables within the "03 Spoke Virtual Network" section of the variable definitons file paramaters.tfvars. 
+Review and if needed, comment out and modify the variables within the "03 Spoke Virtual Network" section of the common variable definitons file parameters.tfvars](./parameters.tfvars). 
 
 Sample:
 
