@@ -30,6 +30,7 @@ for applications deployed to Azure Spring Apps.
 * Azure Firewall
 * Azure Application Gateway with WAF (optional)
 * Azure Key vault
+* Azure Private DNS Zones
 * Log Analytics Workspace
 * Application Insights
 
