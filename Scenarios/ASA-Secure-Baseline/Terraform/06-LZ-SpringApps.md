@@ -66,4 +66,4 @@ terraform apply my.plan
 
 ### Next step
 
-:arrow_forward: [Creation of Azure Application Gateway](./07-AppGateway.md)
+:arrow_forward: [Creation of Azure Application Gateway](./07-LZ-AppGateway.md)
