@@ -5,11 +5,32 @@ The following will be created:
 * Log Analytics Workspace (log_analytics_workspace.tf)
 * Azure Key Vault with a Private Endpoint (key_vault.tf)
 * Virtual Machine for testing the application/s (jump_host.tf)
-* Luis add infor here on the IP firewall rule on KeyVault
+* Public IP whitelisted for Key Vault (get_external_ip.tf)
+
+Your external IP needs to be white-listed for access to Key Vault. The plan will automatically use the external IP of the deployment machine. To use a custom IP, use variable My_External_IP
 
 Review and if needed, comment out and modify the variables within the "Optional - 04 Shared - Jumpbox" section of the common variable definitons file [parameters.tfvars](./parameters.tfvars). 
 
+Sample:
+
+```bash
+##################################################
+## Optional - 04 Shared - Jumpbox
+##################################################
+# The Jumpbox username defaults to "lzadmin"
+# The Jumpbox password defaults to a Random password and stored to the KeyVault
+# under the Jumpbox-Pass secret
+# My_External_IP will be automatically calculated unless you specify it here.
+
+    # jump_host_vm_size = "Standard_DS3_v2"
+    # jump_host_admin_username = "lzadmin"
+    # jump_host_password ="xxxxxx"
+    # My_External_IP = "1.2.3.4/32"
+
+```
+
 If you do not wish to deploy the Virtual machine for testing, remove the jump_host.tf file from the directory
+
 
 ## Deploy the Shared resources
 
