@@ -45,7 +45,7 @@ Obtain the access keys
 
 # Configure Variables for state management
 
-Modify the variables within the "01 Remote Storage State configuration" section of the variable definitons file paramaters.tfvars as needed.
+Modify the variables within the "01 Remote Storage State configuration" section of the variable definitons file [parameters.tfvars](./parameters.tfvars).
 
 Sample: 
 
