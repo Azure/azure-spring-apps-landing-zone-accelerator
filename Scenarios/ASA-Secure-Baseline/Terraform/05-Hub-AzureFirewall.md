@@ -1,6 +1,6 @@
 # Create the Azure Firewall Resource
 
-If you do not want or need an egress Firewall skip to [Creation of Azure Spring Apps](./06-LZ-SpringApps.md)
+If you do not need an egress firewall skip to [Creation of Azure Spring Apps](./06-LZ-SpringApps.md)
 
 If you brought your own hub resource and that hub already includes an Azure Firewall or 3rd party NVA which you would like to use, skip to [BYO Hub with Firewall](./05-Hub-BYO-Firewall-Routes.md)
 

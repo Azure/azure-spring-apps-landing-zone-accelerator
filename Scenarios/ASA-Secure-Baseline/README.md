@@ -15,9 +15,9 @@ applications deployed into the Azure Spring Apps instance. This VM is
 not exposed to the internet and is only accessible via Azure Bastion.
 * Log Analytics Workspace where Azure Spring Apps and Azure Firewall deliver 
 logs and metrics.
-* Application Insights for monitoring applications deployed to Azure Spring Apps
+* Application Insights for monitoring applications deployed to Azure Spring Apps.
 * Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage 
-for applications deployed to Azure Spring Apps
+for applications deployed to Azure Spring Apps.
 * Instance of Azure Bastion for connection to the Windows Server 2022 virtual machine running in the virtual network.
 
 ![Architectural diagram for the secure baseline scenario.](../ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
