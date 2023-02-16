@@ -4,7 +4,7 @@
 This repository contains terraform to deploy the necessary components to run the Pet Clinic sample app in Azure Spring Apps.
 
 This is targeted at deploying within the footprint of the ASA-Secure-Baseline, referencing the resource groups and networking from that deployment.
-
+ - [ASA Secure Baseline deployment](../../ASA-Secure-Baseline/README.md)
 
 
 ## Configure deployment parameters
@@ -21,10 +21,10 @@ Sample:
 # Subscription Id for the target Azure subscription
 subscription_id = ""
 
-# Name of Key Vault, this is randomized during deployment
+# Name of Key Vault, this is created during the deployment of the ASA Secure Baseline
 key_vault_name = "kv-springlza-xxxx"
 
-# Name of Spring Cloud Service, this is randomized during deployment
+# Name of Spring Cloud Service, this is created during the deployment of the ASA Secure Baseline
 spring_cloud_service = "spring-springlza-dev-xxxx"
 ```
 
@@ -33,9 +33,10 @@ spring_cloud_service = "spring-springlza-dev-xxxx"
 
 ```bash
     # Define the state variables (PowerShell Shown)
-    $STORAGEACCOUNTNAME="<UNIQUENAME>"
-    $CONTAINERNAME="springappsterraform"
-    $TFSTATE_RG="springappsterraform"
+    
+    $TFSTATE_RG="<Your storage account resource group name>"
+    $STORAGEACCOUNTNAME="<Your storage account name>"
+    $CONTAINERNAME="<Your Container Name>"
 
     # Login to Azure CLI
     az login

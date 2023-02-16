@@ -24,6 +24,10 @@ provider "azurerm" {
   features {}
 }
 
+locals {
+  vnet_spoke_name = "vnet-springlza-${data.azurerm_resource_group.spoke_rg.location}-SPOKE"
+}
+
 data "azurerm_resource_group" "spoke_rg" {
   name = var.resource_group
 }
@@ -34,7 +38,7 @@ data "azurerm_spring_cloud_service" "spring_cloud" {
 }
 
 data "azurerm_virtual_network" "spoke" {
-  name                = var.vnet_spoke_name
+  name                = local.vnet_spoke_name
   resource_group_name = data.azurerm_resource_group.spoke_rg.name
 }
 

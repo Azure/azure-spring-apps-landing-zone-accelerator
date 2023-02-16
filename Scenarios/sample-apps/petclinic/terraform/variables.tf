@@ -53,7 +53,8 @@ variable "mysql_database_name" {
   default = "petclinic"
 }
 
-variable "vnet_spoke_name" {
+variable "mysql_CIDR" {
   type    = string
-  default = "vnet-springlza-eastus-SPOKE"
+  default = "10.1.6.0/24"
+
 }

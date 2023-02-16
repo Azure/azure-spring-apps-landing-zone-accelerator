@@ -10,23 +10,23 @@ resource "random_password" "mysql_admin_password" {
   special = true
 }
 
-resource "azurerm_key_vault_secret" "mysql_password_secret" {
-  name         = "mysql-password"
-  value        = random_password.mysql_admin_password.result
-  key_vault_id = data.azurerm_key_vault.key_vault.id
-}
+# resource "azurerm_key_vault_secret" "mysql_password_secret" {
+#   name         = "mysql-password"
+#   value        = random_password.mysql_admin_password.result
+#   key_vault_id = data.azurerm_key_vault.key_vault.id
+# }
 
-resource "azurerm_key_vault_secret" "mysql_username_secret" {
-  name         = "mysql-username"
-  value        = var.mysql_server_admin_name
-  key_vault_id = data.azurerm_key_vault.key_vault.id
-}
+# resource "azurerm_key_vault_secret" "mysql_username_secret" {
+#   name         = "mysql-username"
+#   value        = var.mysql_server_admin_name
+#   key_vault_id = data.azurerm_key_vault.key_vault.id
+# }
 
 resource "azurerm_subnet" "mysql" {
   name                 = "snet-mysql"
   resource_group_name  = data.azurerm_resource_group.spoke_rg.name
   virtual_network_name = data.azurerm_virtual_network.spoke.name
-  address_prefixes     = ["10.1.6.0/24"]
+  address_prefixes     = ["${var.mysql_CIDR}"]
   service_endpoints    = ["Microsoft.Storage"]
   delegation {
     name = "fs"
