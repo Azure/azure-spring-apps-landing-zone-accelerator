@@ -59,7 +59,7 @@ az term accept \
 
 4. [Creation of Shared components for this deployment](./04-LZ-SharedResources.md)
  
-5. [Creation of Azure Firewall with UDRs](./05-Hub-Firewall.md)
+5. [Creation of Azure Firewall with UDRs](./05-Hub-AzureFirewall.md)
 
 6. [Creation of Azure Spring Apps](./06-LZ-SpringApps.md)
 
