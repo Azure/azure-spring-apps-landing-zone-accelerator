@@ -1,5 +1,5 @@
 # RBAC Access for Spoke VNET
-# Azure Spring Apps/Cloud Resource Provider Application ID
+# Azure Spring Apps/Cloud Resource Provider Application ID. DO NOT Modify. This is global across all Tenants
 # https://learn.microsoft.com/en-us/azure/spring-apps/how-to-deploy-in-azure-virtual-network?tabs=azure-portal#grant-service-permission-to-the-virtual-network
 
 data "azuread_service_principal" "resource_provider" {
