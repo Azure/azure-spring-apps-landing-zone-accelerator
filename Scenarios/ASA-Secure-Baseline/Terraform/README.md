@@ -9,9 +9,6 @@ In this example, state is stored in an Azure Storage account that was created ou
 ## Terraform Variable Definitons File
 In this example, there is a common variable defintions file [parameters.tfvars](./parameters.tfvars) that is shared across all deployments. Review each section and update the variable definitons file as needed. 
 
-## Getting Started 
-This section is organized using folders that match the steps outlined below. Make any necessary adjustments to the variables and settings within that folder to match the needs of your deployment. 
-
 ## Prerequisites 
 1. Clone this repo, install Azure CLI, install Terraform
 
@@ -77,56 +74,4 @@ Sample:
     Then Apply
 
     - Then you can destroy the deployment
-
-
-BELOW IS LEGACY AND NEEDS TO BE SHUFFLED
-
-## Deploy all components at once
-This will run a PowerShell script that will deploy each component in the appropiate order. You will be prompted for a username and password for the Jump Host.
-
-```bash
-    # Define the state variables (PowerShell Shown)
-    $STORAGEACCOUNTNAME="<UNIQUENAME>"
-    $CONTAINERNAME="springappsterraform"
-    $TFSTATE_RG="springappsterraform"
-
-    # Login to Azure CLI
-    az login
-
-    # There is deployment script for Spring Apps Standard and one for Spring Apps Enterprise
-    cd Deployment
-    ./deploy_xxxxx.ps1
-```
-
-## Deploy individual components
-Use this to deploy each component individually.  It is important to include the --var-file parameter on each run.
-
-For ***Step 06*** , Spring apps Deployment, choose Either Standard or Enterprise
-
-```bash
-    # Define the state variables (PowerShell Shown)
-    $STORAGEACCOUNTNAME="<UNIQUENAME>"
-    $CONTAINERNAME="springappsterraform"
-    $TFSTATE_RG="springappsterraform"
-
-    # Login to Azure CLI
-    az login
-
-    # Change directory in the component and init terraform
-    cd <xx-FolderName>
-    terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config="storage_account_name=$STORAGEACCOUNTNAME" -backend-config="container_name=$CONTAINERNAME"
-
-    # Plan and apply
-    terraform plan -out my.plan --var-file ../parameters.tfvars
-    terraform apply my.plan
-```
-
-## Clean up
-This will run a PowerShell script that will destroy the terraform deployment
-```bash
-    # First review Known issues below
-    az login
-    cd Deploy
-    ./_destroy.ps1
-```
 
