@@ -40,7 +40,15 @@ Sample:
 # }
 
 ```
+4. For Azure Spring Apps Enteprise tier, you need to run the following Azure CLI commands to accept the legal terms and privacy statements. This step is necessary only if your subscription has never been used to create an Enterprise tier instance of Azure Spring Apps.
 
+```bash
+az provider register --namespace Microsoft.SaaS
+az term accept \
+    --publisher vmware-inc \
+    --product azure-spring-cloud-vmware-tanzu-2 \
+    --plan asa-ent-hr-mtr
+```
 
 ## Deployment
 1. [Creation of Azure Storage Account for State Management](./01-State-Storage.md)
