@@ -7,7 +7,7 @@ The following will be created:
 * Virtual Machine for testing the application/s (jump_host.tf)
 * Public IP whitelisted for Key Vault (get_external_ip.tf)
 
-Your external IP needs to be white-listed for access to Key Vault. The plan will automatically use the external IP of the deployment machine. To use a custom IP, use variable My_External_IP
+Your external IP needs to be whitelisted for access to Key Vault. The plan will automatically use the external IP of the deployment machine. To use a custom IP, use variable My_External_IP
 
 Review and if needed, comment out and modify the variables within the "Optional - 04 Shared - Jumpbox" section of the common variable definitons file [parameters.tfvars](./parameters.tfvars). 
 
