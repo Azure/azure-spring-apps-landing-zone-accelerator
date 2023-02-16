@@ -32,7 +32,7 @@ Sample:
 ```
 ## Deploy the Landing Zone (spoke) Virtual Network
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/03-LZ-Network" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network" directory. 
 
 ```bash
 cd ../03-LZ-Network

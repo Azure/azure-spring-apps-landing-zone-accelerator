@@ -22,7 +22,7 @@ Sample:
 ```
 ## Deploy the User Defined Routes
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/05-Hub-BYO-Firewall-Routes" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-BYO-Firewall-Routes" directory. 
 
 ```bash
 cd ../05-Hub-BYO-Firewall-Routes

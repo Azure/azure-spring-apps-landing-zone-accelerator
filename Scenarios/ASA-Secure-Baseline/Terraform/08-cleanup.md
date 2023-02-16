@@ -1,11 +1,11 @@
 # Cleanup
 
-Remember to destroy resources that are not in use. The instructions below assume your terminal is at the "Scenarios/ASA-SecureBaseline/Terraform". If you are not there navigate there first.
+Remember to destroy resources that are not in use. The instructions below assume your terminal is at the "Scenarios/ASA-SecureBaseline/Terraform". If you are not there navigate there first. Delete in the order specified below to allow for resource dependancies. 
 
 1. Delete the Application gateway
 
    ```bash
-   cd /07-AppGateway 
+   cd 07-AppGateway 
    ```
 
    ```bash

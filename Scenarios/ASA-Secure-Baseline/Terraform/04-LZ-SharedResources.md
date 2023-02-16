@@ -13,7 +13,7 @@ If you do not wish to deploy the Virtual machine for testing, remove the jump_ho
 
 ## Deploy the Shared resources
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/04-LZ-SharedResources" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources" directory. 
 
 ```bash
 cd ../04-LZ-SharedResources

@@ -22,7 +22,7 @@ Sample:
 
 ## Deploy Azure Application Gateway
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/07-LZ-AppGateway" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/07-LZ-AppGateway" directory. 
 
 ```bash
 cd ../07-LZ-AppGateway
