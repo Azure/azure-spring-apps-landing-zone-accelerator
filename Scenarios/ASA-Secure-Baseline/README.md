@@ -4,7 +4,7 @@ This reference implementation can be used for experimenting with Spring Boot app
 
 Additional features of this quickstart are:
 
-* Azure Spring Apps is deployed using [vnet-injection](https://learn.microsoft.com/en-us/azure/spring-apps/how-to-deploy-in-azure-virtual-network) 
+* Azure Spring Apps (Standard or Enterprise) is deployed using [vnet-injection](https://learn.microsoft.com/en-us/azure/spring-apps/how-to-deploy-in-azure-virtual-network) 
 to allow for mediation inbound and outbound traffic to the Azure Spring Apps Instance and deployed applications.
 * The Azure Firewall instance has been configured to write its logs to a Log Analytics Workspace. 
 You can leverage [these Kusto queries](https://learn.microsoft.com/en-us/azure/firewall/firewall-workbook) 
