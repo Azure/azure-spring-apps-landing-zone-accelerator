@@ -17,7 +17,8 @@ Sample:
 
     # azure_app_gateway_zones        = [1,2,3]
     # backendPoolFQDN                = "default-replace-me.private.azuremicroservices.io"
-
+    # certfilename                   = "mycertificate.pfx"
+    
 ```
 
 ## Deploy Azure Application Gateway
