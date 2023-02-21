@@ -10,7 +10,7 @@ In this example, state is stored in an Azure Storage account that was created ou
 In this example, there is a common variable defintions file [parameters.tfvars](./parameters.tfvars) that is shared across all deployments. Review each section and update the variable definitons file as needed. 
 
 ## Prerequisites 
-1. Clone this repo, install Azure CLI, install Terraform
+1. Clone this repo, install or upgrade [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli), install [Terraform](https://www.terraform.io/downloads.html)
 
 2. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
 
