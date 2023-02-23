@@ -10,6 +10,12 @@
     name_prefix           = "springlza"
     environment           = "dev"
 
+# Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
+# Use this command to obtain:
+#    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+
+    SRINGAPPS_SPN_OBJECT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
 # tags = { 
 #    project = "ASA-Accelerator"
 #    deployenv = "dev"
@@ -75,9 +81,9 @@
 # under the Jumpbox-Pass secret
 # My_External_IP will be automatically calculated unless you specify it here.
 
+    jump_host_admin_username = "lzadmin"
+    jump_host_password ="xxxxxx"
     # jump_host_vm_size = "Standard_DS3_v2"
-    # jump_host_admin_username = "lzadmin"
-    # jump_host_password ="xxxxxx"
     # My_External_IP = "1.2.3.4/32"
 
 ##################################################

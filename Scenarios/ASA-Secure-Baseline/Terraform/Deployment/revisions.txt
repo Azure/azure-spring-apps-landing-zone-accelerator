@@ -13,4 +13,6 @@ Design changes:
 2/13/2023 - Moving 04 outputs to jump_host.tf and removing legacy script files from VM Custom script extension
 2/13/2023 - ASA UDRs RBAC. Changing lookup value for "Azure Spring Apps Resource Provider" from name to application_id
 2/14/2023 - Updated paramaters.tfvars and pushed drafts to e2e instructions readme files.
-2/15/2023 - added AppGW variables to paramaters.tfvars along with numerous updates to md files. 
+2/15/2023 - added AppGW variables to paramaters.tfvars along with numerous updates to md files.
+2/22/2023 - Removed storing VM/JumpHost password to Keyvault due to issues related to getting external IP and Getting access to Key Vault.
+2/22/2023 - Switched Azure Spring Apps Service principal object id to a variable.  When using the AzureAD module to retrieve it, it blocks Terraform Deployment via Service principal as it cannot read from Azure AD. 

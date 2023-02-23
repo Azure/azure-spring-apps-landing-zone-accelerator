@@ -17,12 +17,13 @@ Sample:
 
     # azure_app_gateway_zones        = [1,2,3]
     # backendPoolFQDN                = "default-replace-me.private.azuremicroservices.io"
-
+    # certfilename                   = "mycertificate.pfx"
+    
 ```
 
 ## Deploy Azure Application Gateway
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/07-LZ-AppGateway" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/07-LZ-AppGateway" directory. 
 
 ```bash
 cd ../07-LZ-AppGateway
