@@ -75,9 +75,9 @@
 # under the Jumpbox-Pass secret
 # My_External_IP will be automatically calculated unless you specify it here.
 
+    jump_host_admin_username = "lzadmin"
+    jump_host_password ="xxxxxx"
     # jump_host_vm_size = "Standard_DS3_v2"
-    # jump_host_admin_username = "lzadmin"
-    # jump_host_password ="xxxxxx"
     # My_External_IP = "1.2.3.4/32"
 
 ##################################################
