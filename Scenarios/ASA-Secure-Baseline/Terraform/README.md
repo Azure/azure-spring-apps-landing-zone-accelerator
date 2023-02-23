@@ -40,7 +40,7 @@ Sample:
     name_prefix           = "springlza"
     environment           = "dev"
 
-# Specify the Object ID for the Azure Spring Apps Service principal in the customer's Azure AD Tenant
+# Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
 # Use this command to obtain:
 #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
 
@@ -53,7 +53,7 @@ Sample:
 # }
 
 ```
-4. For Azure Spring Apps Enteprise tier, you need to run the following Azure CLI commands to accept the legal terms and privacy statements. This step is necessary only if your subscription has never been used to create an Enterprise tier instance of Azure Spring Apps.
+4. For Azure Spring Apps Enterprise tier, you need to run the following Azure CLI commands to accept the legal terms and privacy statements. This step is necessary only if your subscription has never been used to create an Enterprise tier instance of Azure Spring Apps. Note: This command can take several minutes to complete. 
 
 ```bash
 az provider register --namespace Microsoft.SaaS
