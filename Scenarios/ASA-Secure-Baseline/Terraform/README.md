@@ -18,7 +18,13 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 
     `az provider register --namespace 'Microsoft.ContainerService'`
 
-3. Modify the variables within the Global section of the variable definitons file paramaters.tfvars as needed
+3. Obtain the ObjectID of the service principal for Azure Spring Apps. This ID is unique per Azure AD Tenant. In Step 4, set the value of variable SRINGAPPS_SPN_OBJECT_ID to the result from this command.
+
+`az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv`
+
+
+
+4. Modify the variables within the Global section of the variable definitons file paramaters.tfvars as needed
 
 Sample:
 ```bash
@@ -33,6 +39,13 @@ Sample:
 # The environment will also be used as part of the name
     name_prefix           = "springlza"
     environment           = "dev"
+
+# Specify the Object ID for the Azure Spring Apps Service principal in the customer's Azure AD Tenant
+# Use this command to obtain:
+#    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+
+    SRINGAPPS_SPN_OBJECT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
 
 # tags = { 
 #    project = "ASA-Accelerator"
