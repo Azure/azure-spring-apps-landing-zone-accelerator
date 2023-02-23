@@ -1,32 +1,35 @@
-# Quickstart - Azure Spring Apps Reference Architecture
+# Azure Spring Apps Landing Zone Accelerator
 
-## Azure Spring Apps
+Azure Landing Zone Accelerators are architectural guidance, reference architecture, reference implementations and automation packaged to deploy workload platforms on Azure at Scale and aligned with industry proven practices.
 
-Azure Spring Apps is a fully managed service for Spring Boot apps that lets you focus on 
-building the apps that run your business without the hassle of managing infrastructure. 
-Simply deploy your JARs or code and Azure Spring Apps will automatically wire your apps with 
-the Spring service runtime. Once deployed you can easily monitor application performance, 
-fix errors, and rapidly improve applications.
+Azure Spring apps Landing Zone Accelerator represents the strategic design path and target technical state for an Azure Spring Apps Service deployment. 
 
-Azure Spring Apps is jointly built, operated, and supported by Microsoft and VMware. 
-You can use Azure Spring Apps for your most demanding applications and be assured 
-that Microsoft and VMware are standing behind the service to ensure your success.
+This repository provides packaged guidance for customer scenarios, reference architecture, reference implementation, tooling, design area guidance, sample spring apps deployed after provisioning the infrastructure using the accelerator. The architectural approach can be used as design guidance for greenfield implementation and as an assessment for brownfield customers already using Spring boot apps. 
 
-## Quickstart Overview
+## Enterprise-Scale Architecture
+
+The enterprise architecture is broken down into key design areas, where you can find the links to each at:
+| Design Area|Considerations and Recommendations|
+|:--------------:|:--------------:|
+| Identity and Access Management|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-IAM.md)
+| Network Topology and Connectivity|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-Network-Topology.md)
+| Management and Monitoring|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-Mangement%20And%20Operations.md)
+| Security, Governance, and Compliance|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-Security.md)
+
+## Enterprise-Scale Reference Implementation
+
 
 This repository contains instructions for creating an 
 [Azure Spring Apps](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-overview)
-reference architecture that can be used for experimenting with Spring Boot 
-applications in a typical enterprise landing zone design for a regulated organization. 
+reference architecture that can be used for deploying Spring Boot 
+applications in a typical enterprise landing zone design. 
 It uses a [hub and spoke architecture](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) 
 with a single spoke.  East/West traffic (traffic between resources in the hub and resources in the 
 spoke) is filtered with Network Security Groups and North/South traffic (traffic between the 
 Internet and resources in the hub or spoke) is routed through and mediated with an instance of 
-Azure Firewall.  
+Azure Firewall. 
 
 ![lab image](images/architecture-private.svg)
-
-Additional features of this quickstart are:
 
 * Azure Spring Apps is deployed using [vnet-injection](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network) 
 to allow for mediation inbound and outbound traffic to the Azure Spring Apps Instance and deployed applications.
@@ -52,44 +55,28 @@ For Azure Spring Apps Standard SKU:
 * Instance of Azure Database for MySQL flexible server deployed with VNET Integration.  This can be used to deploy the PetClinic sample app described in this document.
 
 For Azure Spring Apps Enterprise SKU:
-* Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  This can be used to deploy the ACME Fitness sample app described in this document.
+* Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  
 
-## Deployment Process
+Deployment Details:
+| Deployment Methodology | GitHub Actions
+|--------------|--------------|
+|[Terraform]|Coming soon|
+|[Bicep]|Coming soon|
 
-There are three methods to deploy the architecture in the diagram documented in this repo.
+Cost estimation:
 
-* [ARM Deployment](/ARM)
-* [Terraform Deployment](/terraform)
-* [CLI Deployment](/CLI)
-* [Bicep Deployment](/Bicep)
+---
 
-ARM, Terraform, CLI and Bicep scripts will deploy Azure Spring Apps in a secure environment. Once the core 
-infrastructure has been deployed, the Post Installation process can be followed to test sample 
-applications.
+## Got a feedback
+Please leverage issues if you have any feedback or request on how we can improve on this repository.
 
-## Build your solutions today!
+## Data Collection
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at https://go.microsoft.com/fwlink/?LinkId=521839. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
 
-Azure Spring Apps abstracts away the complexity of infrastructure management and Spring Apps 
-middleware management, so you can focus on building your business logic and let Azure take care 
-of dynamic scaling, patches, security, compliance, and high availability. With a few steps, 
-you can provision Azure Spring Apps, create applications, deploy, and scale Spring Boot applications
- and start monitoring in minutes. We will continue to bring more developer-friendly and 
- enterprise-ready features to Azure Spring Apps. 
+## Telemetry Configuration
+Telemetry collection is on by default.
 
-We would love to hear how you are building impactful solutions using Azure Spring Apps. 
-Get started today – deploy Spring applications to Azure Spring Apps using this quickstart!
-
-### Resources
-* Learn using an [MS Learn module](https://docs.microsoft.com/learn/modules/azure-spring-cloud-workshop/)
- or [self-paced workshop](https://github.com/microsoft/azure-spring-cloud-training) on GitHub
-* Learn [more](https://docs.microsoft.com/azure/spring-cloud/) about implementing solutions on Azure Spring Apps
-* [Deploy](https://github.com/Azure-Samples/spring-petclinic-microservices) a distributed version of Spring Petclinic built with Spring Apps Standard
-* [Deploy](https://learn.microsoft.com/en-us/azure/spring-apps/quickstart-sample-app-acme-fitness-store-introduction)  a distributed version of ACME Fitness sample app for Spring Apps Enterprise
-* Migrate your [Spring Boot](https://docs.microsoft.com/azure/developer/java/migration/migrate-spring-boot-to-azure-spring-cloud), 
-[Spring Apps](https://docs.microsoft.com/azure/developer/java/migration/migrate-spring-cloud-to-azure-spring-cloud) and 
-[Tomcat applications](https://aka.ms/migrate-tomcat-to-azure-spring-cloud-service) to Azure Spring Apps
-* Wire Spring applications to [interact with Azure services](https://docs.microsoft.com/azure/developer/java/spring-framework/).
-* Use the [Azure Spring Apps extension for VS Code](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-azurespringcloud) to quickly create, manage and deploy apps to an Azure Spring Apps instance.
+To opt-out, set the variable enableTelemetry to false in Bicep/ARM file and disable_terraform_partner_id to false on Terraform files.
 
 ## Contributing
 
@@ -109,6 +96,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
 trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
+[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
