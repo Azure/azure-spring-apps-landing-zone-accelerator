@@ -22,10 +22,10 @@ Sample:
 
 ```
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/02-Hub-Network" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network" directory. 
 
 ```bash
-cd ../02-Hub-Network
+cd Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
 ```
 Deploy using Terraform Init, Plan and Apply
 

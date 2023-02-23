@@ -40,7 +40,7 @@ locals  {
 
   jumphost_name            = substr("vm${var.name_prefix}${var.environment}",0,14)
   jumphost_user            = var.jump_host_admin_username
-  jumphost_pass            = ( var.jump_host_password == "" ? random_password.jumphostpass.result  : var.jump_host_password )
+  jumphost_pass            = var.jump_host_password
   
 }
 

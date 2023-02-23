@@ -80,19 +80,6 @@ SETTINGS
   
 }
 
-resource "azurerm_key_vault_secret" "jumphostsecret" {
-  name         = "jumphost-password"
-
-  value        = local.jumphost_pass
-  key_vault_id = azurerm_key_vault.sc_vault.id
-}
-
-resource "azurerm_key_vault_secret" "jumphostuser" {
-  name         = "jumphost-user"
-  value        = local.jumphost_user
-  key_vault_id = azurerm_key_vault.sc_vault.id
-}
-
 output jump_host_name {
     value = local.jumphost_name
 }
@@ -103,6 +90,3 @@ output jump_host_user {
     value = local.jumphost_user
 }
 
-output jump_host_pass {
-    value = "To get Password, run: az keyvault secret show --name jumphost-password --vault-name ${azurerm_key_vault.sc_vault.name} -o table"
-}

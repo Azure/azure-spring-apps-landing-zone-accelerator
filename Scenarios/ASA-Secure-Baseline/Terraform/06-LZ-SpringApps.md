@@ -44,7 +44,7 @@ terraform apply my.plan
 
 ## Deploy Azure Spring Apps Enterprise
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/06-LZ-SpringApps-Enterprise" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise" directory. 
 
 ```bash
 cd ../06-LZ-SpringApps-Enterprise
@@ -66,4 +66,4 @@ terraform apply my.plan
 
 ### Next step
 
-:arrow_forward: [Creation of Azure Application Gateway](./07-AppGateway.md)
+:arrow_forward: [Creation of Azure Application Gateway](./07-LZ-AppGateway.md)

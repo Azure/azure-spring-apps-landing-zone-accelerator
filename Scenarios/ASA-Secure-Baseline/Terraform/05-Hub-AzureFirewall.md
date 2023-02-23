@@ -24,7 +24,7 @@ Sample:
 ```
 ## Deploy the Azure Firewall and User Defined Routes
 
-Navigate to the "/Scenarios/ASA-Secure-Baseline-/Terraform/05-Hub-Firewall" directory. 
+Navigate to the "/Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-Firewall" directory. 
 
 ```bash
 cd ../05-Hub-AzureFirewall
