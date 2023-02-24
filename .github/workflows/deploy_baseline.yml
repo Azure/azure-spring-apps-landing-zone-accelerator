@@ -1,0 +1,294 @@
+name: Deploy to Azure Spring Apps using passwordless connections
+on: [push]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # === Spring Apps Service ===:
+  SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  # ==== Terraform Backend ===:
+  TFSTATE_RG: <YOUR TFSTATE RG>
+  STORAGEACCOUNTNAME: <YOUR TF STATE STORAGE ACCOUNT>
+  CONTAINERNAME: <YOU TF STATE CONTAINER NAME>
+
+  # ==== Terraform Azure Login ===:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  # === Baseline Parameters ====:
+  REGION: eastus
+  NAME_PREFIX: springlza
+  ENVIRONMENT: dev
+
+  # ==== APPS ====:
+  API_GATEWAY: api-gateway
+  ADMIN_SERVER: admin-server
+  CUSTOMERS_SERVICE: customers-service
+  VETS_SERVICE: vets-service
+  VISITS_SERVICE: visits-service
+  # ==== JARS ====:
+  API_GATEWAY_JAR: spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar
+  ADMIN_SERVER_JAR: spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar
+  CUSTOMERS_SERVICE_JAR: spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar
+  VETS_SERVICE_JAR: spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar
+  VISITS_SERVICE_JAR: spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar
+
+jobs:
+  deploy_hub_network:
+    name: Deploy 02 Hub Network
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan --var-file ../parameters.tfvars
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_lz_network:
+    needs: deploy_hub_network
+    name: Deploy 03 LZ Network
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan --var-file ../parameters.tfvars
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_lz_shared:
+    needs: deploy_lz_network
+    name: Deploy 04 LZ Shared Resources
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan --var-file ../parameters.tfvars
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_hub_firewall:
+    needs: [deploy_hub_network, deploy_lz_shared]
+    name: Deploy 05 Hub Firewall
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan --var-file ../parameters.tfvars
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_lz_standard:
+    needs: [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall]
+    name: Deploy 06 LZ Spring Apps Standard
+    runs-on: ubuntu-latest
+    outputs:
+      spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan --var-file ../parameters.tfvars
+      - name: Terraform Apply
+        run: terraform apply my.plan
+      - name: Terraform Output
+        id: output
+        run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
+  deploy_pet_clinic_infra:
+    name: Deploy Pet Clinic Infrastructure
+    needs: [deploy_lz_standard, deploy_lz_shared]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/sample-apps/petclinic/terraform
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan \
+          -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
+          -var="subscription_id=${{ env.SUBSCRIPTION_ID}}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  build:
+    name: Build and Deploy Pet Clinic Microservices
+    needs: [deploy_pet_clinic_infra, deploy_lz_standard]
+    runs-on: ubuntu-latest
+    env:
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
+    steps:
+      - name: Checkout pet clinic sample
+        uses: actions/checkout@v3
+        with:
+          repository: felipmiguel/spring-petclinic-microservices.git
+          path: pet-clinic
+          ref: 3.0.0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: "microsoft"
+          cache: maven
+
+      - name: maven build, clean
+        working-directory: pet-clinic
+        run: |
+          mvn clean package -DskipTests
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy api-gateway
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.API_GATEWAY }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.API_GATEWAY_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+
+      - name: Deploy admin-server
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.ADMIN_SERVER }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.ADMIN_SERVER_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: "-SPRING_PROFILES_ACTIVE passwordless"
+
+      - name: Deploy customers-service
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.CUSTOMERS_SERVICE }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.CUSTOMERS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+
+      - name: Deploy vets-service
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.VETS_SERVICE }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.VETS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+
+      - name: Deploy visits-service
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.VISITS_SERVICE }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.VISITS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless

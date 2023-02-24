@@ -1,4 +1,4 @@
-# Deploy ASA Baseline
+# Configure ASA Baseline for deployment, set required parameters in the parameters.tf file.
    [ASA Baseline deployment](../../Scenarios/ASA-Secure-Baseline/README.md)
 
 # Configure Github Actions for Terraform
@@ -11,8 +11,8 @@
   - AZURE_SUBSCRIPTION_ID
   - AZURE_TENANT_ID
   
-# Configure Action to Deploy to your Spring Apps Service Instance
-- Modify SPRING_APPS_SERVICE_NAME, KEY_VALUT_NAME in pet-clinic-workload.yml file
-  - These are created by the baseline deployment
-  
-- Modify AzureRM Backend env settings in pet-clinic-workload.yml file
+# Configure Action to Deploy to your Spring Apps Service Instance  
+- Modify AzureRM Backend env settings in deploy_baseline.yml file
+  TFSTATE_RG: <YOUR TFSTATE RG>
+  STORAGEACCOUNTNAME: <YOUR TF STATE STORAGE ACCOUNT>
+  CONTAINERNAME: <YOU TF STATE CONTAINER NAME>

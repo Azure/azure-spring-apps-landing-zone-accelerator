@@ -14,10 +14,6 @@ variable "spring_cloud_resource_group_name" {
   default = "rg-springlza-APPS"
 }
 
-variable "key_vault_name" {
-  type = string
-}
-
 variable "key_vault_rg" {
   type    = string
   default = "rg-springlza-SHARED"
@@ -58,3 +54,4 @@ variable "mysql_CIDR" {
   default = "10.1.6.0/24"
 
 }
+
