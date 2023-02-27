@@ -29,6 +29,7 @@ $Modules | ForEach-Object {
 		remove-item .terraform.lock.hcl -ErrorAction SilentlyContinue
         remove-item terraform.tfstate.backup -ErrorAction SilentlyContinue
 		remove-item terraform.tfstate  -ErrorAction SilentlyContinue
+		remove-item .terraform -Recurse   -ErrorAction SilentlyContinue
 	}
 }
 
