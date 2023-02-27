@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### App Gateway variables
 ##################################################
 
 variable "name_prefix" {

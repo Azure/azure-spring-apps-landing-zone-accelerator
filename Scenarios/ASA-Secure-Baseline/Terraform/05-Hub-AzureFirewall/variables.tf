@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### Azure Firewall variables
 ##################################################
 
 variable "name_prefix" {

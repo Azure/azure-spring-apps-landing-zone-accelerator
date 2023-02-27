@@ -1,6 +1,7 @@
 
 # Destroy in reverse order
 $Modules=@()
+$Modules+= "07-LZ-AppGateway"
 $Modules+= "06-LZ-SpringApps-Enterprise"
 $Modules+= "06-LZ-SpringApps-Standard"
 $Modules+= "05-Hub-AzureFirewall"
@@ -24,15 +25,12 @@ $Modules | ForEach-Object {
 
 		if ($lastexitcode -ne 0) { exit }
 
-		remove-item my.plan
-		remove-item .terraform.lock.hcl
-        remove-item .terraform -Recurse -Confirm:$false
+		remove-item my.plan -ErrorAction SilentlyContinue
+		remove-item .terraform.lock.hcl -ErrorAction SilentlyContinue
+        remove-item terraform.tfstate.backup -ErrorAction SilentlyContinue
+		remove-item terraform.tfstate  -ErrorAction SilentlyContinue
 	}
 }
 
-#az group delete --name "springlza-APPGW" -y
-#az group delete --name "springlza-SpringApps" -y
-#az group delete --name "springlza-SHARED" -y
-#az group delete --name "springlza-SPOKE" -y
-#az group delete --name "springlza-HUB" -y
+
 

@@ -30,10 +30,10 @@
     state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
     container_name="springappsterraform"
 
-# This can also be sourced from variable ARM_ACCESS_KEY
-# https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
-    access_key="xxxx-enter-the-access-key-here-xxxx"
+    #access_key="xxxx-enter-the-access-key-here-xxxx"
 
+        # Note, it is recommended to use an environment variable for the access key.  The environment variable name is  ARM_ACCESS_KEY
+        # For more info, see here https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
 
 ##################################################
 ## 02 Hub Virtual Network
@@ -81,8 +81,18 @@
 # under the Jumpbox-Pass secret
 # My_External_IP will be automatically calculated unless you specify it here.
 
-    jump_host_admin_username = "lzadmin"
-    jump_host_password ="xxxxxx"
+    # jump_host_admin_username = "lzadmin"
+
+    # jump_host_password ="xxxxxx"
+    # Note: 
+    # It is recommended to pass jump_host_password # as an environment variable
+    # and not stored on the parameters file.
+    # Example:
+    # If using PowerShell
+    #    $ENV:TF_VAR_jump_host_password="xxxxx"
+    # If using Bash
+    #    export TF_VAR_jump_host_password="xxxxx"
+    
     # jump_host_vm_size = "Standard_DS3_v2"
     # My_External_IP = "1.2.3.4/32"
 

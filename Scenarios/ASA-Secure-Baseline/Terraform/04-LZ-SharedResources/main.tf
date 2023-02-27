@@ -40,8 +40,10 @@ locals  {
 
   jumphost_name            = substr("vm${var.name_prefix}${var.environment}",0,14)
   jumphost_user            = var.jump_host_admin_username
-  jumphost_pass            = var.jump_host_password
-  
+
+  # If a jumphost_pass was provided, then use that, otherwise, use a random password.
+  jumphost_pass            = ( var.jump_host_password == "" ? random_password.jumphostpass.result : var.jump_host_password )
+  password_notice          = ( var.jump_host_password == "" ? "To get access to the VM, use the Reset Password feature in the Azure Portal.\nAzure Portal > VM > Reset Password" : "A custom password was provided.  To reset go to Azure Portal > VM > Reset Password" )
 }
 
 # Get info about the current azurerm context

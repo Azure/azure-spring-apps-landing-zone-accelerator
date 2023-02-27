@@ -12,6 +12,18 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 ## Prerequisites 
 1. Clone this repo, install or upgrade [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli), install [Terraform](https://www.terraform.io/downloads.html)
 
+    ### To clone this repo
+    `git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git`
+    
+    ### To authenticate Azure CLI
+    `az login`
+
+    ### To set a specific subscription
+    `az account list --output table`<br>
+    `az account set --subscription <name-of-subscription>`
+    
+    
+
 2. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
 
     `az provider register --namespace 'Microsoft.AppPlatform'`
@@ -26,42 +38,43 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 
 4. Modify the variables within the Global section of the variable definitons file paramaters.tfvars as needed
 
-Sample:
-```bash
-
-##################################################
-## Global
-##################################################
-# The Region to deploy to
-    location              = "westus3"
-
-# This Prefix will be used on most deployed resources.  10 Characters max.
-# The environment will also be used as part of the name
-    name_prefix           = "springlza"
-    environment           = "dev"
-
-# Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
-# Use this command to obtain:
-#    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-
-    SRINGAPPS_SPN_OBJECT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 
-# tags = { 
-#    project = "ASA-Accelerator"
-#    deployenv = "dev"
-# }
+    ```bash
+    # EXAMPLE
+    
+    ##################################################
+    ## Global
+    ##################################################
+    # The Region to deploy to
+        location              = "westus3"
 
-```
+    # This Prefix will be used on most deployed resources.  10 Characters max.
+    # The environment will also be used as part of the name
+        name_prefix           = "springlza"
+        environment           = "dev"
+
+    # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
+    # Use this command to obtain:
+    #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+
+        SRINGAPPS_SPN_OBJECT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+
+    # tags = { 
+    #    project = "ASA-Accelerator"
+    #    deployenv = "dev"
+    # }
+    ```
 4. For Azure Spring Apps Enterprise tier, you need to run the following Azure CLI commands to accept the legal terms and privacy statements. This step is necessary only if your subscription has never been used to create an Enterprise tier instance of Azure Spring Apps. Note: This command can take several minutes to complete. 
 
-```bash
-az provider register --namespace Microsoft.SaaS
-az term accept \
-    --publisher vmware-inc \
-    --product azure-spring-cloud-vmware-tanzu-2 \
-    --plan asa-ent-hr-mtr
-```
+    ```bash
+    az provider register --namespace Microsoft.SaaS
+    az term accept \
+        --publisher vmware-inc \
+        --product azure-spring-cloud-vmware-tanzu-2 \
+        --plan asa-ent-hr-mtr
+    ```
 
 ## Deployment
 1. [Creation of Azure Storage Account for State Management](./01-State-Storage.md)

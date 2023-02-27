@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### BYO Firewall variables
 ##################################################
 
 variable "name_prefix" {

@@ -1,14 +1,25 @@
-if ($TFSTATE_RG -eq $null -or $STORAGEACCOUNTNAME -eq $null -or $CONTAINERNAME -eq $null  ) {
+if ($TFSTATE_RG -eq $null -or $STORAGEACCOUNTNAME -eq $null -or $CONTAINERNAME -eq $null -or $ENV:ARM_ACCESS_KEY -eq $null -or $ENV:TF_VAR_access_key -eq $null  ) {
 
-	Write-host "Please set the following variables before running this script"
+	Write-host "Please ensure the following state management variables have been defined, prior to running this script"
 	Write-host '   $TFSTATE_RG'
 	Write-host '   $STORAGEACCOUNTNAME'
 	Write-host '   $CONTAINERNAME'
-	Write-Host
-	write-host 'See README.md for more information'
+	Write-Host '   $ENV:ARM_ACCESS_KEY'
+	write-host '   $ENV:TF_VAR_access_key'
 	break
 }
 
+# Jumpbox password - checking for variables
+if ($null -eq $ENV:TF_VAR_jump_host_password) {
+	Write-warning $('$ENV:TF_VAR_jump_host_password environment variable not set, prompting instead...')
+
+	# If the $ENV:TF_VAR_jump_host_password is not set, then ask
+	$tmpSecureString               = Read-Host -Prompt "Provide a JumpBox VM password" -AsSecureString
+	$BSTR                          = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tmpSecureString)
+    $ENV:TF_VAR_jump_host_password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+} else {
+	Write-Host "Using TF_VAR_jump_host_password for Jump Box VM Password"
+}
 
 #Deploy the Hub first
 cd ..\02-Hub-Network

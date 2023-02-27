@@ -80,10 +80,10 @@ variable "jump_host_vm_size" {
 variable "jump_host_admin_username" {
     type        = string 
     description = "Admin Username, used by Jump Host"
-    default     = "ITADMIN"
+    default     = "lzadmin"
 }
 
-# A random password will be created if not specified
+# The password for the Jump Host Admin account
 variable "jump_host_password" {
     sensitive   = true
     type        = string
@@ -98,13 +98,6 @@ variable "keyvault_dnszone_name" {
     default = "privatelink.vaultcore.azure.net"
 }
 
-# Specify your External IP range in CIDR format  1.2.3.4/32
-# Leave this empty to have the plan get your external IP using an external Web Service
-variable "My_External_IP" {
-    type = string
-    description = "Specify your External IP range in CIDR format 1.2.3.4/32.  Leave this empty to have the plan get your external IP using an external Web Service"
-    default = ""
-}
 
 
 ## This is required for retrieving state

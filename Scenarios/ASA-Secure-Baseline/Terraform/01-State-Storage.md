@@ -10,7 +10,7 @@ STORAGEACCOUNTNAME=<UNIQUENAME>
 CONTAINERNAME=springappsterraform
 TFSTATE_RG=springappsterraform
 
-#      -- or --
+      ## or ##
 
 ## PowerShell
 $REGION="<REGION>"
@@ -33,14 +33,23 @@ az storage account create -n $STORAGEACCOUNTNAME -g $TFSTATE_RG -l $REGION --sku
 Create a Storage Container within the Storage Account:
 
 ```bash
-az storage container-rm create --storage-account $STORAGEACCOUNTNAME --name $CONTAINERNAME
+az storage container-rm create --storage-account $STORAGEACCOUNTNAME --name $CONTAINERNAME -g $TFSTATE_RG
 ```
 
 Obtain the access keys
 
 ```bash
- az storage account keys list -g $TFSTATE_RG  -n $STORAGEACCOUNTNAME 
+az storage account keys list -g $TFSTATE_RG  -n $STORAGEACCOUNTNAME
 
+# Then set the ARM_ACCESS_KEY and TF_VAR_access_key environment variables with the chosen access key
+
+    # Bash
+    export ARM_ACCESS_KEY = 'xxxxxx'
+    export TF_VAR_access_key = 'xxxxxx'
+
+    ## PowerShell
+    $ENV:ARM_ACCESS_KEY = 'xxxxxx'
+    $ENV:TF_VAR_access_key = 'xxxxxx'
 ```
 
 # Configure Variables for state management
@@ -59,9 +68,11 @@ Sample:
     state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
     container_name="springappsterraform"
 
-# This can also be sourced from variable ARM_ACCESS_KEY
-# https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
-    access_key="xxxx-enter-the-access-key-here-xxxx"
+    #access_key="xxxx-enter-the-access-key-here-xxxx"
+
+        # Note, it is recommended to use an environment variable for the access key.  The environment variable name is  ARM_ACCESS_KEY
+        # For more info, see here https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
+
 
 ```
 

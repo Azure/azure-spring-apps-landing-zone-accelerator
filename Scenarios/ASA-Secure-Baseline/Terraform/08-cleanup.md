@@ -2,6 +2,12 @@
 
 Remember to destroy resources that are not in use. The instructions below assume your terminal is at the "Scenarios/ASA-SecureBaseline/Terraform". If you are not there navigate there first. Delete in the order specified below to allow for resource dependancies. 
 
+Ensure the following state management environment variables have been defined:
+- STORAGEACCOUNTNAME = 'xxxxx'
+- CONTAINERNAME      = 'xxxxx'
+- TFSTATE_RG         = 'xxxxx'
+- ARM_ACCESS_KEY     = 'xxxxx'
+
 1. Delete the Application gateway
 
    ```bash

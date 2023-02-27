@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### Spring Apps variables
 ##################################################
 
 variable "name_prefix" {
