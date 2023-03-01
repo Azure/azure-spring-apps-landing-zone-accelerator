@@ -6,7 +6,6 @@ Ensure the following state management environment variables have been defined:
 - STORAGEACCOUNTNAME = 'xxxxx'
 - CONTAINERNAME      = 'xxxxx'
 - TFSTATE_RG         = 'xxxxx'
-- ARM_ACCESS_KEY     = 'xxxxx'
 
 1. Delete the Application gateway
 

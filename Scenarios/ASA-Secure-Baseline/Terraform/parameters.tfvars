@@ -27,14 +27,11 @@
 ##################################################
 
 # Deployment state storage information
-    state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
-    container_name="springappsterraform"
-
-    #access_key="xxxx-enter-the-access-key-here-xxxx"
-
-        # Note, it is recommended to use an environment variable for the access key.  The environment variable name is  ARM_ACCESS_KEY
-        # For more info, see here https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
-
+    state_sa_name  = "xxxx-enter-the-storage-account-name-xxxx"
+    state_sa_rg    = "xxxx-enter-the-resource-group-here-xxxx"
+    state_sa_container_name = "springappsterraform"
+    
+   
 ##################################################
 ## 02 Hub Virtual Network
 ##################################################

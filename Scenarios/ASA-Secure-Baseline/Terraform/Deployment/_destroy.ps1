@@ -13,7 +13,7 @@ $Modules+= "02-Hub-Network"
 
 
 $Modules | ForEach-Object {
-	write-warning  $_
+	write-warning  "Working on $_ ..."
 	cd ..\$_
 	
 	if ((test-path ".terraform") -eq $true ) {

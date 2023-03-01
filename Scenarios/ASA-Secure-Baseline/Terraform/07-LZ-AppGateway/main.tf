@@ -1,13 +1,24 @@
+data "terraform_remote_state" "lz-network" {
+  backend = "azurerm"
+
+  config = {
+    storage_account_name = var.state_sa_name
+    container_name       = var.state_sa_container_name
+    key                  = "lz-network"
+    resource_group_name = var.state_sa_rg
+  }
+}
+
 
 locals  {
  
-  spoke_vnet_name          = "vnet-${var.name_prefix}-${var.location}-SPOKE"
-  spoke_rg                 = "rg-${var.name_prefix}-SPOKE"
+  spoke_vnet_name            = data.terraform_remote_state.lz-network.outputs.spoke_vnet_name
+  spoke_rg                   = data.terraform_remote_state.lz-network.outputs.spoke_rg
 
-  subnet_appgw_name        = var.appgw-subnet-name
+  subnet_appgw_name          = var.appgw-subnet-name
 
-  appgw_rg                 = "rg-${var.name_prefix}-APPGW"
-  appgw_name               = "appgw-${var.name_prefix}"
+  appgw_rg                   = "rg-${var.name_prefix}-APPGW"
+  appgw_name                 = "appgw-${var.name_prefix}"
            
     
   backend_address_pool = {

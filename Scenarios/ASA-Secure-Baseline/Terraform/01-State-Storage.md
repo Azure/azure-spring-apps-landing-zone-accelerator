@@ -36,22 +36,6 @@ Create a Storage Container within the Storage Account:
 az storage container-rm create --storage-account $STORAGEACCOUNTNAME --name $CONTAINERNAME -g $TFSTATE_RG
 ```
 
-Obtain the access keys
-
-```bash
-az storage account keys list -g $TFSTATE_RG  -n $STORAGEACCOUNTNAME
-
-# Then set the ARM_ACCESS_KEY and TF_VAR_access_key environment variables with the chosen access key
-
-    # Bash
-    export ARM_ACCESS_KEY = 'xxxxxx'
-    export TF_VAR_access_key = 'xxxxxx'
-
-    ## PowerShell
-    $ENV:ARM_ACCESS_KEY = 'xxxxxx'
-    $ENV:TF_VAR_access_key = 'xxxxxx'
-```
-
 # Configure Variables for state management
 
 Modify the variables within the "01 Remote Storage State configuration" section of the variable definitons file [parameters.tfvars](./parameters.tfvars).
@@ -65,13 +49,9 @@ Sample:
 ##################################################
 
 # Deployment state storage information
-    state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
-    container_name="springappsterraform"
-
-    #access_key="xxxx-enter-the-access-key-here-xxxx"
-
-        # Note, it is recommended to use an environment variable for the access key.  The environment variable name is  ARM_ACCESS_KEY
-        # For more info, see here https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
+    state_sa_name  = "xxxx-enter-the-storage-account-name-xxxx"
+    state_sa_rg    = "xxxx-enter-the-resource-group-here-xxxx"
+    state_sa_container_name = "springappsterraform"
 
 
 ```

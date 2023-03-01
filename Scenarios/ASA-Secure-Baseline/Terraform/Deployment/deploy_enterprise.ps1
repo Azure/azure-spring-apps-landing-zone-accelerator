@@ -1,12 +1,18 @@
-if ($TFSTATE_RG -eq $null -or $STORAGEACCOUNTNAME -eq $null -or $CONTAINERNAME -eq $null -or $ENV:ARM_ACCESS_KEY -eq $null  ) {
+if ($TFSTATE_RG -eq $null -or $STORAGEACCOUNTNAME -eq $null -or $CONTAINERNAME) {
 
 	Write-host "Please set the following variables before running this script"
 	Write-host '   $TFSTATE_RG'
 	Write-host '   $STORAGEACCOUNTNAME'
 	Write-host '   $CONTAINERNAME'
-	Write-Host '   $ARM_ACCESS_KEY'
 	write-host 'See README.md for more information'
 	break
+} else {
+
+    Write-host "Terraform State Configuration:"
+	Write-host "  Storage Account Resource Group: $TFSTATE_RG"
+	Write-host "  Storage Account Name          : $STORAGEACCOUNTNAME"
+	Write-host "  Storage Account Container     : $CONTAINERNAME"
+    Write-host ""
 }
 
 # Jumpbox password - checking for variables
@@ -18,7 +24,7 @@ if ($null -eq $ENV:TF_VAR_jump_host_password) {
 	$BSTR                          = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($tmpSecureString)
     $ENV:TF_VAR_jump_host_password = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 } else {
-	Write-Host "Using TF_VAR_jump_host_password for Jump Box VM Password"
+	Write-Host "`nUsing TF_VAR_jump_host_password for Jump Box VM Password"
 }
 
 #Deploy the Hub
@@ -36,7 +42,7 @@ if ($ENV:SkipFirewall -ne "true") { $Modules+= "05-Hub-AzureFirewall" }
 $Modules+= "06-LZ-SpringApps-Enterprise"
 
 $Modules | ForEach-Object {
-	write-warning  $_
+	write-warning  "Working on $_ ..."
 	cd ..\$_
 	terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config="storage_account_name=$STORAGEACCOUNTNAME" -backend-config="container_name=$CONTAINERNAME"
 
