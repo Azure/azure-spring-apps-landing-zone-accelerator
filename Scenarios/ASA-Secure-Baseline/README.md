@@ -1,33 +1,42 @@
-# Project
+# Azure Spring Apps Secure Baseline with VNet Injection
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+This reference implementation can be used for experimenting with Spring Boot applications in a typical enterprise landing zone design for a regulated organization. It uses a hub and spoke architecture with a single spoke. East/West traffic (traffic between resources in the hub and resources in the spoke) is filtered with Network Security Groups and an Azure Firewall is used for controlling outbound traffic to the internet. An Azure Application Gateway with Web Application Firewall is used to protect inbound HTTP/s connections to Azure Spring Apps from the internet.   
 
-As the maintainer of this project, please make a few updates:
+Additional features of this quickstart are:
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+* Azure Spring Apps (Standard or Enterprise) is deployed using [vnet-injection](https://learn.microsoft.com/en-us/azure/spring-apps/how-to-deploy-in-azure-virtual-network) 
+to allow for mediation inbound and outbound traffic to the Azure Spring Apps Instance and deployed applications.
+* The Azure Firewall instance has been configured to write its logs to a Log Analytics Workspace. 
+You can leverage [these Kusto queries](https://learn.microsoft.com/en-us/azure/firewall/firewall-workbook) 
+to analyze Azure Firewall log data written to Log Analytics.
+* Azure Private DNS zones for Azure Spring Apps and support services deployed with Private Endpoints
+* A single Windows Server 2022 Virtual Machine deployed into the spoke Virtual Network for testing access to 
+applications deployed into the Azure Spring Apps instance. This VM is 
+not exposed to the internet and is only accessible via Azure Bastion.
+* Log Analytics Workspace where Azure Spring Apps and Azure Firewall deliver 
+logs and metrics.
+* Application Insights for monitoring applications deployed to Azure Spring Apps.
+* Instance of Azure Key Vault deployed with a Private Endpoint for secrets and certificates storage 
+for applications deployed to Azure Spring Apps.
+* Instance of Azure Bastion for connection to the Windows Server 2022 virtual machine running in the virtual network.
 
-## Contributing
+![Architectural diagram for the secure baseline scenario.](../ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+## Core architecture components
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+* Azure Spring Apps Standard/Enterprise with VNet Injection
+* Azure Virtual Networks (hub-spoke)
+* Azure Bastion
+* Azure Firewall
+* Azure Application Gateway with WAF (optional)
+* Azure Key vault
+* Azure Private DNS Zones
+* Log Analytics Workspace
+* Application Insights
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Next
+Pick one of the IaC options below and follow the instructions to deploy the Azure Spring Apps reference implementation.
 
-## Trademarks
+:arrow_forward: [Terraform](./Terraform)
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+:arrow_forward: [Bicep](./Bicep) (coming soon)
