@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### App Gateway variables
 ##################################################
 
 variable "name_prefix" {
@@ -61,3 +61,19 @@ variable "azure_app_gateway_zones" {
     description = "Deploy Azure App Gateway to these zones"
     default = []
 }
+
+# This variable definition is used by other related plans
+# We add it here simply to avoid warnings from terraform
+# About being included in the parameters file.
+variable SRINGAPPS_SPN_OBJECT_ID {
+    type = string
+    default = "notused"
+}
+
+## This is required for retrieving state
+variable "state_sa_name" {}
+
+variable "state_sa_container_name" {}
+
+# Storage Account Resource Group
+variable "state_sa_rg" {}

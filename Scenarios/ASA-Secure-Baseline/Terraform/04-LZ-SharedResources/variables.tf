@@ -80,10 +80,10 @@ variable "jump_host_vm_size" {
 variable "jump_host_admin_username" {
     type        = string 
     description = "Admin Username, used by Jump Host"
-    default     = "ITADMIN"
+    default     = "lzadmin"
 }
 
-# A random password will be created if not specified
+# The password for the Jump Host Admin account
 variable "jump_host_password" {
     sensitive   = true
     type        = string
@@ -98,19 +98,21 @@ variable "keyvault_dnszone_name" {
     default = "privatelink.vaultcore.azure.net"
 }
 
-# Specify your External IP range in CIDR format  1.2.3.4/32
-# Leave this empty to have the plan get your external IP using an external Web Service
-variable "My_External_IP" {
+# This variable definition is used by other related plans
+# We add it here simply to avoid warnings from terraform
+# About being included in the parameters file.
+variable SRINGAPPS_SPN_OBJECT_ID {
     type = string
-    description = "Specify your External IP range in CIDR format 1.2.3.4/32.  Leave this empty to have the plan get your external IP using an external Web Service"
-    default = ""
+    default = "notused"
 }
+
 
 
 ## This is required for retrieving state
 variable "state_sa_name" {}
 
-variable "container_name" {}
+variable "state_sa_container_name" {}
 
-# Storage Account Access Key
-variable "access_key" {}
+# Storage Account Resource Group
+variable "state_sa_rg" {}
+

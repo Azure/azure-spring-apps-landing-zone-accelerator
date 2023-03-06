@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### BYO Firewall variables
 ##################################################
 
 variable "name_prefix" {
@@ -92,10 +92,11 @@ variable "shared-subnet-name" {
 ## This is required for retrieving state
 variable "state_sa_name" {}
 
-variable "container_name" {}
+variable "state_sa_container_name" {}
 
-# Storage Account Access Key
-variable "access_key" {}
+# Storage Account Resource Group
+variable "state_sa_rg" {}
+
 
 # BYO FW IP address
 variable "FW_IP" {}
