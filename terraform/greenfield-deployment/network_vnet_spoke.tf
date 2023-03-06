@@ -7,7 +7,7 @@ resource "azurerm_virtual_network" "spoke" {
     dns_servers                 = [azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address]
 }
 
-# Spring Cloud Service Subnet
+# Spring Apps Service Subnet
 resource "azurerm_subnet" "azuresbcloudsvc" {
   name                 = var.springboot-service-subnet-name
   resource_group_name = azurerm_resource_group.spoke_sc_corp_rg.name
@@ -15,7 +15,7 @@ resource "azurerm_subnet" "azuresbcloudsvc" {
   address_prefixes       = [var.springboot-service-subnet-addr]
 }
 
-# Spring Cloud Apps Subnet
+# Spring Apps Apps Subnet
 resource "azurerm_subnet" "azuresbcloudapps" {
   name                 = var.springboot-apps-subnet-name
   resource_group_name = azurerm_resource_group.spoke_sc_corp_rg.name

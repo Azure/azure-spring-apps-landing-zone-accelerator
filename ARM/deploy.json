@@ -8,10 +8,10 @@
                 "description": "Your tenant ID"
             }
         },
-        "springCloudPrincipalObjectId": {
+        "springAppsPrincipalObjectId": {
             "type": "string",
             "metadata": {
-                "description": "The object ID of the Azure Spring Cloud Resource Provider service principal"
+                "description": "The object ID of the Azure Spring Apps Resource Provider service principal"
             }
         },
         "keyVaultAdminObjectId": {
@@ -64,8 +64,8 @@
         }
     },
     "variables": {
-        "springCloudSkuName": "S0",
-        "springCloudSkuTier": "Standard",
+        "springAppsSkuName": "S0",
+        "springAppsSkuTier": "Standard",
         "vmSku": "Standard_DS2_v2",
         "keyVaultSku": "Standard",
         "ddosStandardProtection": false,
@@ -132,7 +132,7 @@
         "spokeAppSubnetCidr": "10.1.1.0/24",
         "spokeSupportSubnetCidr": "10.1.2.0/24",
         "spokeDataSubnetCidr": "10.1.3.0/24",
-        "springCloudServiceCidrs": "10.3.0.0/16,10.4.0.0/16,10.5.0.1/16",
+        "springAppsServiceCidrs": "10.3.0.0/16,10.4.0.0/16,10.5.0.1/16",
         "appGatewaySubnetName": "snet-agw",
         "sharedServicesSubnetName": "snet-shared",
         "supportSubnetName": "snet-support",
@@ -156,7 +156,7 @@
         "nsgSpokeRuntime": "nsg-spokeruntime",
         "nsgSpokeApp": "nsg-spokeapp",
         "appInsightsName": "[concat('appi-', uniqueString(subscription().id, resourceGroup().id))]",
-        "springCloudInstanceName": "[concat('spring-', uniqueString(subscription().id, resourceGroup().id))]",
+        "springAppsInstanceName": "[concat('spring-', uniqueString(subscription().id, resourceGroup().id))]",
         "ownerDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
         "appPrivateDnsZone": "private.azuremicroservices.io",
         "keyVaultPrivateDnsZone": "privatelink.vaultcore.azure.net",
@@ -323,7 +323,7 @@
             ],
             "properties": {
                 "roleDefinitionId": "[variables('ownerDefinitionId')]",
-                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+                "principalId": "[parameters('springAppsPrincipalObjectId')]"
             }
         },
         {
@@ -715,7 +715,7 @@
                         }
                     },
                     {
-                        "name": "SpringCloudAccess",
+                        "name": "SpringAppsAccess",
                         "properties": {
                             "priority": 102,
                             "action": {
@@ -724,7 +724,7 @@
                             "rules": [
                                 {
                                     "name": "SpringMgmt",
-                                    "description": "Allows access to Spring Cloud Management plane",
+                                    "description": "Allows access to Spring Apps Management plane",
                                     "protocols": [
                                         "TCP"
                                     ],
@@ -830,7 +830,7 @@
                 ],
                 "applicationRuleCollections": [
                     {
-                        "name": "AllowSpringCloudWebAccess",
+                        "name": "AllowSpringAppsWebAccess",
                         "properties": {
                             "priority": 100,
                             "action": {
@@ -1328,7 +1328,7 @@
             ],
             "properties": {
                 "roleDefinitionId": "[variables('ownerDefinitionId')]",
-                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+                "principalId": "[parameters('springAppsPrincipalObjectId')]"
             }
         },
         {
@@ -1341,12 +1341,12 @@
             ],
             "properties": {
                 "roleDefinitionId": "[variables('ownerDefinitionId')]",
-                "principalId": "[parameters('springCloudPrincipalObjectId')]"
+                "principalId": "[parameters('springAppsPrincipalObjectId')]"
             }
         },
         {
             "apiVersion": "[variables('springApiVersion')]",
-            "name": "[variables('springCloudInstanceName')]",
+            "name": "[variables('springAppsInstanceName')]",
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
             "dependsOn": [
@@ -1359,12 +1359,12 @@
             ],
             "type": "Microsoft.AppPlatform/Spring",
             "sku": {
-                "name": "[variables('springCloudSkuName')]",
-                "tier": "[variables('springCloudSkuTier')]"
+                "name": "[variables('springAppsSkuName')]",
+                "tier": "[variables('springAppsSkuTier')]"
             },
             "properties": {
                 "networkProfile": {
-                    "serviceCidr": "[variables('springCloudServiceCidrs')]",
+                    "serviceCidr": "[variables('springAppsServiceCidrs')]",
                     "serviceRuntimeSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeVnetName'), variables('runtimeSubnetName'))]",
                     "appSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('spokeVnetName'), variables('appSubnetName'))]"
                 }
@@ -1372,7 +1372,7 @@
         },
         {
             "apiVersion": "[variables('springApiVersion')]",
-            "name": "[concat(variables('springCloudInstanceName'), '/default')]",
+            "name": "[concat(variables('springAppsInstanceName'), '/default')]",
             "type": "Microsoft.AppPlatform/Spring/monitoringSettings",
             "properties": {
                 "traceEnabled": true,
@@ -1382,15 +1382,15 @@
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('spokeVnetName'))]",
 
-                "[resourceId('Microsoft.AppPlatform/Spring', variables('springCloudInstanceName'))]",
+                "[resourceId('Microsoft.AppPlatform/Spring', variables('springAppsInstanceName'))]",
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
             ]
         },
         {
             "type": "Microsoft.AppPlatform/Spring/providers/diagnosticSettings",
-            "name": "[concat(variables('springCloudInstanceName'), '/Microsoft.Insights/monitoring')]",
+            "name": "[concat(variables('springAppsInstanceName'), '/Microsoft.Insights/monitoring')]",
             "dependsOn": [
-                "[resourceId('Microsoft.AppPlatform/Spring', variables('springCloudInstanceName'))]",
+                "[resourceId('Microsoft.AppPlatform/Spring', variables('springAppsInstanceName'))]",
                 "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]"
             ],
             "apiVersion": "[variables('diagApiVersion')]",
@@ -1439,7 +1439,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourceDeploymentsApiVersion')]",
             "dependsOn": [
-                "[concat('Microsoft.AppPlatform/Spring/', variables('springCloudInstanceName'))]",
+                "[concat('Microsoft.AppPlatform/Spring/', variables('springAppsInstanceName'))]",
                 "[concat('Microsoft.Network/routeTables/', variables('hubRouteTable'))]"
             ],
             "properties": {
@@ -1563,7 +1563,7 @@
                         "value": "[variables('dnsApiVersion')]"
                     },
                     "springInstanceRg": {
-                        "value": "[reference(variables('springCloudInstanceName')).networkProfile.serviceRuntimeNetworkResourceGroup]"
+                        "value": "[reference(variables('springAppsInstanceName')).networkProfile.serviceRuntimeNetworkResourceGroup]"
                     },
                     "appPrivateDnsZone": {
                         "value": "[variables('appPrivateDnsZone')]"
