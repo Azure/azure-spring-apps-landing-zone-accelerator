@@ -1,19 +1,19 @@
-@description('The instance name of the Azure Spring Cloud resource')
+@description('The instance name of the Azure Spring Apps resource')
 param springAppsInstanceName string
 
-@description('The name of the Application Insights instance for Azure Spring Cloud')
+@description('The name of the Application Insights instance for Azure Spring Apps')
 param appInsightsName string
 
 @description('The resource ID of the existing Log Analytics workspace. This will be used for both diagnostics logs and Application Insights')
 param laWorkspaceResourceId string
 
-@description('The resourceID of the Azure Spring Cloud App Subnet')
+@description('The resourceID of the Azure Spring Apps App Subnet')
 param springAppsAppSubnetID string
 
-@description('The resourceID of the Azure Spring Cloud Runtime Subnet')
+@description('The resourceID of the Azure Spring Apps Runtime Subnet')
 param springAppsRuntimeSubnetID string
 
-@description('Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Cloud infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges')
+@description('Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Apps infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges')
 param springAppsServiceCidrs string = '10.0.0.0/16,10.2.0.0/16,10.3.0.1/16'
 
 @description('The tags that will be associated to the Resources')
