@@ -5,13 +5,13 @@
         "springAppsInstanceName": {
             "type": "string",
             "metadata": {
-                "description": "The instance name of the Azure Spring Cloud resource"
+                "description": "The instance name of the Azure Spring Apps resource"
             }
         },
         "appInsightsName": {
             "type": "string",
             "metadata": {
-                "description": "The name of the Application Insights instance for Azure Spring Cloud"
+                "description": "The name of the Application Insights instance for Azure Spring Apps"
             }
         },
         "laWorkspaceResourceId": {
@@ -23,20 +23,20 @@
         "springAppsAppSubnetID": {
             "type": "string",
             "metadata": {
-                "description": "The resourceID of the Azure Spring Cloud App Subnet"
+                "description": "The resourceID of the Azure Spring Apps App Subnet"
             }
         },
         "springAppsRuntimeSubnetID": {
             "type": "string",
             "metadata": {
-                "description": "The resourceID of the Azure Spring Cloud Runtime Subnet"
+                "description": "The resourceID of the Azure Spring Apps Runtime Subnet"
             }
         },
         "springAppsServiceCidrs": {
             "type": "string",
             "defaultValue": "10.0.0.0/16,10.2.0.0/16,10.3.0.1/16",
             "metadata": {
-                "description": "Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Cloud infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges"
+                "description": "Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Apps infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges"
             }
         },        
         "tags": {
