@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "springCloudInstanceName": {
+        "springAppsInstanceName": {
             "type": "string",
             "metadata": {
                 "description": "The instance name of the Azure Spring Cloud resource"
@@ -20,19 +20,19 @@
                 "description": "The resource ID of the existing Log Analytics workspace. This will be used for both diagnostics logs and Application Insights"
             }
         },
-        "springCloudAppSubnetID": {
+        "springAppsAppSubnetID": {
             "type": "string",
             "metadata": {
                 "description": "The resourceID of the Azure Spring Cloud App Subnet"
             }
         },
-        "springCloudRuntimeSubnetID": {
+        "springAppsRuntimeSubnetID": {
             "type": "string",
             "metadata": {
                 "description": "The resourceID of the Azure Spring Cloud Runtime Subnet"
             }
         },
-        "springCloudServiceCidrs": {
+        "springAppsServiceCidrs": {
             "type": "string",
             "defaultValue": "10.0.0.0/16,10.2.0.0/16,10.3.0.1/16",
             "metadata": {
@@ -52,8 +52,8 @@
         }
     },
     "variables": {
-        "springCloudSkuName": "S0",
-        "springCloudSkuTier": "Standard",        
+        "springAppsSkuName": "S0",
+        "springAppsSkuTier": "Standard",        
         "location": "[resourceGroup().location]",
         "diagApiVersion": "2017-05-01-preview",
         "springApiVersion": "2020-07-01",
@@ -78,7 +78,7 @@
         },
         {
             "apiVersion": "[variables('springApiVersion')]",
-            "name": "[parameters('springCloudInstanceName')]",
+            "name": "[parameters('springAppsInstanceName')]",
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
             "dependsOn": [
@@ -87,34 +87,34 @@
             ],
             "type": "Microsoft.AppPlatform/Spring",
             "sku": {
-                "name": "[variables('springCloudSkuName')]",
-                "tier": "[variables('springCloudSkuTier')]"
+                "name": "[variables('springAppsSkuName')]",
+                "tier": "[variables('springAppsSkuTier')]"
             },
             "properties": {
                 "networkProfile": {
-                    "serviceCidr": "[parameters('springCloudServiceCidrs')]",
-                    "serviceRuntimeSubnetId": "[parameters('springCloudRuntimeSubnetID')]",
-                    "appSubnetId": "[parameters('springCloudAppSubnetID')]"
+                    "serviceCidr": "[parameters('springAppsServiceCidrs')]",
+                    "serviceRuntimeSubnetId": "[parameters('springAppsRuntimeSubnetID')]",
+                    "appSubnetId": "[parameters('springAppsAppSubnetID')]"
                 }
             }
         },
         {
             "apiVersion": "[variables('springApiVersion')]",
-            "name": "[concat(parameters('springCloudInstanceName'), '/default')]",
+            "name": "[concat(parameters('springAppsInstanceName'), '/default')]",
             "type": "Microsoft.AppPlatform/Spring/monitoringSettings",
             "properties": {
                 "traceEnabled": true,
                 "appInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), variables('appInsightsApiVersion')).InstrumentationKey]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springCloudInstanceName'))]"
+                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springAppsInstanceName'))]"
             ]
         },
         {
             "type": "Microsoft.AppPlatform/Spring/providers/diagnosticSettings",
-            "name": "[concat(parameters('springCloudInstanceName'), '/Microsoft.Insights/monitoring')]",
+            "name": "[concat(parameters('springAppsInstanceName'), '/Microsoft.Insights/monitoring')]",
             "dependsOn": [  
-                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springCloudInstanceName'))]"       
+                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springAppsInstanceName'))]"       
             ],
             "apiVersion": "[variables('diagApiVersion')]",
             "properties": {
