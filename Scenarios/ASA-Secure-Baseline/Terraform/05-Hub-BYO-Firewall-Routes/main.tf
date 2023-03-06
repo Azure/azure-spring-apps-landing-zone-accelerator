@@ -3,9 +3,9 @@ data "terraform_remote_state" "lz-network" {
 
   config = {
     storage_account_name = var.state_sa_name
-    container_name       = var.container_name
+    container_name       = var.state_sa_container_name
     key                  = "lz-network"
-    access_key = var.access_key
+    resource_group_name  = var.state_sa_rg
   }
 }
 

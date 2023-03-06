@@ -10,7 +10,7 @@ STORAGEACCOUNTNAME=<UNIQUENAME>
 CONTAINERNAME=springappsterraform
 TFSTATE_RG=springappsterraform
 
-#      -- or --
+      ## or ##
 
 ## PowerShell
 $REGION="<REGION>"
@@ -33,14 +33,7 @@ az storage account create -n $STORAGEACCOUNTNAME -g $TFSTATE_RG -l $REGION --sku
 Create a Storage Container within the Storage Account:
 
 ```bash
-az storage container-rm create --storage-account $STORAGEACCOUNTNAME --name $CONTAINERNAME
-```
-
-Obtain the access keys
-
-```bash
- az storage account keys list -g $TFSTATE_RG  -n $STORAGEACCOUNTNAME 
-
+az storage container-rm create --storage-account $STORAGEACCOUNTNAME --name $CONTAINERNAME -g $TFSTATE_RG
 ```
 
 # Configure Variables for state management
@@ -56,12 +49,10 @@ Sample:
 ##################################################
 
 # Deployment state storage information
-    state_sa_name="xxxx-enter-the-storage-account-name-xxxx"
-    container_name="springappsterraform"
+    state_sa_name  = "xxxx-enter-the-storage-account-name-xxxx"
+    state_sa_rg    = "xxxx-enter-the-resource-group-here-xxxx"
+    state_sa_container_name = "springappsterraform"
 
-# This can also be sourced from variable ARM_ACCESS_KEY
-# https://developer.hashicorp.com/terraform/language/settings/backends/azurerm#access_key
-    access_key="xxxx-enter-the-access-key-here-xxxx"
 
 ```
 

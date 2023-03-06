@@ -1,5 +1,5 @@
 ##################################################
-### Shared Resources variables
+### Spring Apps variables
 ##################################################
 
 variable "name_prefix" {
@@ -109,12 +109,20 @@ variable "spring_apps_zone_redundant" {
   default = false
 }
 
+# This variable definition is used by other related plans
+# We add it here simply to avoid warnings from terraform
+# About being included in the parameters file.
+variable SRINGAPPS_SPN_OBJECT_ID {
+    type = string
+    default = "notused"
+}
 
 
 ## This is required for retrieving state
 variable "state_sa_name" {}
 
-variable "container_name" {}
+variable "state_sa_container_name" {}
 
-# Storage Account Access Key
-variable "access_key" {}
+# Storage Account Resource Group
+variable "state_sa_rg" {}
+

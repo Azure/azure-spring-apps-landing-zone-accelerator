@@ -30,6 +30,14 @@ cd Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
 Deploy using Terraform Init, Plan and Apply
 
 ```bash
+
+# Ensure the following state management runtime variables have been defined:
+#   STORAGEACCOUNTNAME = 'xxxxx'
+#   CONTAINERNAME      = 'xxxxx'
+#   TFSTATE_RG         = 'xxxxx'
+
+
+
 terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config="storage_account_name=$STORAGEACCOUNTNAME" -backend-config="container_name=$CONTAINERNAME"
 ```
 
