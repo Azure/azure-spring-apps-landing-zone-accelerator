@@ -3,25 +3,6 @@ locals {
   mysql_server_name = "pcsms-db-${lower(var.resource_group)}"
 }
 
-#Random password for MySql Admin
-resource "random_password" "mysql_admin_password" {
-  length  = 15
-  upper   = true
-  special = true
-}
-
-# resource "azurerm_key_vault_secret" "mysql_password_secret" {
-#   name         = "mysql-password"
-#   value        = random_password.mysql_admin_password.result
-#   key_vault_id = data.azurerm_key_vault.key_vault.id
-# }
-
-# resource "azurerm_key_vault_secret" "mysql_username_secret" {
-#   name         = "mysql-username"
-#   value        = var.mysql_server_admin_name
-#   key_vault_id = data.azurerm_key_vault.key_vault.id
-# }
-
 resource "azurerm_subnet" "mysql" {
   name                 = "snet-mysql"
   resource_group_name  = data.azurerm_resource_group.spoke_rg.name
@@ -55,8 +36,8 @@ resource "azurerm_mysql_flexible_server" "mysql" {
   name                   = local.mysql_server_name
   resource_group_name    = data.azurerm_resource_group.spoke_rg.name
   location               = data.azurerm_resource_group.spoke_rg.location
-  administrator_login    = var.mysql_server_admin_name
-  administrator_password = random_password.mysql_admin_password.result
+  administrator_login    = var.mysql_server_admin_username
+  administrator_password = var.mysql_server_admin_password
   backup_retention_days  = 7
   delegated_subnet_id    = azurerm_subnet.mysql.id
   private_dns_zone_id    = azurerm_private_dns_zone.mysql.id
@@ -99,4 +80,7 @@ resource "azurerm_mysql_flexible_server_configuration" "time_zone" {
   resource_group_name = data.azurerm_resource_group.spoke_rg.name
   server_name         = azurerm_mysql_flexible_server.mysql.name
   value               = "-8:00" // Add appropriate offset based on your region.
+  depends_on = [
+    azurerm_mysql_flexible_server.mysql
+  ]
 }
