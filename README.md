@@ -29,7 +29,7 @@ spoke) is filtered with Network Security Groups and North/South traffic (traffic
 Internet and resources in the hub or spoke) is routed through and mediated with an instance of 
 Azure Firewall. 
 
-![lab image](images/architecture-private.svg)
+![Architectural diagram for the secure baseline scenario.](/Scenarios/ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
 
 * Azure Spring Apps is deployed using [vnet-injection](https://docs.microsoft.com/azure/spring-cloud/spring-cloud-tutorial-deploy-in-azure-virtual-network) 
 to allow for mediation inbound and outbound traffic to the Azure Spring Apps Instance and deployed applications.
@@ -57,15 +57,18 @@ For Azure Spring Apps Standard SKU:
 For Azure Spring Apps Enterprise SKU:
 * Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  
 
+
+## Next Steps to implement AKS Landing Zone Accelerator
+
+Pick the below scenario to get started on a reference implementation. 
+
+:arrow_forward: [Azure Spring Apps Secure Baseline](/Scenarios/ASA-Secure-Baseline/README.md)
+
 Deployment Details:
 | Deployment Methodology | GitHub Actions
 |--------------|--------------|
 |[Terraform]|Coming soon|
 |[Bicep]|Coming soon|
-
-Cost estimation:
-
----
 
 ## Got a feedback
 Please leverage issues if you have any feedback or request on how we can improve on this repository.
