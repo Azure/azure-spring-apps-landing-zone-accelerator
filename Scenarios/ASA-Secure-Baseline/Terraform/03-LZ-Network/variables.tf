@@ -134,6 +134,11 @@ variable "Hub_Vnet_Subscription" {
     default =""
 }
 
+variable "Bring_Your_Own_Hub" {
+    type = bool   
+    description = "Set to true if using your own Hub - the plan will not make modifications related to the Hub"
+    default = false
+}
 
 ## This is required for retrieving state
 variable "state_sa_name" {}

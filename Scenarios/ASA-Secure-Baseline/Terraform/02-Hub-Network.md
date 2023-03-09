@@ -49,9 +49,15 @@ terraform plan -out my.plan --var-file ../parameters.tfvars
 terraform apply my.plan
 ```
 
-# Optional: Bring your own Hub Virtual Network
+# Optional: Bring your own Hub Virtual Network (BYOH)
 
 Follow this section if you have an existing Hub virtual network you would like to use to peer with the Azure Spring Apps Landing Zone Vnet. Comment out and modify the variables within the "Optional 02 - Hub VNET / Bring your own HUB VNET" section of the variable definitons file paramaters.tfvars as needed.
+
+Note: The following Spring Apps LZA features are not available when using Bring your own Hub Virtual Network:
+
+   - Plan configured VNET peering on the HUB Vnet
+   - Plan provided Azure Firewall Deployment
+
 
 Sample:
 

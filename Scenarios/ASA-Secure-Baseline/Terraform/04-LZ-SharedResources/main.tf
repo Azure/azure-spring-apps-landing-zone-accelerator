@@ -6,7 +6,7 @@ data "terraform_remote_state" "lz-network" {
     storage_account_name = var.state_sa_name
     container_name       = var.state_sa_container_name
     key                  = "lz-network"
-    resource_group_name = var.state_sa_rg
+    resource_group_name  = var.state_sa_rg
   }
 }
 
@@ -26,10 +26,10 @@ resource "random_password" "jumphostpass" {
 
 
 locals  {
-  # Hub Data can be read from existing state file or local variables
-  hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_Name )     
-  hub_rg                   = ( var.Hub_Vnet_RG   == "" ? data.terraform_remote_state.lz-network.outputs.hub_rg : var.Hub_Vnet_RG )
-  hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
+  # # Hub Data can be read from existing state file or local variables
+  # hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_Name )     
+  # hub_rg                   = ( var.Hub_Vnet_RG   == "" ? data.terraform_remote_state.lz-network.outputs.hub_rg : var.Hub_Vnet_RG )
+  # hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
 
   shared_rg                = "rg-${var.name_prefix}-SHARED"
 
@@ -37,6 +37,8 @@ locals  {
   spoke_vnet_name          = data.terraform_remote_state.lz-network.outputs.spoke_vnet_name
   subnet_shared_name       = var.shared-subnet-name
   subnet_cloudsupport_name = var.springboot-support-subnet-name
+
+  private_dns_rg           = data.terraform_remote_state.lz-network.outputs.private_dns_rg
 
   jumphost_name            = substr("vm${var.name_prefix}${var.environment}",0,14)
   jumphost_user            = var.jump_host_admin_username
@@ -48,15 +50,6 @@ locals  {
 
 # Get info about the current azurerm context
 data "azurerm_client_config" "current" {}
-
-# Get info about the existing Hub VNET
-data "azurerm_virtual_network" "hub_vnet" {
-
-  provider = azurerm.hub-subscription
-
-  name                = local.hub_vnet_name
-  resource_group_name = local.hub_rg
-}
 
 # Get info about the existing Spoke VNET and subnets
 data "azurerm_virtual_network" "spoke_vnet" {
@@ -79,10 +72,8 @@ data "azurerm_subnet" "azuresbcloudsupport" {
 
 # Get info about Private DNS Zones
 data "azurerm_private_dns_zone" "keyvault_zone" {
-  provider = azurerm.hub-subscription
-  
   name                 =  var.keyvault_dnszone_name
-  resource_group_name  =  local.hub_rg
+  resource_group_name  =  local.private_dns_rg
 }
 
 
