@@ -41,9 +41,3 @@ data "azurerm_virtual_network" "spoke" {
   name                = local.vnet_spoke_name
   resource_group_name = data.azurerm_resource_group.spoke_rg.name
 }
-
-# # Shared Key Vault
-# data "azurerm_key_vault" "key_vault" {
-#   name                = var.key_vault_name
-#   resource_group_name = var.key_vault_rg
-# }

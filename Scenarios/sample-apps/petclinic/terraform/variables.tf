@@ -39,9 +39,13 @@ variable "vets_service" {
   default = "vets-service"
 }
 
-variable "mysql_server_admin_name" {
+variable "mysql_server_admin_username" {
   type    = string
   default = "sqlAdmin"
+}
+
+variable "mysql_server_admin_password" {
+  type = string
 }
 
 variable "mysql_database_name" {
@@ -54,4 +58,3 @@ variable "mysql_CIDR" {
   default = "10.1.6.0/24"
 
 }
-
