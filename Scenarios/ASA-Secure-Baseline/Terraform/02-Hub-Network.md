@@ -53,10 +53,11 @@ terraform apply my.plan
 
 Follow this section if you have an existing Hub virtual network you would like to use to peer with the Azure Spring Apps Landing Zone Vnet. Comment out and modify the variables within the "Optional 02 - Hub VNET / Bring your own HUB VNET" section of the variable definitons file paramaters.tfvars as needed.
 
-Note: The following Spring Apps LZA features are not available when using Bring your own Hub Virtual Network:
+Note: The following Spring Apps LZA features are **not** available when using Bring your own Hub Virtual Network:
 
    - Plan configured VNET peering on the HUB Vnet
    - Plan provided Azure Firewall Deployment
+   - Linking of Private DNS Zones to the Hub
 
 
 Sample:
@@ -70,9 +71,10 @@ Sample:
 
 # If you leave the Subscription empty, we will use the current Subscription
 
-# To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below
+# To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below, set Bring_Your_Own_Hub=true
 # and do not deploy the plan under "02-Hub-Network"
 
+    # Bring_Your_Own_Hub    = true
     # Hub_Vnet_Name         = ""
     # Hub_Vnet_RG           = ""
     # Hub_Vnet_Subscription = ""
