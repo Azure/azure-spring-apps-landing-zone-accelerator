@@ -9,7 +9,7 @@ param https_data string
 @secure()
 param https_password string
 
-@description('backend URL of Azure Spring Cloud Application')
+@description('backend URL of Azure Spring Apps Application')
 param backendPoolFQDN string
 
 @description('The tags that will be associated to the VM')

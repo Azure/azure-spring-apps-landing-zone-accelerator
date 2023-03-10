@@ -11,7 +11,7 @@ variable "location" {
 
 variable "backendPoolFQDN" {
     type        = string
-    description = "FQDN of the backend URL of Azure Spring Cloud Application"
+    description = "FQDN of the backend URL of Azure Spring Apps Application"
 }
 
 variable "appGW_subnet_name" {

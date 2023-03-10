@@ -25,7 +25,7 @@
     "backendPoolFQDN": {
       "type": "string",
       "metadata": {
-        "description": "backend URL of Azure Spring Cloud Application"
+        "description": "backend URL of Azure Spring Apps Application"
       }
       },
     "tags": {

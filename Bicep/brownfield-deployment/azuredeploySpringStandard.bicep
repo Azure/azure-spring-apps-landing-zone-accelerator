@@ -1,20 +1,20 @@
-@description('The instance name of the Azure Spring Cloud resource')
-param springCloudInstanceName string
+@description('The instance name of the Azure Spring Apps resource')
+param springAppsInstanceName string
 
-@description('The name of the Application Insights instance for Azure Spring Cloud')
+@description('The name of the Application Insights instance for Azure Spring Apps')
 param appInsightsName string
 
 @description('The resource ID of the existing Log Analytics workspace. This will be used for both diagnostics logs and Application Insights')
 param laWorkspaceResourceId string
 
-@description('The resourceID of the Azure Spring Cloud App Subnet')
-param springCloudAppSubnetID string
+@description('The resourceID of the Azure Spring Apps App Subnet')
+param springAppsAppSubnetID string
 
-@description('The resourceID of the Azure Spring Cloud Runtime Subnet')
-param springCloudRuntimeSubnetID string
+@description('The resourceID of the Azure Spring Apps Runtime Subnet')
+param springAppsRuntimeSubnetID string
 
-@description('Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Cloud infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges')
-param springCloudServiceCidrs string = '10.0.0.0/16,10.2.0.0/16,10.3.0.1/16'
+@description('Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Apps infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges')
+param springAppsServiceCidrs string = '10.0.0.0/16,10.2.0.0/16,10.3.0.1/16'
 
 @description('The tags that will be associated to the Resources')
 param tags object = {
@@ -36,8 +36,8 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
   }
 }
 
-resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' = {
-  name: springCloudInstanceName
+resource springAppsInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' = {
+  name: springAppsInstanceName
   location: location
   tags: tags
   sku: {
@@ -46,24 +46,24 @@ resource springCloudInstance 'Microsoft.AppPlatform/Spring@2022-03-01-preview' =
   }
   properties: {
     networkProfile: {
-      serviceCidr: springCloudServiceCidrs
-      serviceRuntimeSubnetId: springCloudRuntimeSubnetID
-      appSubnetId: springCloudAppSubnetID
+      serviceCidr: springAppsServiceCidrs
+      serviceRuntimeSubnetId: springAppsRuntimeSubnetID
+      appSubnetId: springAppsAppSubnetID
     }
   }
 }
 
-resource springCloudMonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2020-07-01' = {
-  name: '${springCloudInstance.name}/default' // The only supported value is 'default'
+resource springAppsMonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2020-07-01' = {
+  name: '${springAppsInstance.name}/default' // The only supported value is 'default'
   properties: {
     traceEnabled: true
     appInsightsInstrumentationKey: appInsights.properties.InstrumentationKey
   }
 }
 
-resource springCloudDiagnostics 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource springAppsDiagnostics 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
   name: 'monitoring'
-  scope: springCloudInstance
+  scope: springAppsInstance
   properties: {
     workspaceId: laWorkspaceResourceId
     logs: [
