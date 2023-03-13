@@ -12,7 +12,7 @@ A security control is a quality or feature of an Azure service that contributes 
 
 ### Azure Spring Apps Landing Zone - Topology
 
-![Architectural diagram for the secure baseline scenario.](https://github.com/Azure/azure-spring-apps-reference-architecture/blob/aarthiem-patch-1/Scenarios/ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
+![Architectural diagram for the secure baseline scenario.](Scenarios/ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
 
 ### Azure Spring Apps Landing Zone - Azure Components
 
