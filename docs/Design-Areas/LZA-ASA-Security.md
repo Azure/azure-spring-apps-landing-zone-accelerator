@@ -11,20 +11,22 @@ Azure Spring Apps is the new name for the Azure Spring Cloud service. Security c
 A security control is a quality or feature of an Azure service that contributes to the service's ability to prevent, detect, and respond to security vulnerabilities. For each control, we use Yes or No to indicate whether it is currently in place for the service. We use N/A for a control that is not applicable to the service.
 
 ### Azure Spring Apps Landing Zone - Topology
-Public:
 
-<img width="1042" alt="ASA-LZA-Public-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-public.svg">
-
-Private:
-
-<img width="1042" alt="ASA-LZA-Private-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-private.svg">
-
+![Architectural diagram for the secure baseline scenario.](Scenarios/ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
 
 ### Azure Spring Apps Landing Zone - Azure Components
-Pending 
-| Component | Version | Location |
-|-------------|---------------|---------------|
 
+| Component | Overview | Location |
+|-------------|---------------|---------------|
+| Azure Firewall |<p>Azure Firewall is a cloud-native and intelligent network firewall security service that provides the best of breed threat protection for your cloud workloads running in Azure. It's a fully stateful, firewall as a service with built-in high availability and unrestricted cloud scalability. It provides both east-west and north-south traffic inspection. Azure Firewall is offered in three SKUs: Standard, Premium, and Basic.</p>|Hub|
+| Bastion |<p>Azure Bastion is a service you deploy that lets you connect to a virtual machine using your browser and the Azure portal, or via the native SSH or RDP client already installed on your local computer. The Azure Bastion service is a fully platform-managed PaaS service that you provision inside your virtual network. It provides secure and seamless RDP/SSH connectivity to your virtual machines directly from the Azure portal over TLS. When you connect via Azure Bastion, your virtual machines don't need a public IP address, agent, or special client software. Bastion provides secure RDP and SSH connectivity to all of the VMs in the virtual network in which it is provisioned. Using Azure Bastion protects your virtual machines from exposing RDP/SSH ports to the outside world, while still providing secure access using RDP/SSH.</p>| Hub |
+| V-Net Gateway |<p>To connect your Azure virtual network and your on-premises network using ExpressRoute, you must first create a virtual network gateway. A virtual network gateway serves two purposes: exchange IP routes between the networks and route network traffic. <p>When you create a virtual network gateway, you need to specify several settings. One of the required settings, <code>-GatewayType</code>, specifies whether the gateway is used for ExpressRoute, or VPN traffic. The two gateway types are: Vpn - To send encrypted traffic across the public Internet, you use the gateway type 'Vpn'. This type of gateway is also referred to as a VPN gateway. Site-to-Site, Point-to-Site, and VNet-to-VNet connections all use a VPN gateway. ExpressRoute - To send network traffic on a private connection, you use the gateway type 'ExpressRoute'. This type of gateway is also referred to as an ExpressRoute gateway and is used when configuring ExpressRoute.</p>| Hub |
+| Appication Gateway |<p>Azure Application Gateway is a web traffic load balancer that enables you to manage traffic to your web applications. Traditional load balancers operate at the transport layer (OSI layer 4 - TCP and UDP) and route traffic based on source IP address and port, to a destination IP address and port. Application Gateway can make routing decisions based on additional attributes of an HTTP request, for example URI path or host headers. For example, you can route traffic based on the incoming URL. So if <code>/images</code> is in the incoming URL, you can route traffic to a specific set of servers (known as a pool) configured for images. If <code>/video</code> is in the URL, that traffic is routed to another pool that's optimized for videos.</p>| Hub or Spoke (depending on the clients needs and design requirements)|
+| Management Jumpbox |<p>The most simple solution is to host a jumpbox on the virtual network of the data management landing zone or data landing zone to connect to the data services through private endpoints. A jumpbox is an Azure virtual machine (VM) that's running Linux or Windows and to which users can connect via the Remote Desktop Protocol (RDP) or Secure Shell (SSH). Previously, jumpbox VMs had to be hosted with public IPs to enable RDP and SSH sessions from the public internet. </p>| Spoke |
+| MySql or PostgreSql DB |<p>Deliver high availability and elastic scaling to open-source mobile and web apps with a managed community MySQL database service, or migrate MySQL workloads to the cloud. or Build scalable, secure, and fully managed enterprise-ready apps on open-source PostgreSQL, scale out single-node PostgreSQL with high performance, or migrate PostgreSQL and Oracle workloads to the cloud. </p>| Spoke |
+| Azure Spring Apps Instance|<p>Azure Spring Apps makes it easy to deploy Spring Boot applications to Azure without any code changes. The service manages the infrastructure of Spring applications so developers can focus on their code. Azure Spring Apps provides lifecycle management using comprehensive monitoring and diagnostics, configuration management, service discovery, CI/CD integration, blue-green deployments, and more. Azure Spring Apps is a fully managed service for Spring Boot apps that lets you focus on building and running apps without the hassle of managing infrastructure. Simply deploy your JARs or code for your Spring Boot app or Zip for your Steeltoe app, and Azure Spring Apps will automatically wire your apps with Spring service runtime and built-in app lifecycle. Monitoring is simple. After deployment you can monitor app performance, fix errors, and rapidly improve applications.| Spoke |
+| Azure Private Endpoint (Private Link) |<p>A private endpoint is a network interface that uses a private IP address from your virtual network. This network interface connects you privately and securely to a service that's powered by Azure Private Link. By enabling a private endpoint, you're bringing the service into your virtual network. The service could be an Azure service such as: Azure Storage, Azure Cosmos DB, Azure Key Vault, etc..Your own service, using <a href="private-link-service-overview" data-linktype="relative-path">Private Link service</a>. </p>| Spoke |
+|-------------|---------------|---------------|
 ------------
 
 ### Design Considerations
@@ -153,9 +155,3 @@ To review how the available Azure Policy built-ins for all Azure services map to
 |Anti-Phishing| |Anti-Phishing-14.1|[Azure Spring App should use network injection](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Faf35e2a4-ef96-44e7-a9ae-853dd97032c4)|1.1.0|
 
 ------------
-
-### Appendix A: Checklists
-Pending Review.  I will add a link to the various Checklist. 
-<!-- END of Landing Zone Accelerator - Azure Spring App -Security.MD v2 -->
-
-
