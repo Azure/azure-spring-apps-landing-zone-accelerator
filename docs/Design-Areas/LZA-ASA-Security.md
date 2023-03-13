@@ -11,14 +11,8 @@ Azure Spring Apps is the new name for the Azure Spring Cloud service. Security c
 A security control is a quality or feature of an Azure service that contributes to the service's ability to prevent, detect, and respond to security vulnerabilities. For each control, we use Yes or No to indicate whether it is currently in place for the service. We use N/A for a control that is not applicable to the service.
 
 ### Azure Spring Apps Landing Zone - Topology
-Public:
 
-<img width="1042" alt="ASA-LZA-Public-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-public.svg">
-
-Private:
-
-<img width="1042" alt="ASA-LZA-Private-screenshot" src="https://github.com/Azure/azure-spring-apps-reference-architecture/blob/main/images/architecture-private.svg">
-
+![Architectural diagram for the secure baseline scenario.](/Scenarios/ASA-Secure-Baseline/media/asa-eslz-securebaseline.jpg)
 
 ### Azure Spring Apps Landing Zone - Azure Components
 Pending 
