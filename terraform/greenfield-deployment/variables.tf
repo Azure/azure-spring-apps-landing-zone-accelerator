@@ -63,23 +63,23 @@ variable "hub_vnet_addr_prefix" {
 # Hub Subnets
 variable "appgw-subnet-name" {
     type        = string
-    description = "Spring Cloud Service Subnet"
+    description = "Spring Apps Service Subnet"
     default     = "snet-agw"
 }
 variable "appgw-subnet-addr" {
     type        = string
-    description = "Spring Cloud CIDR Subnet"
+    description = "Spring Apps CIDR Subnet"
     default     = "10.0.3.0/24"
 }
 ##LF## fix descriptions on this
 variable "shared-subnet-name" {
     type        = string
-    description = "Spring Cloud Service Subnet"
+    description = "Spring Apps Service Subnet"
     default     = "snet-shared"
 }
 variable "shared-subnet-addr" {
     type        = string
-    description = "Spring Cloud CIDR Subnet"
+    description = "Spring Apps CIDR Subnet"
     default     = "10.0.4.0/24"
 }
 
@@ -98,44 +98,44 @@ variable "spoke_vnet_addr_prefix" {
 # Spoke Subnets
 variable "springboot-service-subnet-name" {
     type        = string
-    description = "Spring Cloud Service Subnet"
+    description = "Spring Apps Service Subnet"
     default     = "snet-runtime"
 }
 variable "springboot-service-subnet-addr" {
     type        = string
-    description = "Spring Cloud CIDR Subnet"
+    description = "Spring Apps CIDR Subnet"
     default     = "10.1.0.0/24"
 }
 variable "springboot-apps-subnet-name" {
     type        = string
-    description = "Spring Cloud Service Subnet"
+    description = "Spring Apps Service Subnet"
     default     = "snet-app"
 }
 variable "springboot-apps-subnet-addr" {
     type        = string
-    description = "Spring Cloud CIDR Subnet"
+    description = "Spring Apps CIDR Subnet"
     default     = "10.1.1.0/24"
 }
 variable "springboot-data-subnet-name" {
     type        = string
-    description = "Spring Cloud Data Services Subnet"
+    description = "Spring Apps Data Services Subnet"
     default     = "snet-data"
 }
 variable "springboot-data-subnet-addr" {
     type        = string
-    description = "Spring Cloud Data Services Subnet"
+    description = "Spring Apps Data Services Subnet"
     default     = "10.1.3.0/24"
 }
 
 variable "springboot-support-subnet-addr" {
     type        = string
-    description = "Spring Cloud Private Link Subnet"
+    description = "Spring Apps Private Link Subnet"
     default     = "10.1.2.0/24"
 }
 
 variable "springboot-support-subnet-name" {
     type        = string
-    description = "Spring Cloud Private Link Subnet Name"
+    description = "Spring Apps Private Link Subnet Name"
     default     = "snet-support"
 }
 
@@ -164,13 +164,13 @@ variable "app_insights_prefix" {
 
 variable "sc_prefix" {
     type        = string 
-    description = "Spring Cloud Name"
+    description = "Spring Apps Name"
     default     = "spring"
 }
 
 variable "sc_cidr" {
     type        = list
-    description = "Spring Cloud backend ranges - Spring apps internal"
+    description = "Spring Apps backend ranges - Spring apps internal"
     default     = ["10.3.0.0/16", "10.4.0.0/16", "10.5.0.1/16"]
 }
 

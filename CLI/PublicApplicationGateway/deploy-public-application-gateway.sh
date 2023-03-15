@@ -3,7 +3,7 @@ echo "Enter name of application gateway: "
 read name
 appgw_name=$name
 
-echo "Azure Spring Cloud application backend URL: "
+echo "Azure Spring Apps application backend URL: "
 read ascapp
 fqdn=$ascapp
 
