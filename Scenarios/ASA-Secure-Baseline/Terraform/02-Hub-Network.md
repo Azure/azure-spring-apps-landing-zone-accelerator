@@ -55,9 +55,9 @@ Follow this section if you have an existing Hub virtual network you would like t
 
 Note: The following Spring Apps LZA features are **not** available when using Bring your own Hub Virtual Network:
 
-   - Plan configured VNET peering on the HUB Vnet
-   - Plan provided Azure Firewall Deployment
-   - Linking of Private DNS Zones to the Hub
+   - Bidirectional VNET peering with the Hub Vnet (Peering is only initiated from the spoke. You will need to manually create the peering from the Hub Vnet)
+   - Azure Firewall Deployment (assumption is that a firewall is already deployed in the hub if required)
+   - Linking of Private DNS Zones to the Hub (Private DNS Zones are only linked to the Spoke Vnet)
 
 
 Sample:
@@ -80,7 +80,7 @@ Sample:
     # Hub_Vnet_Subscription = ""
 
 ```
-
+After Modifying the variables, move on to deploying the Spoke/LZ Virtual Network.
 
 ### Next step
 

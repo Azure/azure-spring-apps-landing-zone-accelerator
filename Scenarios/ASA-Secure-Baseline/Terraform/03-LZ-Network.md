@@ -57,6 +57,21 @@ terraform plan -out my.plan --var-file ../parameters.tfvars
 ```bash
 terraform apply my.plan
 ```
+# Optional: Bring your own Hub Virtual Network (BYOH)
+If you have configured the (BYOH) option, you will need to have the owner of the hub VNet finish the Vnet Peering by adding a Virtual Network Peer from the Hub to the Spoke. 
+
+See below sample on how to do this with [terraform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network_peering):
+
+```
+resource "azurerm_virtual_network_peering" "hub_spoke_peering" {
+   
+    name                        = "hub_spoke_peer"
+    resource_group_name         = "xxxx-xxxx"
+    virtual_network_name        = "xxxx-xxxx"
+    remote_virtual_network_id   = "xxxx-xxxx" 
+}
+```
+
 
 ### Next step
 
