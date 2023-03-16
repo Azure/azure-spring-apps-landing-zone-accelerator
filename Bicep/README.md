@@ -24,7 +24,7 @@
 
     `az ad user show --id someuser@sometenant.com --query objectId --output tsv`
 
-6. Get the object id of the Spring Apps Resource Provider from your Azure AD tenant. This will be used for the springCloudPrincipalObjectId parameter of the template.
+6. Get the object id of the Spring Apps Resource Provider from your Azure AD tenant. This will be used for the springAppsPrincipalObjectId parameter of the template.
 
     `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query objectId --output tsv`
 
@@ -53,7 +53,7 @@ Execute the template including the parameters of the tenant id from step 4, the 
     az deployment group create --resource-group ${RESOURCE_GROUP} \
     --name initial \
     --template-file deploy.bicep \
-    --parameters tenantId=<TENANT_ID> keyVaultAdminObjectId=<KEY_VAULT_ADMIN_OBJECT_ID> springCloudPrincipalObjectId=<SPRING_CLOUD_SP_OBJECT_ID>
+    --parameters tenantId=<TENANT_ID> keyVaultAdminObjectId=<KEY_VAULT_ADMIN_OBJECT_ID> springAppsPrincipalObjectId=<SPRING_CLOUD_SP_OBJECT_ID>
 ```
 
 You will be prompted to set a username and password.  This will be the username and password for the virtual machine and the MySQL instance.
@@ -159,8 +159,8 @@ There are a few options available from a post deployment perspective the are as 
     ```bash
         az network firewall nat-rule create --resource-group ${RESOURCE_GROUP} \
         --firewall-name "fwhub" \
-        --name springCLoudIngressDNAT \
-        --collection-name springCLoudIngressDNAT \
+        --name springAppsIngressDNAT \
+        --collection-name springAppsIngressDNAT \
         --protocols "TCP" --source-addresses "*" \
         --destination-addresses "x.x.x.x" \
         --destination-ports 443 --action "Dnat" \

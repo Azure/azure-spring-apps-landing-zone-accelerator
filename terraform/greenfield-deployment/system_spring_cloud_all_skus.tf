@@ -6,7 +6,7 @@ resource "azurerm_private_dns_zone" "spring_cloud_zone" {
 # RBAC Access for Spoke VNET
 
 data "azuread_service_principal" "resource_provider" {
-   display_name = "Azure Spring Cloud Resource Provider"
+   display_name = "Azure Spring Apps Resource Provider"
  }
 
 resource "azurerm_role_assignment" "scowner" {

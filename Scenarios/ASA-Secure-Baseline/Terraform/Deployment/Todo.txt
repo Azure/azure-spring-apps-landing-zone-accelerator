@@ -1,0 +1,1 @@
+add bash script as well for complete deployment

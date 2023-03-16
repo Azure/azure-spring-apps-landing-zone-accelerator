@@ -1,0 +1,19 @@
+Design changes:
+1/9/2023 - The plan has been broken up into smaller steps to facilitate phased deployment.
+1/9/2023 - Removed Adding your own IP to IPrules because many customers block sites like ipv4.icanhazip.com
+1/25/2023 - Brought back Adding your Own IP to the Key vault firewall. Provided a variable for the customer to specify an IP range if desired or if the Check IP services are unaccesible.
+1/25/2023 - Moved all the "Get your External IP" code to get_external_ip.tf 
+1/25/2023 - Modified all plans to allow for the Hub Subscription to deployed to separate Subscription via a new variable
+1/25/2023 - Jumpbox password is now randomly chosen and stored in Key Vault.  The customer can still provide a custom password via a variable.
+2/3/2023 - Removing default subnet from HUB and updating CIDR range for Bastion subnet. 
+2/3/2023 - Adding UDR Support for BYO HUB with NVA for Azure Spring Apps subnets. 
+2/3/2023 - Add NSG for App Gateway subnet in spoke and removing data subnet. 
+2/3/2023 - Add variable to parameters.tfvars for Bring your own Firewall/NVA IP
+2/6/2023 - Added Default NSGs to ASA subnets
+2/13/2023 - Moving 04 outputs to jump_host.tf and removing legacy script files from VM Custom script extension
+2/13/2023 - ASA UDRs RBAC. Changing lookup value for "Azure Spring Apps Resource Provider" from name to application_id
+2/14/2023 - Updated paramaters.tfvars and pushed drafts to e2e instructions readme files.
+2/15/2023 - added AppGW variables to paramaters.tfvars along with numerous updates to md files.
+2/22/2023 - Removed storing VM/JumpHost password to Keyvault due to issues related to getting external IP and Getting access to Key Vault.
+2/22/2023 - Switched Azure Spring Apps Service principal object id to a variable.  When using the AzureAD module to retrieve it, it blocks Terraform Deployment via Service principal as it cannot read from Azure AD.
+3/1/2023  - Removed requirement for the Terraform state backend access key 

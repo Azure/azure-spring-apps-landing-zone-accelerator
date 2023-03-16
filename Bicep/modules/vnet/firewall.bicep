@@ -91,7 +91,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2020-11-01' = {
         }
       }
       {
-        name: 'SpringCloudAccess'
+        name: 'SpringAppsAccess'
         properties: {
           priority: 102
           action: {
@@ -100,7 +100,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2020-11-01' = {
           rules: [
             {
               name: 'SpringMgmt'
-              description: 'Allows access to Spring Cloud Management plane'
+              description: 'Allows access to Spring Apps Management plane'
               protocols: [
                 'TCP'
               ]
@@ -206,7 +206,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2020-11-01' = {
     ]
     applicationRuleCollections: [
       {
-        name: 'AllowSpringCloudWebAccess'
+        name: 'AllowSpringAppsWebAccess'
         properties: {
           priority: 100
           action: {

@@ -2,16 +2,16 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "springCloudInstanceName": {
+        "springAppsInstanceName": {
             "type": "string",
             "metadata": {
-                "description": "The instance name of the Azure Spring Cloud resource"
+                "description": "The instance name of the Azure Spring Apps resource"
             }
         },
         "appInsightsName": {
             "type": "string",
             "metadata": {
-                "description": "The name of the Application Insights instance for Azure Spring Cloud"
+                "description": "The name of the Application Insights instance for Azure Spring Apps"
             }
         },
         "laWorkspaceResourceId": {
@@ -20,23 +20,23 @@
                 "description": "The resource ID of the existing Log Analytics workspace. This will be used for both diagnostics logs and Application Insights"
             }
         },
-        "springCloudAppSubnetID": {
+        "springAppsAppSubnetID": {
             "type": "string",
             "metadata": {
-                "description": "The resourceID of the Azure Spring Cloud App Subnet"
+                "description": "The resourceID of the Azure Spring Apps App Subnet"
             }
         },
-        "springCloudRuntimeSubnetID": {
+        "springAppsRuntimeSubnetID": {
             "type": "string",
             "metadata": {
-                "description": "The resourceID of the Azure Spring Cloud Runtime Subnet"
+                "description": "The resourceID of the Azure Spring Apps Runtime Subnet"
             }
         },
-        "springCloudServiceCidrs": {
+        "springAppsServiceCidrs": {
             "type": "string",
             "defaultValue": "10.0.0.0/16,10.2.0.0/16,10.3.0.1/16",
             "metadata": {
-                "description": "Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Cloud infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges"
+                "description": "Comma-separated list of IP address ranges in CIDR format. The IP ranges are reserved to host underlying Azure Spring Apps infrastructure, which should be 3 at least /16 unused IP ranges, must not overlap with any Subnet IP ranges"
             }
             
         },
@@ -71,7 +71,7 @@
         },
         {
             "apiVersion": "2022-03-01-preview",
-            "name": "[parameters('springCloudInstanceName')]",
+            "name": "[parameters('springAppsInstanceName')]",
             "location": "[variables('location')]",
             "tags": "[parameters('tags')]",
             "dependsOn": [
@@ -85,29 +85,29 @@
             },
             "properties": {
                 "networkProfile": {
-                    "serviceCidr": "[parameters('springCloudServiceCidrs')]",
-                    "serviceRuntimeSubnetId": "[parameters('springCloudRuntimeSubnetID')]",
-                    "appSubnetId": "[parameters('springCloudAppSubnetID')]"
+                    "serviceCidr": "[parameters('springAppsServiceCidrs')]",
+                    "serviceRuntimeSubnetId": "[parameters('springAppsRuntimeSubnetID')]",
+                    "appSubnetId": "[parameters('springAppsAppSubnetID')]"
                 }
             }
         },
         {
             "apiVersion": "2022-03-01-preview",
-            "name": "[concat(parameters('springCloudInstanceName'), '/default')]",
+            "name": "[concat(parameters('springAppsInstanceName'), '/default')]",
             "type": "Microsoft.AppPlatform/Spring/monitoringSettings",
             "properties": {
                 "traceEnabled": true,
                 "appInsightsInstrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02-preview').InstrumentationKey]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springCloudInstanceName'))]"
+                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springAppsInstanceName'))]"
             ]
         },
         {
             "type": "Microsoft.AppPlatform/Spring/providers/diagnosticSettings",
-            "name": "[concat(parameters('springCloudInstanceName'), '/Microsoft.Insights/monitoring')]",
+            "name": "[concat(parameters('springAppsInstanceName'), '/Microsoft.Insights/monitoring')]",
             "dependsOn": [  
-                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springCloudInstanceName'))]"       
+                "[resourceId('Microsoft.AppPlatform/Spring/', parameters('springAppsInstanceName'))]"       
             ],
             "apiVersion": "2017-05-01-preview",
             "properties": {

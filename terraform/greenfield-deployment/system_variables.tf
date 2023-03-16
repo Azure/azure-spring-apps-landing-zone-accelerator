@@ -1,4 +1,4 @@
-# Azure Spring Cloud
+# Azure Spring Apps
 
 variable "internal_lb_svc_load_balancer_name" {
     type    = string
@@ -16,5 +16,5 @@ variable "private_dns_a_record_a_record_ttl" {
 
 variable "service_principal_resource_provider_display_name" {
   type    = string
-  default = "Azure Spring Cloud Resource Provider"
+  default = "Azure Spring Apps Resource Provider"
 }
