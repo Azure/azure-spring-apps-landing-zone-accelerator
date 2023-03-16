@@ -2,7 +2,8 @@
 
 If you do not need an egress firewall skip to [Creation of Azure Spring Apps](./06-LZ-SpringApps.md)
 
-If you brought your own hub resource and that hub already includes an Azure Firewall or 3rd party NVA which you would like to use, skip to [BYO Hub with Firewall](./05-Hub-BYO-Firewall-Routes.md)
+If you brought your own hub resource (BYOH) and that hub already includes an Azure Firewall or 3rd party NVA which you would like to use, skip to [BYO Hub with Firewall](./05-Hub-BYO-Firewall-Routes.md).
+Ensure that the Hub<>Spoke VNET peering has been completed.
 
 The following will be created:
 * Azure Firewall (azure_firewall.tf)

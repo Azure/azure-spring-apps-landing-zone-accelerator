@@ -49,9 +49,16 @@ terraform plan -out my.plan --var-file ../parameters.tfvars
 terraform apply my.plan
 ```
 
-# Optional: Bring your own Hub Virtual Network
+# Optional: Bring your own Hub Virtual Network (BYOH)
 
 Follow this section if you have an existing Hub virtual network you would like to use to peer with the Azure Spring Apps Landing Zone Vnet. Comment out and modify the variables within the "Optional 02 - Hub VNET / Bring your own HUB VNET" section of the variable definitons file paramaters.tfvars as needed.
+
+Note: The following Spring Apps LZA features are **not** available when using Bring your own Hub Virtual Network:
+
+   - Bidirectional VNET peering with the Hub Vnet (Peering is only initiated from the spoke. You will need to manually create the peering from the Hub Vnet)
+   - Azure Firewall Deployment (assumption is that a firewall is already deployed in the hub if required)
+   - Linking of Private DNS Zones to the Hub (Private DNS Zones are only linked to the Spoke Vnet)
+
 
 Sample:
 
@@ -64,15 +71,16 @@ Sample:
 
 # If you leave the Subscription empty, we will use the current Subscription
 
-# To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below
+# To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below, set Bring_Your_Own_Hub=true
 # and do not deploy the plan under "02-Hub-Network"
 
+    # Bring_Your_Own_Hub    = true
     # Hub_Vnet_Name         = ""
     # Hub_Vnet_RG           = ""
     # Hub_Vnet_Subscription = ""
 
 ```
-
+After Modifying the variables, move on to deploying the Spoke/LZ Virtual Network.
 
 ### Next step
 

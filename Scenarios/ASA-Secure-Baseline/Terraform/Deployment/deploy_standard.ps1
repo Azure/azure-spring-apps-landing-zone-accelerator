@@ -1,17 +1,34 @@
+param($SpecificModules)
+
 if ($TFSTATE_RG -eq $null -or $STORAGEACCOUNTNAME -eq $null -or $CONTAINERNAME -eq $null ) {
 
-	Write-host "Please ensure the following state management variables have been defined, prior to running this script"
+	Write-host "Please set the following variables before running this script"
 	Write-host '   $TFSTATE_RG'
 	Write-host '   $STORAGEACCOUNTNAME'
 	Write-host '   $CONTAINERNAME'
+	write-host 'See Terraform/01-State-Storage.md for more information'
 	break
 } else {
 
     Write-host "Terraform State Configuration:"
-	Write-host "  Storage Account Resource Group: $TFSTATE_RG"
-	Write-host "  Storage Account Name          : $STORAGEACCOUNTNAME"
-	Write-host "  Storage Account Container     : $CONTAINERNAME"
-	Write-host ""
+	Write-host "  Storage Account Resource Group : $TFSTATE_RG"
+	Write-host "  Storage Account Name           : $STORAGEACCOUNTNAME"
+	Write-host "  Storage Account Container      : $CONTAINERNAME"
+    Write-host "From parameters.tfvars:"
+	
+	Get-Content ..\parameters.tfvars -ErrorAction SilentlyContinue | Select-String -Pattern "="  | ForEach-Object {
+		$TrimmedLine=[string]$_
+		
+		if ($TrimmedLine.trim() -match "^#|pass|key|secret") {
+			<#Exclude this line#>
+		}
+		
+		else {
+			$kvpair=$TrimmedLine.trim() -split '='
+			Write-host $("  {0}{1}:{2}" -f  $kvpair[0].trim(),(" "*(31-$kvpair[0].trim().length)),$kvpair[1])
+		}
+	}
+
 }
 
 # Jumpbox password - checking for variables
@@ -26,19 +43,19 @@ if ($null -eq $ENV:TF_VAR_jump_host_password) {
 	Write-Host "`nUsing TF_VAR_jump_host_password for Jump Box VM Password"
 }
 
-#Deploy the Hub first
-cd ..\02-Hub-Network
-
-terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config="storage_account_name=$STORAGEACCOUNTNAME" -backend-config="container_name=$CONTAINERNAME"
-terraform plan -out my.plan --var-file ../parameters.tfvars
-terraform apply my.plan
-
-# Deploy the rest
+# Deploy the modules
 $Modules=@()
-$Modules+= "03-LZ-Network"
-$Modules+= "04-LZ-SharedResources"
-if ($ENV:SkipFirewall -ne "true") { $Modules+= "05-Hub-AzureFirewall" }
-$Modules+= "06-LZ-SpringApps-Standard"
+
+if ($SpecificModules -eq $null) {
+	if ($ENV:SkipHub -ne "true") { $Modules+= "02-Hub-Network" }
+	$Modules+= "03-LZ-Network"
+	$Modules+= "04-LZ-SharedResources"
+	if ($ENV:SkipFirewall -ne "true") { $Modules+= "05-Hub-AzureFirewall" }
+	$Modules+= "06-LZ-SpringApps-Standard"
+} else {
+	$Modules=$SpecificModules
+}
+
 		  
 
 $Modules | ForEach-Object {

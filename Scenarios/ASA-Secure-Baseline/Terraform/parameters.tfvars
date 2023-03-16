@@ -47,9 +47,10 @@
 
 # If you leave the Subscription empty, we will use the current Subscription
 
-# To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below
+# To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below, set Bring_Your_Own_Hub=true
 # and do not deploy the plan under "02-Hub-Network"
 
+    # Bring_Your_Own_Hub    = true
     # Hub_Vnet_Name         = ""
     # Hub_Vnet_RG           = ""
     # Hub_Vnet_Subscription = ""
@@ -74,9 +75,9 @@
 ## Optional - 04 Shared - Jumpbox
 ##################################################
 # The Jumpbox username defaults to "lzadmin"
-# The Jumpbox password defaults to a Random password and stored to the KeyVault
-# under the Jumpbox-Pass secret
-# My_External_IP will be automatically calculated unless you specify it here.
+# The Jumpbox password defaults to a Random password unless specified via paramater.
+# If not specified, the random password is not provided.  Use the Reset Password feature to regain access.
+
 
     # jump_host_admin_username = "lzadmin"
 
@@ -89,9 +90,7 @@
     #    $ENV:TF_VAR_jump_host_password="xxxxx"
     # If using Bash
     #    export TF_VAR_jump_host_password="xxxxx"
-    
-    # jump_host_vm_size = "Standard_DS3_v2"
-    # My_External_IP = "1.2.3.4/32"
+   
 
 ##################################################
 ## 05 Hub Azure Firewall

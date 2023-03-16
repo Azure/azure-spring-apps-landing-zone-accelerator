@@ -5,6 +5,10 @@
   output spoke_rg {
     value = local.spoke_rg
   }
+
+  output private_dns_rg {
+    value = local.private_dns_rg
+  }
   
   output hub_rg {
     value = local.hub_rg
