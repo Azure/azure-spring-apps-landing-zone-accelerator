@@ -19,16 +19,16 @@ env:
   # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
   # Use this command to obtain:
   #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-  SRINGAPPS_SPN_OBJECT_ID: <Your Azure Spring Apps Resource Provider Object ID >
+  SRINGAPPS_SPN_OBJECT_ID: 1b7a460f-dc1f-42d5-a4d5-0505272dfd54
 
   # === Pet Clinic Required Settings ===:
   MYSQL_ADMIN_USERNAME: sqlAdmin
   MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
 
   # ==== Terraform Backend ===:
-  TFSTATE_RG: <Your State Resource Group>
-  STORAGEACCOUNTNAME: <Your State Storage Account>
-  CONTAINERNAME: <Your State Container Name>
+  TFSTATE_RG: cloud-shell-storage-southcentralus
+  STORAGEACCOUNTNAME: cs7100320022eb75670
+  CONTAINERNAME: tfstateasa
 
   # ==== Terraform Azure Login ===:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
