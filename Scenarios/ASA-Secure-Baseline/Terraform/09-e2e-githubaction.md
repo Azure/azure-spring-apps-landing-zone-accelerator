@@ -74,7 +74,7 @@ To create a new Service Principal, run the following commands:
     echo $SUBSCRIPTION_ID     
 ```
 
-Then just like in the previous step, create a new secret in your repository named `SUBSCRIPTION_ID` and `AZURE_CREDENTIALS` and paste the value of the `AZURE_CREDENTIALS` variable as the secret value (make sure to _copy the entire JSon_).
+Then just like in the previous step, create a new secret in your repository named `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`. You can copy paste these values from the AZURE_CREDENTIALS value returned in the cli. Also create another secret for  `AZURE_CREDENTIALS` and paste the value of the `AZURE_CREDENTIALS` variable as the secret value (make sure to _copy the entire JSon_).
 
 ![GitHub Secrets](../../../images/github_asa_secrets.png)
 
@@ -112,7 +112,6 @@ YAML is very sensitive to indentation.
 * If you do not want to provision the firewall or destroy the E2E infra once the pipeline run in complete, make sure to set those values to false in the deploy.yaml
 * If a particular step errors out you can run only that step from the pipeline directly.Most errors should be transient errors.
 
-
 ## Running the workflow
 
 Now that we've defined our workflow and prepared everything, we can run it to deploy our landing zone and the petclinic application to Azure Spring Apps.
@@ -121,7 +120,6 @@ It should take a few minutes to complete.
 A successful run using github actions should look like below:
 
 ![successful e2e run](../../../images/github_asa_successful_run.png)
-
 
 ## Testing the deployed application
 
@@ -134,4 +132,3 @@ First we need to get the ingress URL by running the following command:
 ```
 
 Then we can use `curl` to test our applications using the above endpoint. This assumes that there's no Application Gateway and you would access your spring app using the spring apps ingress url for the api-gateway app instance.
-
