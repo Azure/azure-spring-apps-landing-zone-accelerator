@@ -11,10 +11,10 @@ This repository provides packaged guidance for customer scenarios, reference arc
 The enterprise architecture is broken down into key design areas, where you can find the links to each at:
 | Design Area|Considerations and Recommendations|
 |:--------------:|:--------------:|
-| Identity and Access Management|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/identity-and-access-management)
-| Network Topology and Connectivity|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/network-topology-and-connectivity)
-| Management and Monitoring|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/management)
-| Security, Governance, and Compliance|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/security)
+| Identity and Access Management|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/identity-and-access-management)
+| Network Topology and Connectivity|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/network-topology-and-connectivity)
+| Management and Monitoring|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/management)
+| Security, Governance, and Compliance|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/security)
 
 ## Enterprise-Scale Reference Implementation
 
@@ -99,6 +99,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
 trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
