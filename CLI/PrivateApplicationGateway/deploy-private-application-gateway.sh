@@ -3,7 +3,7 @@ echo "Enter name of application gateway: "
 read name
 appgw_name=$name
 
-echo "Azure Spring Cloud application backend URL: "
+echo "Azure Spring Apps application backend URL: "
 read ascapp
 fqdn=$ascapp
 
@@ -70,10 +70,10 @@ fw_pub_id="$(az network firewall ip-config list -g sc-corp-rg -f $fw_name --quer
 fw_pub_ip="$(az network public-ip show --ids $fw_pub_id --query "ipAddress" -o tsv)"
 
 az network firewall nat-rule create \
-    --collection-name "SpringCloudIngressDNAT" \
+    --collection-name "SpringAppsIngressDNAT" \
     --destination-ports 443 \
     --firewall-name $fw_name \
-    --name "SpringCloudIngressDNAT" \
+    --name "SpringAppsIngressDNAT" \
     --protocols "TCP" \
     --translated-port 443 \
     --translated-address "10.9.3.10" \

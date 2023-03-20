@@ -50,6 +50,12 @@ variable "Hub_Vnet_Subscription" {
     default =""
 }
 
+variable "Bring_Your_Own_Hub" {
+    type = bool   
+    description = "Set to true if using your own Hub - the plan will not make modifications related to the Hub"
+    default = false
+}
+
 # Subnets Info
 
 # Spoke Subnets - use the TFVars file if you want to modify these

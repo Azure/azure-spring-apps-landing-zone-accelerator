@@ -1,8 +1,8 @@
 @description('Your tenant ID')
 param tenantId string
 
-@description('The object ID of the Azure Spring Cloud Resource Provider service principal')
-param springCloudPrincipalObjectId string
+@description('The object ID of the Azure Spring Apps Resource Provider service principal')
+param springAppsPrincipalObjectId string
 
 @description('The object ID of the security principal that will have permissions over the Key Vault instance')
 param keyVaultAdminObjectId string
@@ -29,8 +29,8 @@ param roleGuidRuntimeRouteTableName string = newGuid()
 param roleGuidAppRouteTableName string = newGuid()
 
 // Variables
-var springCloudSkuName = 'S0'
-var springCloudSkuTier = 'Standard'
+var springAppsSkuName = 'S0'
+var springAppsSkuTier = 'Standard'
 var vmSku = 'Standard_DS2_v2'
 var keyVaultSku = 'Standard'
 var ddosStandardProtection = false
@@ -125,7 +125,7 @@ var dataSubnet = {
 }
 var spokeRuntimeSubnetCidr = '10.1.0.0/24'
 var spokeAppSubnetCidr = '10.1.1.0/24'
-var springCloudServiceCidrs = '10.3.0.0/16,10.4.0.0/16,10.5.0.1/16'
+var springAppsServiceCidrs = '10.3.0.0/16,10.4.0.0/16,10.5.0.1/16'
 var sharedServicesSubnetName = 'snet-shared'
 var supportSubnetName = 'snet-support'
 var runtimeSubnetName = 'snet-runtime'
@@ -148,7 +148,7 @@ var nsgHubShared = 'nsg-hubshared'
 var nsgSpokeRuntime = 'nsg-spokeruntime'
 var nsgSpokeApp = 'nsg-spokeapp'
 var appInsightsName = 'appi-${uniqueString(subscription().id, resourceGroup().id)}'
-var springCloudInstanceName = 'spring-${uniqueString(subscription().id, resourceGroup().id)}'
+var springAppsInstanceName = 'spring-${uniqueString(subscription().id, resourceGroup().id)}'
 var ownerDefinitionId = '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 var appPrivateDnsZone = 'private.azuremicroservices.io'
 var keyVaultPrivateDnsZone = 'privatelink.vaultcore.azure.net'
@@ -318,7 +318,7 @@ module vnetSpokeUpdate 'modules/vnet/vnet.bicep' = {
 module role 'modules/Identity/role.bicep' = {
   name: roleGuidVnetName
   params: {
-    principalId: springCloudPrincipalObjectId
+    principalId: springAppsPrincipalObjectId
     roleGuid: ownerDefinitionId
     resourceName: vnetSpoke.outputs.vnetName
     resourceType: 'vnet'
@@ -568,7 +568,7 @@ module spokeAppRtTable 'modules/vnet/routetables.bicep' = {
 module roleAssignmentAppRt 'modules/Identity/role.bicep' = {
   name: roleGuidAppRouteTableName
   params: {
-    principalId: springCloudPrincipalObjectId
+    principalId: springAppsPrincipalObjectId
     roleGuid: ownerDefinitionId
     resourceName: spokeAppRtTable.outputs.routeTableName
     resourceType: 'route'
@@ -578,7 +578,7 @@ module roleAssignmentAppRt 'modules/Identity/role.bicep' = {
 module roleAssignmentRuntimeRt 'modules/Identity/role.bicep' = {
   name: roleGuidRuntimeRouteTableName
   params: {
-    principalId: springCloudPrincipalObjectId
+    principalId: springAppsPrincipalObjectId
     roleGuid: ownerDefinitionId
     resourceName: spokeRuntimeRtTable.outputs.routeTableName
     resourceType: 'route'
@@ -593,16 +593,16 @@ resource rtSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existin
   name: '${vnetSpoke.name}/${runtimeSubnetName}'
 }
 
-module springCloud 'modules/springCloud/springcloud.bicep' = {
-  name: springCloudInstanceName
+module springApps 'modules/springApps/springapps.bicep' = {
+  name: springAppsInstanceName
   params: {
     appsubnetId: appSubnet.id
     location: location
-    name: springCloudInstanceName
+    name: springAppsInstanceName
     rtsubnetId: rtSubnet.id
-    skuName: springCloudSkuName
-    skuTier: springCloudSkuTier
-    springCloudServiceCidrs: springCloudServiceCidrs
+    skuName: springAppsSkuName
+    skuTier: springAppsSkuTier
+    springAppsServiceCidrs: springAppsServiceCidrs
     tags: tags
     workspaceId: laworkspace.outputs.laworkspaceId
     appInsightsInstrumentationKey: appInsights.outputs.appInsightsInstrumentationKey
@@ -658,6 +658,6 @@ module arecord 'modules/vnet/arecord.bicep' = {
   name: 'arecord'
   params: {
     name: '${appPrivateDnsZone}/*'
-    networkrg: springCloud.outputs.springCloudNetworkRG
+    networkrg: springApps.outputs.springAppsNetworkRG
   }
 }

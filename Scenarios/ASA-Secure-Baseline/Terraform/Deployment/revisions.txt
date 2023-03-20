@@ -16,4 +16,6 @@ Design changes:
 2/15/2023 - added AppGW variables to paramaters.tfvars along with numerous updates to md files.
 2/22/2023 - Removed storing VM/JumpHost password to Keyvault due to issues related to getting external IP and Getting access to Key Vault.
 2/22/2023 - Switched Azure Spring Apps Service principal object id to a variable.  When using the AzureAD module to retrieve it, it blocks Terraform Deployment via Service principal as it cannot read from Azure AD.
-3/1/2023  - Removed requirement for the Terraform state backend access key 
+3/1/2023  - Removed requirement for the Terraform state backend access key
+3/7/2023  - Private DNS Zones are now deployed to their own RG - Reason - Enhanced Flexibility for Bring your own Hub
+3/7/2023  - Private DNS Zones are no longer linked to the Hub - Reason - Enhanced Flexibility for Bring your own Hub 

@@ -1,7 +1,7 @@
 # Add Custom domain to an Azure Spring Apps application with SSL/TLS
 
 ## Overview
-When you deploy an application to an Azure Spring cloud environment, it will publish the application using the domain suffix azuremicroservices.io or private.azuremicroservice.io when injected into a VNet. A custom domain allows you to utilize your own custom domain for your Azure Spring Apps application endpoint.
+When you deploy an application to an Azure Spring Apps environment, it will publish the application using the domain suffix azuremicroservices.io or private.azuremicroservice.io when injected into a VNet. A custom domain allows you to utilize your own custom domain for your Azure Spring Apps application endpoint.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
     source setup-env-variables-custom-domain.sh
 ```
 
-2. Currently, if the Azure Key Vault being used has a firewall configured, the Azure Spring cloud management IP addresses need to be added to the firewall. Use the following command:
+2. Currently, if the Azure Key Vault being used has a firewall configured, the Azure Spring Apps management IP addresses need to be added to the firewall. Use the following command:
 
 ```bash
     export MGMT_IPS=(20.53.123.160 52.143.241.210 40.65.234.114 52.142.20.14 20.54.40.121 40.80.210.49 52.253.84.152 20.49.137.168 40.74.8.134 51.143.48.243)  
@@ -56,7 +56,7 @@ When you deploy an application to an Azure Spring cloud environment, it will pub
     -e false
 ```
 
-7. Add a new A record for the application within the new DNS Zone. Replace yourIPAddress with your Azure Spring Apps endpoint private IP. You can get the IP address of your spring cloud VNet injection endpoint from the Azure Portal.
+7. Add a new A record for the application within the new DNS Zone. Replace yourIPAddress with your Azure Spring Apps endpoint private IP. You can get the IP address of your spring apps VNet injection endpoint from the Azure Portal.
 
 ![lab image](https://github.com/Azure/azure-spring-cloud-reference-architecture/blob/main/custom-domain/images/vnetinjection.jpeg)
 

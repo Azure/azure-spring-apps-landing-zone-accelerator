@@ -1,7 +1,8 @@
 locals  {
   spoke_vnet_name            = "vnet-${var.name_prefix}-${var.location}-SPOKE"
   spoke_rg                   = "rg-${var.name_prefix}-SPOKE"
-  shared_rg                  = "rg-${var.name_prefix}-SHARED"
+  #shared_rg                  = "rg-${var.name_prefix}-SHARED"
+  private_dns_rg             = "rg-${var.name_prefix}-PRIVATEZONES"
 
   hub_vnet_name             = ( var.Hub_Vnet_Name == "" ? "vnet-${var.name_prefix}-${var.location}-HUB" : var.Hub_Vnet_Name )     
   hub_rg                    = ( var.Hub_Vnet_RG   == "" ? "rg-${var.name_prefix}-HUB" : var.Hub_Vnet_RG )
@@ -29,7 +30,7 @@ data "azurerm_resource_group" "hub_rg" {
 }
 
 
-# Resource group 
+# Spoke Resource group
 resource "azurerm_resource_group" "spoke_rg" {
     name                        = local.spoke_rg
     location                    = var.location
@@ -44,6 +45,11 @@ resource "azurerm_virtual_network" "spoke_vnet" {
     address_space               = [var.spoke_vnet_addr_prefix]    
 }
 
+# Private DNS Zones Resource Group
+resource "azurerm_resource_group" "private_dns_rg" {
+    name                        = local.private_dns_rg 
+    location                    = var.location
+}
 
 
 

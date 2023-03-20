@@ -26,9 +26,3 @@ provider "azurerm" {
     partner_id                   = "76581e27-e985-41a0-a44d-dacc1b995aa1"  
 }
 
-provider "azurerm" {
-    alias = "hub-subscription"
-    subscription_id = local.hub_subscriptionId
-    features {
-    } 
-}

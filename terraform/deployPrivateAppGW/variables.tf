@@ -35,7 +35,7 @@ variable "az_fw_pip" {
 } 
 variable "backendPoolFQDN" {
     type        = string
-    description = "FQDN of the backend URL of Azure Spring Cloud Application"
+    description = "FQDN of the backend URL of Azure Spring Apps Application"
 }
 
 variable "https_password" {

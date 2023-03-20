@@ -3,13 +3,13 @@ param location string
 param tags object
 param skuName string
 param skuTier string
-param springCloudServiceCidrs string
+param springAppsServiceCidrs string
 param rtsubnetId string
 param appsubnetId string
 param workspaceId string
 param appInsightsInstrumentationKey string
 
-resource springcloud 'Microsoft.AppPlatform/Spring@2020-07-01' = {
+resource springapps 'Microsoft.AppPlatform/Spring@2020-07-01' = {
   name: name
   location: location
   tags: tags
@@ -19,24 +19,24 @@ resource springcloud 'Microsoft.AppPlatform/Spring@2020-07-01' = {
   }
   properties: {
     networkProfile: {
-      serviceCidr: springCloudServiceCidrs
+      serviceCidr: springAppsServiceCidrs
       serviceRuntimeSubnetId: rtsubnetId
       appSubnetId: appsubnetId
     }
   }
 }
 
-resource springCloudMonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2020-07-01' = {
-  name: '${springcloud.name}/default'
+resource springAppsMonitoringSettings 'Microsoft.AppPlatform/Spring/monitoringSettings@2020-07-01' = {
+  name: '${springapps.name}/default'
   properties: {
     traceEnabled: true
     appInsightsInstrumentationKey: appInsightsInstrumentationKey
   }
 }
 
-resource springclouddiagnostics 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
-  name: 'springclouddiagnostics'
-  scope: springcloud
+resource springappsdiagnostics 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  name: 'springappsdiagnostics'
+  scope: springapps
   properties: {
     logs: [
       {
@@ -52,5 +52,5 @@ resource springclouddiagnostics 'microsoft.insights/diagnosticSettings@2017-05-0
   }
 }
 
-output springcloudName string = springcloud.name
-output springCloudNetworkRG string = springcloud.properties.networkProfile.serviceRuntimeNetworkResourceGroup
+output springappsName string = springapps.name
+output springAppsNetworkRG string = springapps.properties.networkProfile.serviceRuntimeNetworkResourceGroup

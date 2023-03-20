@@ -19,7 +19,6 @@ Sample:
 # The Jumpbox username defaults to "lzadmin"
 # The Jumpbox password defaults to a Random password and stored to the KeyVault
 # under the Jumpbox-Pass secret
-# My_External_IP will be automatically calculated unless you specify it here.
 
     # jump_host_admin_username = "lzadmin"
     
@@ -32,10 +31,6 @@ Sample:
     #    $ENV:TF_VAR_jump_host_password="xxxxx"
     # If using Bash
     #    export TF_VAR_jump_host_password="xxxxx"
-
-
-    # jump_host_vm_size = "Standard_DS3_v2"
-    # My_External_IP = "1.2.3.4/32"
 
 ```
 

@@ -118,14 +118,14 @@ resource "azurerm_application_gateway" "azure_appgw" {
 }
 
 resource "azurerm_firewall_nat_rule_collection" "az_fw" {
-  name                = "springCLoudIngressDNAT"
+  name                = "springAppsIngressDNAT"
   azure_firewall_name = var.az_fw_name
   resource_group_name = var.resource_group_name
   priority            = 100
   action              = "Dnat"
 
   rule {
-    name = "springCLoudIngressDNAT"
+    name = "springAppsIngressDNAT"
 
     source_addresses = [
       "*",
