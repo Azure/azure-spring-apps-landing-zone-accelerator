@@ -11,10 +11,10 @@ This repository provides packaged guidance for customer scenarios, reference arc
 The enterprise architecture is broken down into key design areas, where you can find the links to each at:
 | Design Area|Considerations and Recommendations|
 |:--------------:|:--------------:|
-| Identity and Access Management|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-IAM.md)
-| Network Topology and Connectivity|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-Network-Topology.md)
-| Management and Monitoring|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-Mangement%20And%20Operations.md)
-| Security, Governance, and Compliance|[Design Considerations and Recommendations](/docs/Design-Areas/LZA-ASA-Security.md)
+| Identity and Access Management|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/identity-and-access-management)
+| Network Topology and Connectivity|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/network-topology-and-connectivity)
+| Management and Monitoring|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/management)
+| Security, Governance, and Compliance|[Design Considerations and Recommendations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/security)
 
 ## Enterprise-Scale Reference Implementation
 
