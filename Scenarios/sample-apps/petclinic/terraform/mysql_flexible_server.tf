@@ -1,6 +1,11 @@
+resource "random_string" "random" {
+  length  = 4
+  upper   = false
+  special = false
+}
 
 locals {
-  mysql_server_name = "pcsms-db-${lower(var.resource_group)}"
+  mysql_server_name = "pcsms-db-${lower(var.resource_group)}-${random_string.random.result}"
 }
 
 resource "azurerm_subnet" "mysql" {
