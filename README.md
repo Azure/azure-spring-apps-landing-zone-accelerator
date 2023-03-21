@@ -58,7 +58,7 @@ For Azure Spring Apps Enterprise SKU:
 * Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  
 
 
-## Next Steps to implement AKS Landing Zone Accelerator
+## Next Steps to implement Azure Spring Apps Landing Zone Accelerator
 
 Pick the below scenario to get started on a reference implementation. 
 
