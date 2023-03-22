@@ -72,7 +72,7 @@ resource "azurerm_virtual_machine_extension" "Installdependencies" {
   settings = <<SETTINGS
     {
         "fileUris": [
-           "https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/greenfield-deployment/scripts/DeployDeveloperConfig.ps1"
+           "https://raw.githubusercontent.com/Azure/azure-spring-apps-landing-zone-accelerator/main/Scenarios/ASA-Secure-Baseline/scripts/DeployDeveloperConfig.ps1"
     
            ]
     }
