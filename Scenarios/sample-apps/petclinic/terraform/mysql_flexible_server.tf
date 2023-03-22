@@ -25,7 +25,7 @@ resource "azurerm_subnet" "mysql" {
   }
 }
 
-resource "azurerm_network_security_group" "asa_svc_nsg" {
+resource "azurerm_network_security_group" "mysql" {
   name                = "snet-mysql-nsg"
   location            = data.azurerm_resource_group.spoke_rg.location
   resource_group_name = data.azurerm_resource_group.spoke_rg.name
