@@ -80,15 +80,15 @@ Then just like in the previous step, create a new secret in your repository name
 
 ## Modify variables in `deploy.yml`
 
-The workflow file can be found in your repository with the path [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) :
+The workflow file can be found in your repository with the path [`.github/workflows/deploy.yml`](../../../.github/workflows/deploy.yml) :
 
-* Replace the value of the `SRINGAPPS_SPN_OBJECT_ID` environment variable in the [deploy.yaml](.github/workflows/deploy.yml) file with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
+* Replace the value of the `SRINGAPPS_SPN_OBJECT_ID` environment variable in the [deploy.yaml](../../../.github/workflows/deploy.yml) file with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
 You use the command below to obtain the value of the variable:
 
       az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
 
-* Replace the value of  TFSTATE_RG, STORAGEACCOUNTNAME and CONTAINERNAME in [deploy.yaml](.github/workflows/deploy.yml) to point to your Terraform backend.
-* You can also set the deploy_firewall and destroy values in [deploy.yaml](.github/workflows/deploy.yml) depending on your usecase.
+* Replace the value of  TFSTATE_RG, STORAGEACCOUNTNAME and CONTAINERNAME in [deploy.yaml](../../../.github/workflows/deploy.yml) to point to your Terraform backend.
+* You can also set the deploy_firewall and destroy values in [deploy.yaml](../../../.github/workflows/deploy.yml) depending on your usecase.
 
 This workflow will be triggered every time a commit is pushed to the `main` branch.
 It will then run a job with the following steps:
