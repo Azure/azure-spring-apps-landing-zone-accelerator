@@ -1,0 +1,567 @@
+name: Deploy to Azure Spring Apps using passwordless connections
+on: [push]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # === Deploy Firewall ===:
+  SHOULD_DEPLOY_FIREWALL: false
+
+  # === Destroy All ==
+  SHOULD_DESTROY: false
+
+  # === Spring Apps Service ===:
+  SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  JUMP_BOX_USERNAME: lzadmin
+  JUMP_BOX_PASSWORD: ${{ secrets.JUMP_BOX_PASSWORD }}
+  # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
+  # Use this command to obtain:
+  #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+  SRINGAPPS_SPN_OBJECT_ID: 1b7a460f-dc1f-42d5-a4d5-0505272dfd54
+
+  # === Pet Clinic Required Settings ===:
+  MYSQL_ADMIN_USERNAME: sqlAdmin
+  MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
+
+  # ==== Terraform Backend ===:
+  TFSTATE_RG: cloud-shell-storage-southcentralus
+  STORAGEACCOUNTNAME: cs7100320022eb75670
+  CONTAINERNAME: tfstateasa
+
+  # ==== Terraform Azure Login ===:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  # === Baseline Parameters ====:
+  REGION: eastus
+  NAME_PREFIX: springlza
+  ENVIRONMENT: dev
+
+  # ==== APPS ====:
+  API_GATEWAY: api-gateway
+  ADMIN_SERVER: admin-server
+  CUSTOMERS_SERVICE: customers-service
+  VETS_SERVICE: vets-service
+  VISITS_SERVICE: visits-service
+
+  # ==== JARS ====:
+  API_GATEWAY_JAR: spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar
+  ADMIN_SERVER_JAR: spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar
+  CUSTOMERS_SERVICE_JAR: spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar
+  VETS_SERVICE_JAR: spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar
+  VISITS_SERVICE_JAR: spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar
+
+jobs:
+  conditions:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_firewall: "${{ env.SHOULD_DEPLOY_FIREWALL }}"
+      destroy: "${{ env.SHOULD_DESTROY }}"
+    steps:
+      - name: echo
+        run: |
+          echo ${{ env.SHOULD_DEPLOY_FIREWALL }} \
+          echo ${{ env.SHOULD_DESTROY }}
+  deploy_hub_network:
+    name: Deploy 02 Hub Network
+    needs: conditions
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan  \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_lz_network:
+    needs: [deploy_hub_network, conditions]
+    name: Deploy 03 LZ Network
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_lz_shared:
+    needs: [deploy_lz_network, conditions]
+    name: Deploy 04 LZ Shared Resources
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan  \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}" \
+          -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
+          -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  deploy_hub_firewall:
+    needs: [deploy_hub_network, deploy_lz_shared, conditions]
+    name: Deploy 05 Hub Firewall
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        if: needs.conditions.outputs.deploy_firewall == 'true'
+        run: terraform apply my.plan
+  deploy_lz_standard:
+    needs:
+      [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
+    name: Deploy 06 LZ Spring Apps Standard
+    runs-on: ubuntu-latest
+    outputs:
+      spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+      - name: Terraform Output
+        id: output
+        run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
+  deploy_pet_clinic_infra:
+    name: Deploy Pet Clinic Infrastructure
+    needs: [deploy_lz_standard, deploy_lz_shared, conditions]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/sample-apps/petclinic/terraform
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan \
+          -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
+          -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
+          -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
+          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
+
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  build:
+    name: Build and Deploy Pet Clinic Microservices
+    needs: [deploy_pet_clinic_infra, deploy_lz_standard, conditions]
+    runs-on: ubuntu-latest
+    env:
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
+    steps:
+      - name: Checkout pet clinic sample
+        uses: actions/checkout@v3
+        with:
+          repository: Azure-Samples/spring-petclinic-microservices.git
+          path: pet-clinic
+          ref: azure
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: "microsoft"
+          cache: maven
+
+      - name: maven build, clean
+        working-directory: pet-clinic
+        run: |
+          mvn clean package -DskipTests
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy api-gateway
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
+          app-name: ${{ env.API_GATEWAY }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.API_GATEWAY_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+
+      - name: Deploy admin-server
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.ADMIN_SERVER }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.ADMIN_SERVER_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: "-SPRING_PROFILES_ACTIVE passwordless"
+
+      - name: Deploy customers-service
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.CUSTOMERS_SERVICE }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.CUSTOMERS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+
+      - name: Deploy vets-service
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.VETS_SERVICE }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.VETS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+
+      - name: Deploy visits-service
+        uses: azure/spring-apps-deploy@v1
+        with:
+          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          action: deploy
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: ${{ env.VISITS_SERVICE }}
+          use-staging-deployment: false
+          package: ${{ github.workspace }}/pet-clinic/${{ env.VISITS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+  destroy_pet_clinic_infra:
+    name: Destroy Pet Clinic Infrastructure
+    needs:
+      [
+        conditions,
+        deploy_lz_standard,
+        deploy_lz_shared,
+        deploy_pet_clinic_infra,
+        build,
+      ]
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    defaults:
+      run:
+        working-directory: Scenarios/sample-apps/petclinic/terraform
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
+          -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
+          -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
+          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  destroy_lz_standard:
+    needs: [conditions, deploy_lz_standard, destroy_pet_clinic_infra]
+    name: Destroy 06 LZ Spring Apps Standard
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  destroy_hub_firewall:
+    needs: [destroy_lz_standard, conditions]
+    name: Destroy 05 Hub Firewall
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  destroy_lz_shared:
+    needs: [destroy_hub_firewall, conditions]
+    name: Destroy 04 LZ Shared Resources
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}" \
+          -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
+          -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  destroy_lz_network:
+    needs: [destroy_lz_shared, conditions]
+    name: Destroy 03 LZ Network
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+  destroy_hub_network:
+    name: Destroy 02 Hub Network
+    needs: [destroy_lz_network, conditions]
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
