@@ -67,8 +67,8 @@ Pick the below scenario to get started on a reference implementation.
 Deployment Details:
 | Deployment Methodology | GitHub Actions
 |--------------|--------------|
-|[Terraform]|Coming soon|
-|[Bicep]|Coming soon|
+|Terraform|[Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction.md)|
+|Bicep|Coming soon|
 
 ## Got a feedback
 Please leverage issues if you have any feedback or request on how we can improve on this repository.
