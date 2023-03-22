@@ -95,6 +95,8 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 
 8. [Cleanup](./08-cleanup.md)
 
+9. [E2E Deployment using GitHub Action](./09-e2e-githubactions.md)
+
 ## Known Issues / Notes
   - When destroying Azure Spring Apps **Enterprise**, there is an issue with the API Portal destruction where destruction will fail with error "Please unassign public endpoint before deleting API Portal.".  This issues does not apply to Spring Apps Standard Edition.
     - A bug has been filed with the AZURERM terraform provider Github
