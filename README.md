@@ -67,7 +67,7 @@ Pick the below scenario to get started on a reference implementation.
 Deployment Details:
 | Deployment Methodology | GitHub Actions
 |--------------|--------------|
-|Terraform|[Published](https://github.com/Azure/azure-spring-apps-landing-zone-accelerator/blob/main/Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction.md)|
+|Terraform|[Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction.md)|
 |Bicep|Coming soon|
 
 ## Got a feedback
