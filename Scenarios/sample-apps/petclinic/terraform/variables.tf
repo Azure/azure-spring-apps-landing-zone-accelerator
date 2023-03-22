@@ -14,6 +14,11 @@ variable "spring_cloud_resource_group_name" {
   default = "rg-springlza-APPS"
 }
 
+variable "private_zones_resource_group_name" {
+  type    = string
+  default = "rg-springlza-PRIVATEZONES"
+}
+
 variable "key_vault_rg" {
   type    = string
   default = "rg-springlza-SHARED"

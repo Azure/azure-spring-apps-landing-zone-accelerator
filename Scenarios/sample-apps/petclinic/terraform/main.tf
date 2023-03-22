@@ -32,6 +32,14 @@ data "azurerm_resource_group" "spoke_rg" {
   name = var.resource_group
 }
 
+data "azurerm_resource_group" "private_zones_rg" {
+  name = var.private_zones_resource_group_name
+}
+
+data "azurerm_resource_group" "spring_apps_rg" {
+  name = var.spring_cloud_resource_group_name
+}
+
 data "azurerm_spring_cloud_service" "spring_cloud" {
   name                = var.spring_cloud_service
   resource_group_name = var.spring_cloud_resource_group_name
