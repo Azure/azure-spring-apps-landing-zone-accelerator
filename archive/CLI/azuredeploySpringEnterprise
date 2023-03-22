@@ -260,7 +260,7 @@ az vm extension set \
     --vm-name jumphostvm \
     --resource-group ${hub_resource_group_name} \
     --protected-settings '{"commandToExecute": "powershell.exe -Command \"./DeployDeveloperConfig.ps1; exit 0;\""}' \
-    --settings '{"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/terraform/modules/jump_host/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.ps1","https://raw.githubusercontent.com/Azure/azure-spring-cloud-reference-architecture/main/petclinic/deployPetClinicApp.sh"]}'
+    --settings '{"fileUris": ["https://raw.githubusercontent.com/Azure/azure-spring-apps-landing-zone-accelerator/main/archive/terraform/greenfield-deployment/scripts/DeployDeveloperConfig.ps1","https://raw.githubusercontent.com/Azure/azure-spring-apps-landing-zone-accelerator/main/archive/petclinic/deployPetClinicApp.ps1","https://raw.githubusercontent.com/Azure/azure-spring-apps-landing-zone-accelerator/main/archive/petclinic/deployPetClinicApp.sh"]}'
 
 # creates Azure Firewall instance, public IP and Azure Firewall IP Configuration
 az network firewall create \
