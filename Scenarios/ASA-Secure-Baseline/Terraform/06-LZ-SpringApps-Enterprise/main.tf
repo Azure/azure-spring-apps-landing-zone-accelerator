@@ -48,23 +48,6 @@ locals  {
   sc_cidr                  = var.sc_cidr
 }
 
-# We need the Hub info so that we can update the DNS zone which is located in the Hub RG
-# Get info about the existing Hub VNET
-# data "azurerm_virtual_network" "hub_vnet" {
-
-#   provider = azurerm.hub-subscription
-
-#   name                = local.hub_vnet_name
-#   resource_group_name = local.hub_rg
-# }
-
-# Get info about the existing Hub RG
-# data "azurerm_resource_group" "hub_rg" {
-#   provider = azurerm.hub-subscription
-
-#   name                = local.hub_rg
-# }
-
 
 # Get info about the existing Shared RG
 data "azurerm_resource_group" "shared_rg" {

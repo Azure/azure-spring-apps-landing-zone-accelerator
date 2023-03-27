@@ -27,9 +27,6 @@ resource "azurerm_spring_cloud_service" "sc_standard" {
 
   }
  
-#   depends_on = [  
-#   ]
-
 }
 
 resource "azurerm_monitor_diagnostic_setting" "sc_diag_standard" {
