@@ -7,6 +7,7 @@ resource "azurerm_subnet" "azure_bastion" {
     resource_group_name         = azurerm_resource_group.hub_rg.name
     virtual_network_name        = azurerm_virtual_network.hub_vnet.name
     address_prefixes            = [var.azurebastion_addr_prefix]
+
 } 
 
 # NSG for Bastion subnet
@@ -105,8 +106,9 @@ resource "azurerm_network_security_group" "bastion_nsg" {
       destination_port_ranges      = ["80"]
       source_address_prefix       = "*"
       destination_address_prefix  = "Internet"
-}
+    }
     
+    tags = var.tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "bastion_nsg_assoc" {
@@ -129,7 +131,11 @@ resource "azurerm_public_ip" "azure_bastion" {
     location                    = var.location
     resource_group_name         = azurerm_resource_group.hub_rg.name
     allocation_method           = "Static"
-    sku                         = "Standard" 
+    sku                         = "Standard"
+   
+    
+
+    tags = var.tags 
 }
 
 
@@ -145,6 +151,8 @@ resource "azurerm_bastion_host" "azure_bastion_instance" {
         subnet_id               = azurerm_subnet.azure_bastion.id
         public_ip_address_id    = azurerm_public_ip.azure_bastion.id 
     }
+
+    tags = var.tags
 
     depends_on = [
       azurerm_public_ip.azure_bastion

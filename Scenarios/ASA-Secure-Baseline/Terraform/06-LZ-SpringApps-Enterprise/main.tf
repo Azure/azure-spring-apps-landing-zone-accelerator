@@ -90,4 +90,6 @@ data "azurerm_log_analytics_workspace" "sc_law" {
 resource "azurerm_resource_group" "springapps_rg" {
     name                        = local.springapps_rg
     location                    = var.location
+
+    tags = var.tags
 }

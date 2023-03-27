@@ -69,6 +69,7 @@ data "azurerm_subnet" "azuresbcloudsupport" {
 data "azurerm_private_dns_zone" "keyvault_zone" {
   name                 =  var.keyvault_dnszone_name
   resource_group_name  =  local.private_dns_rg
+
 }
 
 
@@ -79,6 +80,8 @@ data "azurerm_private_dns_zone" "keyvault_zone" {
 resource "azurerm_resource_group" "shared_rg" {
     name                        = local.shared_rg
     location                    = var.location
+
+    tags = var.tags
 }
 
 

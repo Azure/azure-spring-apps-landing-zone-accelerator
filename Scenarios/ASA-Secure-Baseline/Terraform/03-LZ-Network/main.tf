@@ -34,6 +34,8 @@ data "azurerm_resource_group" "hub_rg" {
 resource "azurerm_resource_group" "spoke_rg" {
     name                        = local.spoke_rg
     location                    = var.location
+
+    tags = var.tags
 }
 
 
@@ -42,13 +44,17 @@ resource "azurerm_virtual_network" "spoke_vnet" {
     name                        = local.spoke_vnet_name
     location                    = var.location 
     resource_group_name         = azurerm_resource_group.spoke_rg.name
-    address_space               = [var.spoke_vnet_addr_prefix]    
+    address_space               = [var.spoke_vnet_addr_prefix]
+
+    tags = var.tags    
 }
 
 # Private DNS Zones Resource Group
 resource "azurerm_resource_group" "private_dns_rg" {
     name                        = local.private_dns_rg 
     location                    = var.location
+
+    tags = var.tags
 }
 
 

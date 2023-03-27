@@ -181,7 +181,7 @@ resource "azurerm_firewall_network_rule_collection" "SpringAppsRefArchNetworkRul
         rule {
             name = "NtpQuery"
             source_addresses = [
-                "${local.address_range_cloudsvc }", "${local.address_range_cloudapps}",
+                "${local.address_range_cloudsvc }", "${local.address_range_cloudapps}", "${local.address_range_shared}",
             ]
 
             destination_addresses = [
