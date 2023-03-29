@@ -11,6 +11,8 @@ resource "azurerm_network_interface" "jump_host" {
         private_ip_address_allocation = "Static"
         private_ip_address            = var.jump_host_private_ip_addr
     }
+
+    tags = var.tags
 }
 
 
@@ -54,6 +56,8 @@ resource "azurerm_virtual_machine" "jump_host" {
       create = "60m"
       delete = "2h"
   }
+
+  tags = var.tags
 }
  
 resource "azurerm_virtual_machine_extension" "Installdependencies" {

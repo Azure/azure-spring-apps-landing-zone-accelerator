@@ -3,12 +3,16 @@
 resource "azurerm_private_dns_zone" "spring_cloud_zone" {
   name                = var.springapps_dnszone_name
   resource_group_name = azurerm_resource_group.private_dns_rg.name
+
+  tags = var.tags
 }
 
 # Azure KeyVault Private Link DNS Zone
 resource "azurerm_private_dns_zone" "keyvault_zone" {
   name                = var.keyvault_dnszone_name
   resource_group_name = azurerm_resource_group.private_dns_rg.name
+
+  tags = var.tags
 }
 
 # Spoke Links

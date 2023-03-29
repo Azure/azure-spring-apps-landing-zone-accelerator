@@ -10,6 +10,8 @@ resource "azurerm_route_table" "default_apps_route" {
     next_hop_in_ip_address      =  azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address
   }
 
+  tags = var.tags
+
   lifecycle {
     ignore_changes = [
       route,tags
@@ -31,6 +33,8 @@ resource "azurerm_route_table" "default_runtime_route" {
     next_hop_in_ip_address      =  azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address
   }
 
+  tags = var.tags
+
   lifecycle {
     ignore_changes = [
       route,tags
@@ -50,6 +54,8 @@ resource "azurerm_route_table" "default_shared_route" {
     next_hop_type               = "VirtualAppliance"
     next_hop_in_ip_address      =  azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address
   }
+
+  tags = var.tags
 
   lifecycle {
     ignore_changes = [
@@ -108,7 +114,8 @@ resource "azurerm_route_table" "default_hub_route" {
     next_hop_type               = "VirtualAppliance"
     next_hop_in_ip_address      =  azurerm_firewall.azure_firewall_instance.ip_configuration[0].private_ip_address
   }
- 
+
+  tags = var.tags 
 }
 
 

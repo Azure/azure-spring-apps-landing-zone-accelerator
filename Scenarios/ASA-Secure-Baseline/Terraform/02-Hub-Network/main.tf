@@ -38,5 +38,7 @@ resource "azurerm_virtual_network" "hub_vnet" {
     location                    = var.location 
     resource_group_name         = azurerm_resource_group.hub_rg.name
     address_space               = [var.hub_vnet_addr_prefix]
+
+    tags = var.tags
 }
 

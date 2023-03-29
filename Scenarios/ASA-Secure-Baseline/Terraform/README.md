@@ -98,11 +98,9 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 9. [E2E Deployment using GitHub Action](./09-e2e-githubaction.md)
 
 ## Known Issues / Notes
-  - When destroying Azure Spring Apps **Enterprise**, there is an issue with the API Portal destruction where destruction will fail with error "Please unassign public endpoint before deleting API Portal.".  This issues does not apply to Spring Apps Standard Edition.
-    - A bug has been filed with the AZURERM terraform provider Github
-    https://github.com/hashicorp/terraform-provider-azurerm/issues/19949
-
-    - To get around this and complete the destruction, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal
+  - Please take the following actions before attempting to destroy this deployment.
+    - Turn on the Jump Box Virtual Machine
+    - If you have deployed Azure Spring apps Enterprise edition, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal
         - To do this via the Azure Portal, do this:
     Azure Portal > Azure Spring Apps instance > API Portal > Assign endpoint -> Set to No
 
@@ -111,5 +109,5 @@ In this example, there is a common variable defintions file [parameters.tfvars](
     Line 44 - public_network_access_enabled , set it to False
     Then Apply
 
-    - Then you can destroy the deployment
+   
 

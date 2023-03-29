@@ -6,9 +6,7 @@ resource "azurerm_subnet" "azure_firewall" {
     name                        = "AzureFirewallSubnet"
     resource_group_name         = data.azurerm_resource_group.hub_rg.name
     virtual_network_name        = data.azurerm_virtual_network.hub_vnet.name
-    address_prefixes            = [var.azurefw_addr_prefix]
-
-    
+    address_prefixes            = [var.azurefw_addr_prefix]    
 } 
 
 resource "azurerm_public_ip" "azure_firewall" {
@@ -19,6 +17,8 @@ resource "azurerm_public_ip" "azure_firewall" {
     resource_group_name         = data.azurerm_resource_group.hub_rg.name
     allocation_method           = "Static"
     sku                         = "Standard"
+
+    tags = var.tags
 }
 
 
@@ -48,6 +48,8 @@ resource "azurerm_firewall" "azure_firewall_instance" {
 
 
   zones = var.azure_firewall_zones
+
+  tags = var.tags
 
   depends_on = [ azurerm_public_ip.azure_firewall ]
 }
