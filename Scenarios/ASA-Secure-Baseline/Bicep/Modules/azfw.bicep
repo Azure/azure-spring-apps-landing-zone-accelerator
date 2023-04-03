@@ -1,7 +1,7 @@
 param applicationRules array = []
-param prefix string
-param location string
 param hubVnetName string
+param location string
+param name string
 param networkRules array = []
 param tags object
 
@@ -10,7 +10,7 @@ param privateTrafficPrefixes string = ''
 param fireWallSubnetName string
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
-  name: '${prefix}-azfw-ip'
+  name: 'azure-firewall-ip'
   location: location
   properties: {
     publicIPAddressVersion: 'IPv4'
@@ -22,13 +22,13 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
 }
 
 resource fwl 'Microsoft.Network/azureFirewalls@2020-06-01' = {
-  name: '${prefix}-azfw'
+  name: name
   location: location
   properties: {
     applicationRuleCollections: ((!empty(applicationRules)) ? applicationRules : null)
     ipConfigurations: [
       {
-        name: '${prefix}-azfw-ipconf'
+        name: 'azfw-ipconf'
         properties: {
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', hubVnetName, fireWallSubnetName)

@@ -42,7 +42,7 @@ module appInsights '../Modules/appInsights.bicep' = {
   params: {
     logAnalyticsId: logAnalytics.id
     location: location
-    name: 'ai-${namePrefix}-${location}-${randomSufix}'
+    name: '${namePrefix}-ai'
     tags: tags
   }
   dependsOn: [
@@ -56,7 +56,7 @@ module springApps '../Modules/springApps.bicep' = {
   params: {
     appSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeResourceGroupName}/providers/Microsoft.Network/virtualNetworks/vnet-${namePrefix}-${location}-SPOKE/subnets/snet-app'
     location: location
-    name: 'spring-${namePrefix}-${location}-${substring(uniqueString(timeStamp), 0, 4)}'
+    name: 'spring-${namePrefix}-${environment}-${substring(uniqueString(timeStamp), 0, 4)}'
     serviceCidr: serviceCidr
     serviceRuntimeSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeResourceGroupName}/providers/Microsoft.Network/virtualNetworks/vnet-${namePrefix}-${location}-SPOKE/subnets/snet-runtime'
     tags: tags

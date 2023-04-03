@@ -42,8 +42,6 @@ param tags object = {}
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
-
-
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
@@ -58,6 +56,12 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {
 
 resource spokeRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: 'rg-${namePrefix}-SPOKE'
+  location: location
+  tags: tags
+}
+
+resource privateZonesRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: 'rg-${namePrefix}-PRIVATEZONES'
   location: location
   tags: tags
 }
@@ -129,7 +133,7 @@ module appNsg '../Modules/nsg.bicep' = {
   params: {
     name: 'snet-app-nsg'
     location: location
-    securityRules: [ ]
+    securityRules: []
     tags: tags
   }
 }
@@ -140,7 +144,7 @@ module runtimeNsg '../Modules/nsg.bicep' = {
   params: {
     name: 'snet-runtime-nsg'
     location: location
-    securityRules: [ ]
+    securityRules: []
     tags: tags
   }
 }
@@ -234,7 +238,7 @@ module agwNsg '../Modules/nsg.bicep' = {
 // Private DNS zone for Spring Apps
 module privateZoneSpringApps '../Modules/privateDnsZone.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-private-springapps'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(privateZonesRg.name)
   params: {
     tags: tags
     zoneName: 'private.azuremicroservices.io'
@@ -243,7 +247,7 @@ module privateZoneSpringApps '../Modules/privateDnsZone.bicep' = {
 
 module hubVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-hub-link-springapps'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
   ]
@@ -257,7 +261,7 @@ module hubVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
 
 module spokeVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-spoke-link-springapps'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
   ]
@@ -272,7 +276,7 @@ module spokeVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
 // Private DNS zone for Key Vault
 module privateZoneKv '../Modules/privateDnsZone.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-private-kv'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(privateZonesRg.name)
   params: {
     tags: tags
     zoneName: 'privatelink.vaultcore.azure.net'
@@ -281,7 +285,7 @@ module privateZoneKv '../Modules/privateDnsZone.bicep' = {
 
 module hubVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-hub-link-kv'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneKv
   ]
@@ -295,7 +299,7 @@ module hubVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
 
 module spokeVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
   name: '${timeStamp}-${namePrefix}-dns-spoke-link-kv'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
   ]
@@ -326,5 +330,3 @@ module spokeToHubPeering '../Modules/virtualNetworkPeering.bicep' = {
     remoteVnetId: hubVnet.id
   }
 }
-
-//TODO Grant owner to Azure AD Service Principle to Spoke VNET

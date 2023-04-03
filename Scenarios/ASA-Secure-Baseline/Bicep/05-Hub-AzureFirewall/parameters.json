@@ -8,16 +8,25 @@
           "component": "05-Hub-AzureFilewall"
         }
       },
+      "appGwSubnetSpace": {
+        "value": "10.1.5.0/24"
+      },
       "azureFirewallSubnetSpace": {
         "value": "10.0.1.0/24"
       },
-      "springBootAppsAddressPrefix": {
-        "value": "10.1.1.0/24"
+      "spokeVnetAddressPrefixes": {
+        "value": "10.1.0.0/16"
       },
-      "springBootSvcAddressPrefix": {
+      "springBootServiceSubnetSpace": {
         "value": "10.1.0.0/24"
       },
-      "sharedAddressPrefix": {
+      "springBootAppsSubnetSpace": {
+        "value": "10.1.1.0/24"
+      },
+      "springBootSupportSubnetSpace": {
+        "value": "10.1.2.0/24"
+      },
+      "sharedSubnetSpace": {
         "value": "10.1.4.0/24"
       }
     }

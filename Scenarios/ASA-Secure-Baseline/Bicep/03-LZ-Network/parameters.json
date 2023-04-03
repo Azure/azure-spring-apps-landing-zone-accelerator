@@ -8,6 +8,9 @@
           "component": "03-LZ-Network"
         }
       },
+      "appGwSubnetSpace": {
+        "value": "10.1.5.0/24"
+      },
       "spokeVnetAddressPrefixes": {
         "value": "10.1.0.0/16"
       },
@@ -22,9 +25,6 @@
       },
       "sharedSubnetSpace": {
         "value": "10.1.4.0/24"
-      },
-      "appGwSubnetSpace": {
-        "value": "10.1.5.0/24"
       }
     }
   }

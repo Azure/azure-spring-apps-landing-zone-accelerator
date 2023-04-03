@@ -3,6 +3,8 @@ targetScope = 'subscription'
 /******************************/
 /*         PARAMETERS         */
 /******************************/
+param appGwSubnetSpace string
+
 @description('Azure Bastion Subnet Address Space')
 param azureFirewallSubnetSpace string
 
@@ -18,9 +20,21 @@ param location string
 @description('The common prefix used when naming resources')
 param namePrefix string
 
-param springBootAppsAddressPrefix string
-param springBootSvcAddressPrefix string
-param sharedAddressPrefix string
+param spokeRgName string = 'rg-${namePrefix}-SPOKE'
+
+@description('Spoke VNET Prefix')
+param spokeVnetAddressPrefixes string
+
+@description('Name of the spoke VNET. Leave blank if you need one created')
+param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
+
+@description('Name of the RG that has the spoke VNET. Leave blank if you need one created')
+param spokeVnetResourceGroupName string = 'rg-${namePrefix}-SPOKE'
+
+param springBootAppsSubnetSpace string
+param springBootServiceSubnetSpace string
+param springBootSupportSubnetSpace string
+param sharedSubnetSpace string
 
 @description('Azure Resource Tags')
 param tags object = {}
@@ -38,11 +52,12 @@ module azfwSubnet '../Modules/subnet.bicep' = {
   }
 }
 
+//TODO: Add Diagnostics configuration
 module azfw '../Modules/azfw.bicep' = {
   name: '${timeStamp}-${namePrefix}-azfw'
   scope: resourceGroup(hubVnetResourceGroupName)
   params: {
-    prefix: namePrefix
+    name: 'fw-${namePrefix}'
     privateTrafficPrefixes: azureFirewallSubnetSpace
     fireWallSubnetName: 'AzureFirewallSubnet'
     location: location
@@ -57,10 +72,10 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowVMAppAccess'
               sourceAddresses: [
-                sharedAddressPrefix
+                sharedSubnetSpace
               ]
               destinationAddresses: [
-                springBootAppsAddressPrefix
+                springBootAppsSubnetSpace
               ]
               destinationPorts: [
                 '80'
@@ -73,7 +88,7 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowAllWebAccess'
               sourceAddresses: [
-                sharedAddressPrefix
+                sharedSubnetSpace
               ]
               destinationAddresses: [
                 '*'
@@ -89,7 +104,7 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowKMSActivation'
               sourceAddresses: [
-                sharedAddressPrefix
+                sharedSubnetSpace
               ]
               destinationAddresses: [
                 '*'
@@ -104,8 +119,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'SpringMgmt'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               destinationAddresses: [
                 'AzureCloud'
@@ -120,8 +135,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'KubernetesMgmtTcp'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               destinationAddresses: [
                 'AzureCloud'
@@ -136,8 +151,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'KubernetesMgmtUdp'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               destinationAddresses: [
                 'AzureCloud'
@@ -153,8 +168,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AzureContainerRegistery'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               destinationAddresses: [
                 'AzureContainerRegistry'
@@ -169,8 +184,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AzureStorage'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               destinationAddresses: [
                 'Storage'
@@ -185,8 +200,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'NtpQuery'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               destinationAddresses: [
                 '*'
@@ -214,8 +229,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowAks'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               fqdnTags: [
                 'AzureKubernetesService'
@@ -224,8 +239,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowKubMgmt'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 '*.azmk8s.io'
@@ -241,8 +256,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowMCR'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'mcr.microsoft.com'
@@ -257,8 +272,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowMCRStorage'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 '*.cdn.mscr.io'
@@ -274,8 +289,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowAzureAd'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 substring(environment().authentication.loginEndpoint, 8, length(environment().authentication.loginEndpoint) - 9) //This strips off the protocol and trailing slash and is to eliminate the linter failure on hard coded special domains
@@ -290,8 +305,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowMSPackRepo'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'packages.microsoft.com'
@@ -308,8 +323,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowGitHub'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'github.com'
@@ -324,8 +339,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowDocker'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 '*.docker.io'
@@ -342,8 +357,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowSnapcraft'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'api.snapcraft.io'
@@ -358,8 +373,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowClamAv'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'database.clamav.net'
@@ -374,8 +389,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'Allow*UbuntuMisc'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'motd.ubuntu.com'
@@ -390,8 +405,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'MsCrls'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'crl.microsoft.com'
@@ -407,8 +422,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'AllowDigiCerty'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'crl3.digicert.com'
@@ -435,8 +450,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'nuget'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'api.nuget.org'
@@ -451,8 +466,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'pypi'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'pypi.org'
@@ -468,8 +483,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'npm'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'registry.npmjs.org'
@@ -484,8 +499,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'gradle'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'services.gradle.org'
@@ -504,8 +519,8 @@ module azfw '../Modules/azfw.bicep' = {
             {
               name: 'maven'
               sourceAddresses: [
-                springBootAppsAddressPrefix
-                springBootSvcAddressPrefix
+                springBootAppsSubnetSpace
+                springBootServiceSubnetSpace
               ]
               targetFqdns: [
                 'repo.maven.apache.org'
@@ -518,6 +533,181 @@ module azfw '../Modules/azfw.bicep' = {
               ]
             }
           ]
+        }
+      }
+    ]
+    tags: tags
+  }
+}
+
+module defaultHubRoute '../Modules/udr.bicep' = {
+  name: '${timeStamp}-defaultHubRoute'
+  scope: resourceGroup(hubVnetResourceGroupName)
+  params: {
+    name: 'default_hub_route'
+    location: location
+    routes: [
+      {
+        name: 'default_egress'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: azfw.outputs.privateIp
+        }
+      }
+    ]
+  }
+}
+
+module defaultAppsRoute '../Modules/udr.bicep' = {
+  name: '${timeStamp}-defaultAppsRoute'
+  scope: resourceGroup(spokeVnetResourceGroupName)
+  params: {
+    isForSpringApps: true
+    name: 'default_apps_route'
+    location: location
+    routes: [
+      {
+        name: 'default_egress'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: azfw.outputs.privateIp
+        }
+      }
+    ]
+  }
+}
+
+module defaultRuntimeRoute '../Modules/udr.bicep' = {
+  name: '${timeStamp}-defaultRuntimeRoute'
+  scope: resourceGroup(spokeVnetResourceGroupName)
+  params: {
+    isForSpringApps: true
+    name: 'default_runtime_route'
+    location: location
+    routes: [
+      {
+        name: 'default_egress'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: azfw.outputs.privateIp
+        }
+      }
+    ]
+  }
+}
+
+module defaultSharedRoute '../Modules/udr.bicep' = {
+  name: '${timeStamp}-defaultSharedRoute'
+  scope: resourceGroup(spokeVnetResourceGroupName)
+  params: {
+    name: 'default_shared_route'
+    location: location
+    routes: [
+      {
+        name: 'default_egress'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: azfw.outputs.privateIp
+        }
+      }
+    ]
+  }
+}
+
+
+//TODO - this section is a hack
+resource runtimeNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
+  name: 'snet-runtime-nsg'
+  scope: resourceGroup(spokeRgName)
+}
+
+resource appNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
+  name: 'snet-app-nsg'
+  scope: resourceGroup(spokeRgName)
+}
+
+resource supportNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
+  name: 'snet-support-nsg'
+  scope: resourceGroup(spokeRgName)
+}
+
+resource sharedNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
+  name: 'snet-shared-nsg'
+  scope: resourceGroup(spokeRgName)
+}
+
+resource agwNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
+  name: 'snet-agw-nsg'
+  scope: resourceGroup(spokeRgName)
+}
+
+module spokeVnet '../Modules/vnet.bicep' = {
+  name: '${timeStamp}-${spokeVnetName}'
+  scope: resourceGroup(spokeRgName)
+  params: {
+    isForSpringApps: true
+    name: spokeVnetName
+    location: location
+    addressPrefixes: [
+      spokeVnetAddressPrefixes
+    ]
+    subnets: [
+      {
+        name: 'snet-runtime'
+        properties: {
+          addressPrefix: springBootServiceSubnetSpace
+          networkSecurityGroup: {
+            id: runtimeNsg.id
+          }
+          routeTable: {
+            id: defaultRuntimeRoute.outputs.id
+          }
+        }
+      }
+      {
+        name: 'snet-app'
+        properties: {
+          addressPrefix: springBootAppsSubnetSpace
+          networkSecurityGroup: {
+            id: appNsg.id
+          }
+          routeTable: {
+            id: defaultAppsRoute.outputs.id
+          }
+        }
+      }
+      {
+        name: 'snet-support'
+        properties: {
+          addressPrefix: springBootSupportSubnetSpace
+          networkSecurityGroup: {
+            id: supportNsg.id
+          }
+        }
+      }
+      {
+        name: 'snet-shared'
+        properties: {
+          addressPrefix: sharedSubnetSpace
+          networkSecurityGroup: {
+            id: sharedNsg.id
+          }
+          routeTable: {
+            id: defaultSharedRoute.outputs.id
+          }
+        }
+      }
+      {
+        name: 'snet-agw'
+        properties: {
+          addressPrefix: appGwSubnetSpace
+          networkSecurityGroup: {
+            id: agwNsg.id
+          }
         }
       }
     ]

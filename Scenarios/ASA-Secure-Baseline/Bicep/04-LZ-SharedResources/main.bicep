@@ -49,7 +49,7 @@ module keyVault '../Modules/keyVault.bicep' = {
   name: '${timeStamp}-${namePrefix}-kv'
   scope: resourceGroup(sharedRg.name)
   params: {
-    dnsResourceGroupName: 'rg-${namePrefix}-HUB'
+    dnsResourceGroupName: 'rg-${namePrefix}-PRIVATEZONES'
     enableSoftDelete: enableKvSoftDelete
     location: location
     name: 'kv-${namePrefix}-${randomSufix}'
