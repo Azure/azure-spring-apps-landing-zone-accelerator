@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "tags": {
+        "value": {
+          "project": "SpringAppsLZA",
+          "component": "05-Hub-AzureFilewall"
+        }
+      },
+      "azureFirewallSubnetSpace": {
+        "value": "10.0.1.0/24"
+      },
+      "springBootAppsAddressPrefix": {
+        "value": "10.1.1.0/24"
+      },
+      "springBootSvcAddressPrefix": {
+        "value": "10.1.0.0/24"
+      },
+      "sharedAddressPrefix": {
+        "value": "10.1.4.0/24"
+      }
+    }
+  }
