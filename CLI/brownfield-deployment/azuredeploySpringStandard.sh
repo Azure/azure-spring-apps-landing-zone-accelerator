@@ -63,7 +63,6 @@ az spring create \
     -g ${azurespringrg} \
     -l ${location} \
     --sku Standard \
-    --enable-java-agent true \
     --app-insights ${azurespring_service} \
     --app-subnet ${azurespring_app_subnet_name} \
     --service-runtime-subnet ${azurespring_service_subnet_name} \
