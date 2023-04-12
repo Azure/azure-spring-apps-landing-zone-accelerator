@@ -32,7 +32,7 @@ echo "Enter Azure Log Analytics Workspace Resource Group Name: "
 read loganalyticsrg
 loganalyticsrg=$loganalyticsrg
 
-echo "Enter Log Analytics Workspace Resource ID: "
+echo "Enter Log Analytics Workspace Resource Name: "
 read workspace
 workspaceID='/subscriptions/'$subscription'/resourcegroups/'$loganalyticsrg'/providers/microsoft.operationalinsights/workspaces/'$workspace
 
