@@ -67,7 +67,7 @@ module azfw '../Modules/azfw.bicep' = {
         name: 'SpringAppsRefArchNetworkRules'
         properties: {
           action: { type: 'Allow' }
-          priority: 110
+          priority: 100
           rules: [
             {
               name: 'AllowVMAppAccess'

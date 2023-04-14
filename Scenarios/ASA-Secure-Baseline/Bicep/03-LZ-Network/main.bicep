@@ -125,6 +125,13 @@ module spokeVnet '../Modules/vnet.bicep' = {
     ]
     tags: tags
   }
+  dependsOn: [
+    appNsg
+    runtimeNsg
+    supportNsg
+    sharedNsg
+    agwNsg
+  ]
 }
 
 module appNsg '../Modules/nsg.bicep' = {
@@ -264,6 +271,7 @@ module spokeVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
   scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
+    spokeVnet
   ]
   params: {
     vnetName: spokeVnet.outputs.name
@@ -302,6 +310,7 @@ module spokeVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
   scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
+    spokeVnet
   ]
   params: {
     vnetName: spokeVnet.outputs.name
@@ -319,6 +328,9 @@ module hubToSpokePeering '../Modules/virtualNetworkPeering.bicep' = {
     remoteVnetName: spokeVnet.outputs.name
     remoteVnetId: spokeVnet.outputs.id
   }
+  dependsOn: [
+    spokeVnet
+  ]
 }
 
 module spokeToHubPeering '../Modules/virtualNetworkPeering.bicep' = {
@@ -329,4 +341,7 @@ module spokeToHubPeering '../Modules/virtualNetworkPeering.bicep' = {
     remoteVnetName: hubVnet.name
     remoteVnetId: hubVnet.id
   }
+  dependsOn: [
+    spokeVnet
+  ]
 }
