@@ -9,6 +9,16 @@ $Modules+= "04-LZ-SharedResources"
 $Modules+= "03-LZ-Network"
 $Modules+= "02-Hub-Network"
 
+Write-host @"
+Please take the following actions before attempting to destroy this deployment.
+  - Turn on the Jump Box Virtual Machine
+  - If you have deployed Azure Spring apps Enterprise edition, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal    
+    Azure Portal > Azure Spring Apps instance > API Portal > Assign endpoint -> Set to No
+
+"@
+
+Write-host "This script will automatically continue in 30 seconds..."
+sleep 30
 
 
 

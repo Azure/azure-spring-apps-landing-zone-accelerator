@@ -4,7 +4,9 @@ resource "azurerm_public_ip" "azure_appgw" {
     location                    = var.location
     resource_group_name         = azurerm_resource_group.appgw_rg.name
     allocation_method           = "Static"
-    sku                         = "Standard" 
+    sku                         = "Standard"
+
+    tags = var.tags 
 }
 
 resource "azurerm_application_gateway" "azure_appgw" {
@@ -76,6 +78,8 @@ resource "azurerm_application_gateway" "azure_appgw" {
   }
 
   zones = var.azure_app_gateway_zones
+
+  tags = var.tags
 
   depends_on = [ azurerm_public_ip.azure_appgw ]
 }

@@ -44,6 +44,8 @@ resource "azurerm_network_security_group" "asa_svc_nsg" {
     name                        = "${var.springboot-service-subnet-name}-nsg"
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
+
+    tags = var.tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "asa_svc_nsg_assoc" {
@@ -56,6 +58,8 @@ resource "azurerm_network_security_group" "asa_apps_nsg" {
     name                        = "${var.springboot-apps-subnet-name}-nsg"
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
+
+    tags = var.tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "asa_apps_nsg_assoc" {
@@ -68,6 +72,8 @@ resource "azurerm_network_security_group" "support_svc_nsg" {
     name                        = "${var.springboot-support-subnet-name}-nsg"
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
+
+    tags = var.tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "support_svc_nsg_assoc" {
@@ -80,6 +86,8 @@ resource "azurerm_network_security_group" "snetshared_nsg" {
     name                        = "${var.shared-subnet-name}-nsg"
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
+
+    tags = var.tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "shared_nsg_assoc" {
@@ -138,7 +146,8 @@ resource "azurerm_network_security_group" "appgw_nsg" {
       source_address_prefix       = "AzureLoadBalancer"
       destination_address_prefix  = "*"
     }  
-        
+
+    tags = var.tags 
 }
 
 resource "azurerm_subnet_network_security_group_association" "appgw_nsg_assoc" {

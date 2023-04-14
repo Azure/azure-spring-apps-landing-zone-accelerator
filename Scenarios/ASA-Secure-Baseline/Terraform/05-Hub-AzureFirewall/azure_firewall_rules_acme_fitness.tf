@@ -95,6 +95,22 @@ resource "azurerm_firewall_application_rule_collection" "AllowAcmeFitnessInstall
             }
                
         }
+
+        rule {
+            name = "jfrog-jcenter"
+            source_addresses = [
+                "${local.address_range_cloudsvc }", "${local.address_range_cloudapps}",
+            ]
+
+            target_fqdns = [
+                "jcenter.bintray.com",
+            ]
+
+            protocol {
+                port = "443"
+                type = "Https"
+            }
+        }
     depends_on = [
         azurerm_firewall_application_rule_collection.SpringAppsRefArchApplicationRules
     ]

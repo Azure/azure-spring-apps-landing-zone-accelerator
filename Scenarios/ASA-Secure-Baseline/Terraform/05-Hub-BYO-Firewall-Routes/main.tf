@@ -22,10 +22,6 @@ locals  {
   
 }
 
-# Get info about the current azurerm context
-#data "azurerm_client_config" "current" {}
-
-
 # Get info about the existing Spoke RG
 data "azurerm_resource_group" "spoke_rg" {
   name                = local.spoke_rg

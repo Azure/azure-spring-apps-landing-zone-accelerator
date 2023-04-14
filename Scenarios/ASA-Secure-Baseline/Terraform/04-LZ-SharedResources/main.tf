@@ -26,11 +26,6 @@ resource "random_password" "jumphostpass" {
 
 
 locals  {
-  # # Hub Data can be read from existing state file or local variables
-  # hub_vnet_name            = ( var.Hub_Vnet_Name == "" ? data.terraform_remote_state.lz-network.outputs.hub_vnet_name : var.Hub_Vnet_Name )     
-  # hub_rg                   = ( var.Hub_Vnet_RG   == "" ? data.terraform_remote_state.lz-network.outputs.hub_rg : var.Hub_Vnet_RG )
-  # hub_subscriptionId       = ( var.Hub_Vnet_Subscription == "" ? data.terraform_remote_state.lz-network.outputs.hub_subscriptionId  : var.Hub_Vnet_Subscription )
-
   shared_rg                = "rg-${var.name_prefix}-SHARED"
 
   spoke_rg                 = data.terraform_remote_state.lz-network.outputs.spoke_rg
@@ -74,6 +69,7 @@ data "azurerm_subnet" "azuresbcloudsupport" {
 data "azurerm_private_dns_zone" "keyvault_zone" {
   name                 =  var.keyvault_dnszone_name
   resource_group_name  =  local.private_dns_rg
+
 }
 
 
@@ -84,6 +80,8 @@ data "azurerm_private_dns_zone" "keyvault_zone" {
 resource "azurerm_resource_group" "shared_rg" {
     name                        = local.shared_rg
     location                    = var.location
+
+    tags = var.tags
 }
 
 

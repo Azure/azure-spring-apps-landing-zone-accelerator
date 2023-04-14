@@ -33,6 +33,7 @@ resource "azurerm_spring_cloud_service" "sc_enterprise" {
 
   }
 
+  tags = var.tags
 
 }
 
