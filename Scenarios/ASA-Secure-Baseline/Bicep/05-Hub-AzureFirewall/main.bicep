@@ -191,7 +191,7 @@ module azfw '../Modules/azfw.bicep' = {
                 'Storage'
               ]
               destinationPorts: [
-                '443'
+                '445'
               ]
               protocols: [
                 'TCP'
@@ -618,8 +618,8 @@ module defaultSharedRoute '../Modules/udr.bicep' = {
   }
 }
 
-
-//TODO - this section is a hack
+//HACK - In Bicep you cannot associate a route table with an existing subnet, so this is effectively 
+//"redeploying" the network so that the UDRs defined above can be associated.
 resource runtimeNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
   name: 'snet-runtime-nsg'
   scope: resourceGroup(spokeRgName)

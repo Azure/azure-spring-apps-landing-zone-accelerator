@@ -17,13 +17,16 @@ param serviceCidr string
 @description('Name of the RG that has the spoke resources. Leave blank if you need one created')
 param spokeResourceGroupName string = 'rg-${namePrefix}-SPOKE'
 
+@description('Name of the RG that has the spoke resources. Leave blank if you need one created')
+param sharedResourceGroupName string = 'rg-${namePrefix}-SHARED'
+
 @description('Azure Resource Tags')
 param tags object = {}
 
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
-var randomSufix = substring(uniqueString(namePrefix), 0, 4)
+var randomSufix = substring(uniqueString(timeStamp), 0, 4)
 
 resource appRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: appResourceGroupName
@@ -31,21 +34,27 @@ resource appRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   tags: tags
 }
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
-  name: 'law-${namePrefix}-${randomSufix}'
-  scope: resourceGroup('rg-${namePrefix}-SHARED')
+module logAnalyticsWorkspace '../Modules/logAnalyticsWorkspace.bicep' = {
+  name: '${timeStamp}-${namePrefix}-law'
+  scope: resourceGroup(sharedResourceGroupName)
+  params: {
+    location: location
+    name: 'law-${namePrefix}-${randomSufix}'
+    tags: tags
+  }
 }
 
 module appInsights '../Modules/appInsights.bicep' = {
   name: '${timeStamp}-appInsights'
   scope: resourceGroup(appResourceGroupName)
   params: {
-    logAnalyticsId: logAnalytics.id
+    logAnalyticsId: logAnalyticsWorkspace.outputs.id
     location: location
     name: '${namePrefix}-ai'
     tags: tags
   }
   dependsOn: [
+    logAnalyticsWorkspace
     appRg
   ]
 }
