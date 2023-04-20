@@ -1,3 +1,11 @@
+### Notice about changes ######################################################
+# We recommend the use of parameters.tfvars for changes.
+# Have a particular customization in mind not addressable via parameters.tfvars?
+#  Consider filing a feature request at 
+#  https://github.com/Azure/azure-spring-apps-landing-zone-accelerator/issues 
+# 
+
+
 data "terraform_remote_state" "lz-network" {
   backend = "azurerm"
 
