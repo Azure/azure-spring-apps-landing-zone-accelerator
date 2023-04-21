@@ -264,7 +264,7 @@ jobs:
           repository: Azure-Samples/acme-fitness-store.git
           path: fitness-store
           ref: Azure
-          
+
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
@@ -282,7 +282,7 @@ jobs:
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
           environment-variables: -SPRING_PROFILES_ACTIVE passwordless
-          build-env: BP_JVM_VERSION=17
+          build-env: "-BP_JVM_VERSION 17"
           config-file-patterns: payment
 
       - name: Deploy catalog/default
@@ -297,7 +297,7 @@ jobs:
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
           environment-variables: "-SPRING_PROFILES_ACTIVE passwordless"
-          build-env: BP_JVM_VERSION=17
+          build-env: "-BP_JVM_VERSION 17"
           config-file-patterns: catalog
 
       - name: Deploy apps/acme-order
