@@ -247,7 +247,6 @@ jobs:
           terraform plan -out my.plan \
           -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
-          -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" 
 
       - name: Terraform Apply
