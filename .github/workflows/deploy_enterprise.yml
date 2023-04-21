@@ -228,7 +228,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Scenarios/sample-apps/petclinic/terraform
+        working-directory: Scenarios/sample-apps/fitness-store/terraform
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
