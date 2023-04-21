@@ -263,15 +263,8 @@ jobs:
         with:
           repository: Azure-Samples/acme-fitness-store.git
           path: fitness-store
-          ref: azure
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
-        with:
-          java-version: 17
-          distribution: "microsoft"
-          cache: maven
-
+          ref: Azure
+          
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
