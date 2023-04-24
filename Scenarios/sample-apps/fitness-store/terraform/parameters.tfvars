@@ -1,7 +1,7 @@
 subscription_id = "e01d0721-fca7-417a-bde2-5511fd1b7ff0"
 
 # Name of Spring Cloud Service, this is generated when deploying the ASA-Secure-Baseline
-spring_cloud_service = "spring-springent-dev-rukc"
+spring_cloud_service = "spring-springent-dev-ej6q"
 name_prefix          = "springent"
 environment          = "dev"
 

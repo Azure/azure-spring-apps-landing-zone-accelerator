@@ -187,7 +187,7 @@ jobs:
   deploy_lz_enterprise:
     needs:
       [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
-    name: Deploy 06 LZ Spring Apps Standard
+    name: Deploy 06 LZ Spring Apps Enterprise
     runs-on: ubuntu-latest
     outputs:
       spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
@@ -285,15 +285,15 @@ jobs:
           build-env: "-BP_JVM_VERSION 17"
           config-file-patterns: payment
 
-      - name: Deploy catalog/default
+      - name: Deploy catalog service
         uses: azure/spring-apps-deploy@v1
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: cart-service
+          app-name: catalog-service
           use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/catalog/default
+          package: ${{ github.workspace }}/fitness-store/apps/acme-catalog
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
           environment-variables: "-SPRING_PROFILES_ACTIVE passwordless"
