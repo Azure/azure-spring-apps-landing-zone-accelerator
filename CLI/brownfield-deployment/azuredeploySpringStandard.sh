@@ -32,7 +32,7 @@ echo "Enter Azure Log Analytics Workspace Resource Group Name: "
 read loganalyticsrg
 loganalyticsrg=$loganalyticsrg
 
-echo "Enter Log Analytics Workspace Resource ID: "
+echo "Enter Log Analytics Workspace Resource Name: "
 read workspace
 workspaceID='/subscriptions/'$subscription'/resourcegroups/'$loganalyticsrg'/providers/microsoft.operationalinsights/workspaces/'$workspace
 
@@ -62,8 +62,7 @@ az spring create \
     -n ${azurespring_service} \
     -g ${azurespringrg} \
     -l ${location} \
-    --sku Stadard \
-    --enable-java-agent true \
+    --sku Standard \
     --app-insights ${azurespring_service} \
     --app-subnet ${azurespring_app_subnet_name} \
     --service-runtime-subnet ${azurespring_service_subnet_name} \
