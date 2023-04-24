@@ -1,19 +1,24 @@
 targetScope = 'subscription'
 
-
 /******************************/
 /*         PARAMETERS         */
 /******************************/
 @description('Azure Bastion Subnet Address Space')
-param azureBastionSubnetSpace string
+param azureBastionSubnetPrefix string
 
-@description('Hub VNET Prefix')
-param hubVnetAddressPrefixes string
+@description('Bastion Name. Specify this value in the parameters.json file to override this default.')
+param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
 
-@description('Name of the hub VNET. Leave blank if you need one created')
+@description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
+param bastionNsgName string = 'bastion-nsg'
+
+@description('IP CIDR Block for the Hub VNET')
+param hubVnetAddressPrefix string
+
+@description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
 param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
 
-@description('Name of the RG that has the hub VNET. Leave blank if you need one created')
+@description('Name of the resource group that contains the hub VNET. Specify this value in the parameters.json file to override this default.')
 param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
@@ -28,7 +33,6 @@ param tags object = {}
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
-
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
@@ -39,19 +43,19 @@ resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
 }
 
 module hubVnet '../Modules/vnet.bicep' = {
-  name: '${timeStamp}-${hubVnetName}'
+  name: '${timeStamp}-hub-vnet'
   scope: resourceGroup(hubVnetRg.name)
   params: {
     name: hubVnetName
-    location: location
     addressPrefixes: [
-      hubVnetAddressPrefixes
+      hubVnetAddressPrefix
     ]
+    location: location
     subnets: [
       {
         name: 'AzureBastionSubnet' //Note: this name must remain this value and cannot be customized for Azure Bastion to deploy correctly
         properties: {
-          addressPrefix: azureBastionSubnetSpace
+          addressPrefix: azureBastionSubnetPrefix
           networkSecurityGroup: {
             id: azureBastionNsg.outputs.id
           }
@@ -64,10 +68,10 @@ module hubVnet '../Modules/vnet.bicep' = {
 
 // NSG for Azure Bastion subnet
 module azureBastionNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-nsg-bastion'
+  name: '${timeStamp}-nsg-bastion'
   scope: resourceGroup(hubVnetRg.name)
   params: {
-    name: 'bastion-nsg'
+    name: bastionNsgName
     location: location
     securityRules: [
       {
@@ -189,10 +193,10 @@ module azureBastionNsg '../Modules/nsg.bicep' = {
 }
 
 module azureBastion '../Modules/bastion.bicep' = {
-  name: '${timeStamp}-bastion-${namePrefix}'
+  name: '${timeStamp}-bastion'
   scope: resourceGroup(hubVnetRg.name)
   params: {
-    name: 'bastion-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
+    name: bastionName
     location: location
     subnetId: '${hubVnet.outputs.id}/subnets/AzureBastionSubnet'
     tags: tags

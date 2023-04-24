@@ -2,17 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "admninistratorLogin": {
+      "value": "admin"
+    },
+    "databaseName": {
+      "value": "petclinic"
+    },
+    "mysqlSubnetAddressPrefix": {
+      "value": "10.1.6.0/24"
+    },
     "tags": {
       "value": {
         "project": "SpringAppsLZA",
-        "component": "02-Hub-Network"
+        "component": "08-Db-PetClinic"
       }
-    },
-    "hubVnetAddressPrefix": {
-      "value": "10.0.0.0/16"
-    },
-    "azureBastionSubnetPrefix": {
-      "value": "10.0.0.0/24"
     }
   }
 }

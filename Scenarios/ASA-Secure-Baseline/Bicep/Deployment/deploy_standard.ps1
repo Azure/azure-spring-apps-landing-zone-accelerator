@@ -2,11 +2,12 @@ param($SpecificModules)
 
 $timeStamp = Get-Date -Format "yyyyMMddHHmm"
 
-if ($null -eq $location -or $null -eq $namePrefix ) {
+if ($null -eq $location -or $null -eq $namePrefix -or $null -eq $principalId) {
 
     Write-host "Please set the following variables before running this script"
     Write-host '   $location - this should match standard Azure region naming convention, such as "eastus" or "westeurope"'
     Write-host '   $namePrefix - this is a user defined value that will be used to name all resources in this deployment'
+    Write-host '   $principalId - this is the Azure AD Service Principal ID of the Azure Spring Cloud Resource Provider - this value varies by tenant - use the command "az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv" to get the value specific to your tenant'
     write-host 'See Bicep/README.md for more information'
     break
 }
@@ -15,6 +16,7 @@ else {
     Write-host "Bicep State Configuration:"
     Write-host "  Location (Azure Region) : $location"
     Write-host "  Name Prefix             : $namePrefix"
+    Write-host "  Principal ID            : $pricipalId"
 }
 
 # Deploy the modules

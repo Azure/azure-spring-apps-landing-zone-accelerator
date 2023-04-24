@@ -1,15 +1,15 @@
-param azureFirewallSubnetSpace string
-param hubVentName string
+param addressPrefix string
+param vnetName string
 param name string
 
-resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
-  name: hubVentName
+resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
+  name: vnetName
 }
 
-resource azfwSubnet 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' = {
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2022-07-01' = {
   name: name
-  parent: hubVnet
+  parent: vnet
   properties: {
-    addressPrefix: azureFirewallSubnetSpace
+    addressPrefix: addressPrefix
   }
 }

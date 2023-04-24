@@ -8,14 +8,14 @@
     "environment": {
       "value": "dev"
     },
+    "jumpHostPassword": {
+      "value": "YoUrV4lUeHere!"
+    },
     "tags": {
       "value": {
         "project": "SpringAppsLZA",
         "component": "04-LZ-SharedResources"
       }
-    },
-    "jumpHostPassword": {
-      "value": "YoUrV4lUeHere!"
     }
   }
 }

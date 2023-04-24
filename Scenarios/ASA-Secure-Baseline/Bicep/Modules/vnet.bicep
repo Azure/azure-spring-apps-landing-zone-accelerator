@@ -1,10 +1,10 @@
 param addressPrefixes array
 param isForSpringApps bool = false
-param name string
 param location string
+param name string
+param principalId string = '' //This value is only required for VNETs that will host Azure Spring Apps.
 param subnets array
 param tags object
-
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: name
@@ -18,14 +18,17 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   tags: tags
 }
 
-var roleDefinitionID = '8e3af657-a8ff-443c-a75c-2fe8c4bcb635' //ID of Owner Role
-var roleAssignmentName= guid(vnet.name, roleDefinitionID, resourceGroup().id)
+var roleDefinitionID = '8e3af657-a8ff-443c-a75c-2fe8c4bcb635' //ID of Owner Role. This value is global to Azure.
+var roleAssignmentName = guid(vnet.name, roleDefinitionID, resourceGroup().id)
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01'= if(isForSpringApps) {
+// When deploying an Azure Spring Apps instance, the Azure Spring Cloud Resource Provider needs to be able to make modifications to the 
+// VNET during the provisioning process, so the principal ID gets passed in to assign the onwer role to the VNET
+// See https://learn.microsoft.com/en-us/azure/spring-apps/how-to-deploy-in-azure-virtual-network?tabs=azure-portal#grant-service-permission-to-the-virtual-network
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (isForSpringApps) {
   name: roleAssignmentName
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionID)
-    principalId: '77e44c53-4911-427e-83c2-e2a52f569dee' //ID of Azure Spring Cloud Resource Provider -- az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+    principalId: principalId
     principalType: 'ServicePrincipal'
   }
   scope: vnet

@@ -4,12 +4,12 @@ targetScope = 'subscription'
 /*         PARAMETERS         */
 /******************************/
 @description('IP CIDR Block for the App Gateway Subnet')
-param appGwSubnetSpace string
+param appGwSubnetPrefix string
 
-@description('Name of the hub VNET. Leave blank if you need one created')
+@description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
 param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
 
-@description('Name of the RG that has the hub VNET. Leave blank if you need one created')
+@description('Name of the RG that has the hub VNET. Specify this value in the parameters.json file to override this default.')
 param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
@@ -18,23 +18,47 @@ param location string
 @description('The common prefix used when naming resources')
 param namePrefix string
 
+@description('The Azure AD Service Principal ID of the Azure Spring Cloud Resource Provider - this value varies by tenant - use the command "az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv" to get the value specific to your tenant')
+param principalId string
+
+@description('Name of the resource group that contains the private DNS zones. Specify this value in the parameters.json file to override this default.')
+param privateZonesRgName string = 'rg-${namePrefix}-PRIVATEZONES'
+
 @description('IP CIDR Block for the Shared Subnet')
-param sharedSubnetSpace string
+param sharedSubnetPrefix string
 
-@description('Spoke VNET Prefix')
-param spokeVnetAddressPrefixes string
+@description('Network Security Group name for the Application Gateway subnet should you chose to deploy an AppGW. Specify this value in the parameters.json file to override this default.')
+param snetAppGwNsg string = 'snet-agw-nsg'
 
-@description('Name of the RG that has the spoke VNET. Leave blank if you need one created')
+@description('Network Security Group name for the ASA app subnet. Specify this value in the parameters.json file to override this default.')
+param snetAppNsg string = 'snet-app-nsg'
+
+@description('Network Security Group name for the ASA runtime subnet. Specify this value in the parameters.json file to override this default.')
+param snetRuntimeNsg string = 'snet-runtime-nsg'
+
+@description('Network Security Group name for the shared subnet. Specify this value in the parameters.json file to override this default.')
+param snetSharedNsg string = 'snet-shared-nsg'
+
+@description('Network Security Group name for the support subnet. Specify this value in the parameters.json file to override this default.')
+param snetSupportNsg string = 'snet-support-nsg'
+
+@description('Name of the resource group that contains the spoke VNET. Specify this value in the parameters.json file to override this default.')
+param spokeRgName string = 'rg-${namePrefix}-SPOKE'
+
+@description('IP CIDR Block for the Spoke VNET')
+param spokeVnetAddressPrefix string
+
+@description('Name of the RG that has the spoke VNET. Specify this value in the parameters.json file to override this default.')
 param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
 
 @description('IP CIDR Block for the Spring Apps Subnet')
-param springBootAppsSubnetSpace string
+param springAppsSubnetPrefix string
 
-@description('IP CIDR Block for the Spring Apps Service Subnet')
-param springBootServiceSubnetSpace string
+@description('IP CIDR Block for the Spring Apps Runtime Subnet')
+param springAppsRuntimeSubnetPrefix string
 
-@description(' for the Spring Apps SUpport Subnet')
-param springBootSupportSubnetSpace string
+@description('IP CIDR Block for the Support Subnet')
+param supportSubnetPrefix string
 
 @description('Azure Resource Tags')
 param tags object = {}
@@ -55,32 +79,33 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {
 }
 
 resource spokeRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: 'rg-${namePrefix}-SPOKE'
+  name: spokeRgName
   location: location
   tags: tags
 }
 
 resource privateZonesRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: 'rg-${namePrefix}-PRIVATEZONES'
+  name: privateZonesRgName
   location: location
   tags: tags
 }
 
 module spokeVnet '../Modules/vnet.bicep' = {
-  name: '${timeStamp}-${spokeVnetName}'
+  name: '${timeStamp}-spoke-vnet'
   scope: resourceGroup(spokeRg.name)
   params: {
     isForSpringApps: true
     name: spokeVnetName
     location: location
+    principalId: principalId
     addressPrefixes: [
-      spokeVnetAddressPrefixes
+      spokeVnetAddressPrefix
     ]
     subnets: [
       {
         name: 'snet-runtime'
         properties: {
-          addressPrefix: springBootServiceSubnetSpace
+          addressPrefix: springAppsRuntimeSubnetPrefix
           networkSecurityGroup: {
             id: runtimeNsg.outputs.id
           }
@@ -89,7 +114,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
       {
         name: 'snet-app'
         properties: {
-          addressPrefix: springBootAppsSubnetSpace
+          addressPrefix: springAppsSubnetPrefix
           networkSecurityGroup: {
             id: appNsg.outputs.id
           }
@@ -98,7 +123,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
       {
         name: 'snet-support'
         properties: {
-          addressPrefix: springBootSupportSubnetSpace
+          addressPrefix: supportSubnetPrefix
           networkSecurityGroup: {
             id: supportNsg.outputs.id
           }
@@ -107,7 +132,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
       {
         name: 'snet-shared'
         properties: {
-          addressPrefix: sharedSubnetSpace
+          addressPrefix: sharedSubnetPrefix
           networkSecurityGroup: {
             id: sharedNsg.outputs.id
           }
@@ -116,7 +141,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
       {
         name: 'snet-agw'
         properties: {
-          addressPrefix: appGwSubnetSpace
+          addressPrefix: appGwSubnetPrefix
           networkSecurityGroup: {
             id: agwNsg.outputs.id
           }
@@ -135,10 +160,10 @@ module spokeVnet '../Modules/vnet.bicep' = {
 }
 
 module appNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-snet-app-nsg'
+  name: '${timeStamp}-nsg-snet-app'
   scope: resourceGroup(spokeRg.name)
   params: {
-    name: 'snet-app-nsg'
+    name: snetAppNsg
     location: location
     securityRules: []
     tags: tags
@@ -146,10 +171,10 @@ module appNsg '../Modules/nsg.bicep' = {
 }
 
 module runtimeNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-snet-runtime-nsg'
+  name: '${timeStamp}-nsg-snet-runtime'
   scope: resourceGroup(spokeRg.name)
   params: {
-    name: 'snet-runtime-nsg'
+    name: snetRuntimeNsg
     location: location
     securityRules: []
     tags: tags
@@ -157,10 +182,10 @@ module runtimeNsg '../Modules/nsg.bicep' = {
 }
 
 module supportNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-snet-support-nsg'
+  name: '${timeStamp}-nsg-snet-support'
   scope: resourceGroup(spokeRg.name)
   params: {
-    name: 'snet-support-nsg'
+    name: snetSupportNsg
     location: location
     securityRules: []
     tags: tags
@@ -168,10 +193,10 @@ module supportNsg '../Modules/nsg.bicep' = {
 }
 
 module sharedNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-snet-shared-nsg'
+  name: '${timeStamp}-nsg-snet-shared'
   scope: resourceGroup(spokeRg.name)
   params: {
-    name: 'snet-shared-nsg'
+    name: snetSharedNsg
     location: location
     securityRules: []
     tags: tags
@@ -179,10 +204,10 @@ module sharedNsg '../Modules/nsg.bicep' = {
 }
 
 module agwNsg '../Modules/nsg.bicep' = {
-  name: '${timeStamp}-${namePrefix}-snet-agw-nsg'
+  name: '${timeStamp}-nsg-snet-agw'
   scope: resourceGroup(spokeRg.name)
   params: {
-    name: 'snet-agw-nsg'
+    name: snetAppGwNsg
     location: location
     securityRules: [
       {
@@ -244,7 +269,7 @@ module agwNsg '../Modules/nsg.bicep' = {
 
 // Private DNS zone for Spring Apps
 module privateZoneSpringApps '../Modules/privateDnsZone.bicep' = {
-  name: '${timeStamp}-${namePrefix}-dns-private-springapps'
+  name: '${timeStamp}-dns-private-springapps'
   scope: resourceGroup(privateZonesRg.name)
   params: {
     tags: tags
@@ -253,7 +278,7 @@ module privateZoneSpringApps '../Modules/privateDnsZone.bicep' = {
 }
 
 module hubVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
-  name: '${timeStamp}-${namePrefix}-dns-hub-link-springapps'
+  name: '${timeStamp}-dns-hub-link-springapps'
   scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
@@ -267,7 +292,7 @@ module hubVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
 }
 
 module spokeVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
-  name: '${timeStamp}-${namePrefix}-dns-spoke-link-springapps'
+  name: '${timeStamp}-dns-spoke-link-springapps'
   scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
@@ -283,7 +308,7 @@ module spokeVnetSpringAppsZoneLink '../Modules/virtualNetworkLink.bicep' = {
 
 // Private DNS zone for Key Vault
 module privateZoneKv '../Modules/privateDnsZone.bicep' = {
-  name: '${timeStamp}-${namePrefix}-dns-private-kv'
+  name: '${timeStamp}-dns-private-kv'
   scope: resourceGroup(privateZonesRg.name)
   params: {
     tags: tags
@@ -292,7 +317,7 @@ module privateZoneKv '../Modules/privateDnsZone.bicep' = {
 }
 
 module hubVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
-  name: '${timeStamp}-${namePrefix}-dns-hub-link-kv'
+  name: '${timeStamp}-dns-hub-link-kv'
   scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneKv
@@ -306,7 +331,7 @@ module hubVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
 }
 
 module spokeVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
-  name: '${timeStamp}-${namePrefix}-dns-spoke-link-kv'
+  name: '${timeStamp}-dns-spoke-link-kv'
   scope: resourceGroup(privateZonesRg.name)
   dependsOn: [
     privateZoneSpringApps
@@ -321,7 +346,7 @@ module spokeVnetKvZoneLink '../Modules/virtualNetworkLink.bicep' = {
 }
 
 module hubToSpokePeering '../Modules/virtualNetworkPeering.bicep' = {
-  name: '${timeStamp}-${namePrefix}-vnet-hubToSpokePeering'
+  name: '${timeStamp}-vnet-hubToSpokePeering'
   scope: resourceGroup(hubVnetRg.name)
   params: {
     localVnetName: hubVnet.name
@@ -334,7 +359,7 @@ module hubToSpokePeering '../Modules/virtualNetworkPeering.bicep' = {
 }
 
 module spokeToHubPeering '../Modules/virtualNetworkPeering.bicep' = {
-  name: '${timeStamp}-${namePrefix}-vnet-spokeToHubPeering'
+  name: '${timeStamp}-vnet-spokeToHubPeering'
   scope: resourceGroup(spokeRg.name)
   params: {
     localVnetName: spokeVnet.outputs.name
