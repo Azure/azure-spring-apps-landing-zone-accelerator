@@ -305,8 +305,8 @@ jobs:
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
-          service-name: order-service
-          app-name: ${{ env.CUSTOMERS_SERVICE }}
+          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+          app-name: order-service
           use-staging-deployment: false
           package: ${{ github.workspace }}/fitness-store/apps/acme-order
 
