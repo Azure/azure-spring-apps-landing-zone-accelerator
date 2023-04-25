@@ -345,6 +345,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Remove Ip from API
+        run: az extension add --name spring
+      - name: Remove Ip from API
         run: az spring api-portal update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
       - name: Remove Ip from gateway
         run: az spring gateway update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
