@@ -259,10 +259,10 @@ resource "azurerm_spring_cloud_connection" "asa_app_catalog_connection" {
     secret = random_password.password.result
   }
 
-#   authentication {
-#     type = "systemAssignedIdentity"
-#   }
-# }
+  #   authentication {
+  #     type = "systemAssignedIdentity"
+  #   }
+}
 
 # Create Routing for Catalog Service
 resource "azurerm_spring_cloud_gateway_route_config" "asa_app_catalog_routing" {
