@@ -191,6 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
+      spring_apps_rg: ${{ steps.output-apps-rg.outputs.spring_apps_rg }}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
@@ -222,6 +223,9 @@ jobs:
       - name: Terraform Output
         id: output
         run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
+      - name: Terraform Output
+        id: output-apps-rg
+        run: echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
   deploy_pet_clinic_infra:
     name: Deploy Fitness Store Clinic Infrastructure
     needs: [deploy_lz_enterprise, deploy_lz_shared, conditions]
@@ -330,7 +334,21 @@ jobs:
           app-name: frontend
           use-staging-deployment: false
           package: ${{ github.workspace }}/fitness-store/apps/acme-shopping
-          
+  prepare_destroy:
+    needs: [conditions, build, deploy_lz_enterprise]
+    name: Prepare Spring Enterprise for Destroy
+    runs-on: ubuntu-latest
+    if: needs.conditions.outputs.destroy == 'true'
+    steps:
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Remove Ip from API
+        run: az spring api-portal update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
+      - name: Remove Ip from gateway
+        run: az spring gateway update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
+         
   destroy_pet_clinic_infra:
     name: Destroy Pet Clinic Infrastructure
     needs:
@@ -369,7 +387,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_lz_enterprise:
-    needs: [conditions, destroy_pet_clinic_infra]
+    needs: [conditions, prepare_destroy,destroy_pet_clinic_infra]
     name: Destroy 06 LZ Spring Apps Enterprise
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
