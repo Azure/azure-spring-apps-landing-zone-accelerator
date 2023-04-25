@@ -357,7 +357,7 @@ jobs:
         deploy_lz_enterprise,
         deploy_lz_shared,
         deploy_pet_clinic_infra,
-        build,
+        prepare_destroy
       ]
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
