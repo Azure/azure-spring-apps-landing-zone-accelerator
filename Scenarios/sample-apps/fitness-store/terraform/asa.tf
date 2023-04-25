@@ -235,15 +235,15 @@ resource "azurerm_spring_cloud_connection" "asa_app_order_connection" {
   spring_cloud_id    = azurerm_spring_cloud_build_deployment.asa_app_deployment[0].id
   target_resource_id = azurerm_postgresql_flexible_server_database.postgres_order_service_db.id
   client_type        = "dotnet"
-  # authentication {
-  #   type   = "secret"
-  #   name   = random_password.admin.result
-  #   secret = random_password.password.result
-  # }
-
   authentication {
-    type = "systemAssignedIdentity"
+    type   = "secret"
+    name   = random_password.admin.result
+    secret = random_password.password.result
   }
+
+  # authentication {
+  #   type = "systemAssignedIdentity"
+  # }
 }
 
 # Postgres Flexible Server Connector for Catalog Service
@@ -253,16 +253,16 @@ resource "azurerm_spring_cloud_connection" "asa_app_catalog_connection" {
   target_resource_id = azurerm_postgresql_flexible_server_database.postgres_catalog_service_db.id
   client_type        = "springBoot"
 
-  # authentication {
-  #   type   = "secret"
-  #   name   = random_password.admin.result
-  #   secret = random_password.password.result
-  # }
-
   authentication {
-    type = "systemAssignedIdentity"
+    type   = "secret"
+    name   = random_password.admin.result
+    secret = random_password.password.result
   }
-}
+
+#   authentication {
+#     type = "systemAssignedIdentity"
+#   }
+# }
 
 # Create Routing for Catalog Service
 resource "azurerm_spring_cloud_gateway_route_config" "asa_app_catalog_routing" {
