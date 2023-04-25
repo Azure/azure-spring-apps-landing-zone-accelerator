@@ -362,7 +362,7 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan -destroy -out my.plan \
-          -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
+          -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
           -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
           -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
@@ -370,12 +370,12 @@ jobs:
         run: terraform apply my.plan
   destroy_lz_enterprise:
     needs: [conditions, destroy_pet_clinic_infra]
-    name: Destroy 06 LZ Spring Apps Standard
+    name: Destroy 06 LZ Spring Apps Enterprise
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
     defaults:
       run:
-        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
