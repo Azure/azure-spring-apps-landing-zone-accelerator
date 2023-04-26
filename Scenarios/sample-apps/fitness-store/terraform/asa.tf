@@ -253,15 +253,15 @@ resource "azurerm_spring_cloud_connection" "asa_app_catalog_connection" {
   target_resource_id = azurerm_postgresql_flexible_server_database.postgres_catalog_service_db.id
   client_type        = "springBoot"
 
-  # authentication {
-  #   type   = "secret"
-  #   name   = random_password.admin.result
-  #   secret = random_password.password.result
-  # }
-
   authentication {
-    type = "systemAssignedIdentity"
+    type   = "secret"
+    name   = random_password.admin.result
+    secret = random_password.password.result
   }
+
+  # authentication {
+  #   type = "systemAssignedIdentity"
+  # }
 }
 
 # Create Routing for Catalog Service
