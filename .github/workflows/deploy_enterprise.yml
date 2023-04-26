@@ -351,8 +351,8 @@ jobs:
       - name: Remove Ip from gateway
         run: az spring gateway update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
          
-  destroy_pet_clinic_infra:
-    name: Destroy Pet Clinic Infrastructure
+  destroy_sample_app_infra:
+    name: Destroy Fitness Store Infrastructure
     needs:
       [
         conditions,
@@ -365,7 +365,7 @@ jobs:
     if: needs.conditions.outputs.destroy == 'true'
     defaults:
       run:
-        working-directory: Scenarios/sample-apps/petclinic/terraform
+        working-directory: Scenarios/sample-apps/fitness-store/terraform
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
@@ -382,14 +382,13 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan -destroy -out my.plan \
-          -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
+           -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
-          -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
-          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
+          -var="name_prefix=${{ env.NAME_PREFIX }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_lz_enterprise:
-    needs: [conditions, prepare_destroy,destroy_pet_clinic_infra]
+    needs: [conditions, prepare_destroy,destroy_sample_app_infra]
     name: Destroy 06 LZ Spring Apps Enterprise
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
