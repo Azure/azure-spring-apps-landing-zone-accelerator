@@ -10,7 +10,7 @@ env:
   SHOULD_DEPLOY_FIREWALL: false
 
   # === Destroy All ==
-  SHOULD_DESTROY: false
+  SHOULD_DESTROY: true
 
   # === Spring Apps Service ===:
   SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -259,6 +259,7 @@ jobs:
     name: Build and Deploy Pet Clinic Microservices
     needs: [deploy_pet_clinic_infra, deploy_lz_enterprise, conditions]
     runs-on: ubuntu-latest
+    
     env:
       SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
     steps:
@@ -276,6 +277,7 @@ jobs:
 
       - name: Deploy apps/acme-payment
         uses: azure/spring-apps-deploy@v1
+        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
@@ -291,6 +293,7 @@ jobs:
 
       - name: Deploy catalog service
         uses: azure/spring-apps-deploy@v1
+        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
@@ -306,6 +309,7 @@ jobs:
 
       - name: Deploy apps/acme-order
         uses: azure/spring-apps-deploy@v1
+        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
@@ -316,6 +320,7 @@ jobs:
 
       - name: Deploy apps/acme-cart 
         uses: azure/spring-apps-deploy@v1
+        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
@@ -327,6 +332,7 @@ jobs:
 
       - name: Deploy apps/acme-shopping
         uses: azure/spring-apps-deploy@v1
+        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
