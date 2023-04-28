@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "tags": {
+      "value": {
+        "project": "SpringAppsLZA",
+        "component": "02-Hub-Network"
+      }
+    },
+    "hubVnetAddressPrefix": {
+      "value": "10.0.0.0/16"
+    },
+    "azureBastionSubnetPrefix": {
+      "value": "10.0.0.0/24"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUserName": {
+      "value": "ITADMIN"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "jumpHostPassword": {
+      "value": "YoUrV4lUeHere!"
+    },
+    "tags": {
+      "value": {
+        "project": "SpringAppsLZA",
+        "component": "04-LZ-SharedResources"
+      }
+    }
+  }
+}

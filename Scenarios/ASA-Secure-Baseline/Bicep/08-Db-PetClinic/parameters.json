@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "admninistratorLogin": {
+      "value": "mysqlAdmin"
+    },
+    "databaseName": {
+      "value": "petclinic"
+    },
+    "mysqlSubnetAddressPrefix": {
+      "value": "10.1.6.0/24"
+    },
+    "tags": {
+      "value": {
+        "project": "SpringAppsLZA",
+        "component": "08-Db-PetClinic"
+      }
+    }
+  }
+}

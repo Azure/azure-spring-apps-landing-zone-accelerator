@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "springAppsRuntimeCidr": {
+        "value": "10.3.0.0/16,10.4.0.0/16,10.5.0.1/16"
+      },
+      "environment": {
+        "value": "dev"
+      },
+      "tags": {
+        "value": {
+          "project": "SpringAppsLZA",
+          "component": "06-LZ-SpringApps-Standard"
+        }
+      }
+    }
+  }
