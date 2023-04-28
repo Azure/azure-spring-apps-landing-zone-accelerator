@@ -1,4 +1,6 @@
 param admninistratorLogin string
+@secure()
+param administratorLoginPassword string
 param databaseName string
 param location string
 param name string
@@ -11,6 +13,7 @@ resource mySql 'Microsoft.DBforMySQL/flexibleServers@2021-05-01' = {
   location: location
   properties: {
     administratorLogin: admninistratorLogin
+    administratorLoginPassword: administratorLoginPassword
     storage: {
       storageSizeGB: 20
       iops: 360

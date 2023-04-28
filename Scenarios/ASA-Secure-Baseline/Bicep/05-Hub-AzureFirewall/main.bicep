@@ -61,7 +61,7 @@ param snetSupportNsg string = 'snet-support-nsg'
 param spokeVnetResourceGroupName string = 'rg-${namePrefix}-SPOKE'
 
 @description('IP CIDR Block for the Spoke VNET')
-param spokeVnetAddressPrefixes string
+param spokeVnetAddressPrefix string
 
 @description('Name of the spoke VNET. Specify this value in the parameters.json file to override this default.')
 param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
@@ -94,7 +94,7 @@ module azfwSubnet '../Modules/subnet.bicep' = {
   }
 }
 
-//TODO: Add Diagnostics configuration
+
 module azfw '../Modules/azfw.bicep' = {
   name: '${timeStamp}-azfw'
   scope: resourceGroup(hubVnetResourceGroupName)
@@ -580,6 +580,9 @@ module azfw '../Modules/azfw.bicep' = {
     ]
     tags: tags
   }
+  dependsOn: [
+    azfwSubnet
+  ]
 }
 
 module defaultHubRoute '../Modules/udr.bicep' = {
@@ -662,8 +665,8 @@ module defaultSharedRoute '../Modules/udr.bicep' = {
   }
 }
 
-//HACK - In Bicep you cannot associate a route table with an existing subnet, so this is effectively 
-//"redeploying" the network so that the UDRs defined above can be associated.
+// Currently in Bicep you cannot associate a route table with an existing subnet, so this workaround
+// effectively redeploys the network so that the UDRs defined above can be associated.
 resource runtimeNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
   name: snetRuntimeNsg
   scope: resourceGroup(spokeVnetResourceGroupName)
@@ -696,8 +699,9 @@ module spokeVnet '../Modules/vnet.bicep' = {
     isForSpringApps: true
     name: spokeVnetName
     location: location
+    principalId: principalId
     addressPrefixes: [
-      spokeVnetAddressPrefixes
+      spokeVnetAddressPrefix
     ]
     subnets: [
       {

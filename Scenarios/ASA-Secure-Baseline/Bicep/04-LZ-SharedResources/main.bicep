@@ -31,8 +31,8 @@ param namePrefix string
 @description('Name of the resource group that contains the private DNS zones. Specify this value in the parameters.json file to override this default.')
 param privateZonesRgName string = 'rg-${namePrefix}-PRIVATEZONES'
 
-@description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
-param sharedVnetName string = 'vnet-${namePrefix}-${location}-SHARED'
+@description('Name of the resource group containing shared resources. Specify this value in the parameters.json file to override this default.')
+param sharedRgName string = 'rg-${namePrefix}-SHARED'
 
 @description('Name of the resource group that contains the spoke VNET. Specify this value in the parameters.json file to override this default.')
 param spokeRgName string = 'rg-${namePrefix}-SPOKE'
@@ -62,7 +62,7 @@ param vmSize string = 'Standard_DS3_v2'
 /*     RESOURCES & MODULES    */
 /******************************/
 resource sharedRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: sharedVnetName
+  name: sharedRgName
   location: location
   tags: tags
 }
