@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "tags": {
-        "value": {
-          "project": "SpringAppsLZA",
-          "component": "05-Hub-AzureFilewall"
-        }
-      },
       "appGwSubnetPrefix": {
         "value": "10.1.5.0/24"
       },
@@ -31,6 +25,12 @@
       },
       "principalId": {
         "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      },
+      "tags": {
+        "value": {
+          "project": "SpringAppsLZA",
+          "component": "05-Hub-AzureFilewall"
+        }
       }
     }
   }

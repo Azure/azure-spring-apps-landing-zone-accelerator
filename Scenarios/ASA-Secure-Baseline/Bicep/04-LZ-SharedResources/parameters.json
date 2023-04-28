@@ -8,9 +8,6 @@
     "environment": {
       "value": "dev"
     },
-    "jumpHostPassword": {
-      "value": "YoUrV4lUeHere!"
-    },
     "tags": {
       "value": {
         "project": "SpringAppsLZA",
