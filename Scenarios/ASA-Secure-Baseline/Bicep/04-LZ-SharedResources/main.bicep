@@ -53,7 +53,7 @@ param tags object = {}
 param timeStamp string = utcNow('yyyyMMddHHmm')
 
 @description('Name of the jump box. Specify this value in the parameters.json file to override this default.')
-param vmName string = substring('vm${namePrefix}${environment}', 0, 14)
+param vmName string = length('vm${namePrefix}${environment}') > 14 ? substring('vm${namePrefix}${environment}', 0, 14) : 'vm${namePrefix}${environment}'
 
 @description('SKU size of the jump box. Specify this value in the parameters.json file to override this default.')
 param vmSize string = 'Standard_DS3_v2'
