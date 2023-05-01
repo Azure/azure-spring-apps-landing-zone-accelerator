@@ -19,7 +19,7 @@ param logAnalyticsWorkspaceName string = 'law-${namePrefix}-${substring(uniqueSt
 param namePrefix string
 
 @description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
-param springAppsName string = 'spring-${namePrefix}-${environment}-${substring(uniqueString(timeStamp), 0, 4)}'
+param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(timeStamp), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(timeStamp), 0, 4)}'
 
 @description('The CIDR Range that will be used for the Spring Apps backend cluster')
 param springAppsRuntimeCidr string
