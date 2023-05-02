@@ -31,7 +31,7 @@ In this example, each section folder contains a parameters.json file.  These fil
 
     `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv`
 
-    *This value will need to be set in both the _03-LZ-Network/parameters.json_ and _05-Hub-AzureFirewall/parameters.json_ files.*  It is used to grant permissions to the provisioned VNET and user defined route tables.
+    This value will need to be set in both the ***03-LZ-Network/parameters.json*** and ***05-Hub-AzureFirewall/parameters.json*** files.  It is used to grant permissions to the provisioned VNET and user defined route tables.
 
 
 4. Modify the variables within the parameters.json files as needed
