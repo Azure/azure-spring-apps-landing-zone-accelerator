@@ -13,13 +13,13 @@ param environment string
 param location string
 
 @description('Name of the log analytics workspace instance. Specify this value in the parameters.json file to override this default.')
-param logAnalyticsWorkspaceName string = 'law-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
+param logAnalyticsWorkspaceName string = 'law-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
 
 @description('The common prefix used when naming resources')
 param namePrefix string
 
 @description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
-param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(timeStamp), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(timeStamp), 0, 4)}'
+param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(namePrefix), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(namePrefix), 0, 4)}'
 
 @description('The CIDR Range that will be used for the Spring Apps backend cluster')
 param springAppsRuntimeCidr string

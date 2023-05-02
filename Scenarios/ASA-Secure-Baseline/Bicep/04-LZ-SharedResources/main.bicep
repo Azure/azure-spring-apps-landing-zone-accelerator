@@ -20,7 +20,7 @@ param jumpHostPassword string
 param jumpHostPasswordSecretName string = 'jumpHostPassword'
 
 @description('Name of the key vault. Specify this value in the parameters.json file to override this default.')
-param keyVaultName string = length(namePrefix) > 16 ? 'kv-${substring(namePrefix, 0, 16)}-${substring(uniqueString(timeStamp), 0, 4)}' : 'kv-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
+param keyVaultName string = length(namePrefix) > 16 ? 'kv-${substring(namePrefix, 0, 16)}-${substring(uniqueString(namePrefix), 0, 4)}' : 'kv-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string

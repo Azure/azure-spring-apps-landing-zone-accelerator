@@ -7,7 +7,7 @@ targetScope = 'subscription'
 param azureBastionSubnetPrefix string
 
 @description('Bastion Name. Specify this value in the parameters.json file to override this default.')
-param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(timeStamp), 0, 4)}'
+param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
 
 @description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
 param bastionNsgName string = 'bastion-nsg'
