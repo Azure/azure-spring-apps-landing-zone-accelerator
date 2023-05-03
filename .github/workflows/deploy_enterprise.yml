@@ -10,7 +10,7 @@ env:
   SHOULD_DEPLOY_FIREWALL: false
 
   # === Destroy All ==
-  SHOULD_DESTROY: false
+  SHOULD_DESTROY: true
 
   # === Spring Apps Service ===:
   SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
