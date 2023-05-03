@@ -4,7 +4,7 @@
 While the code here is located in one folder in a single repo, the steps are designed to mimic how an organization may break up the deployment of various Azure components across teams, into different code repos or have them run by different pipelines with specific credentials. 
 
 ## Terraform State Management
-In this example, state is stored in an Azure Storage account that was created out-of-band.  All deployments reference this storage account to either store state or reference variables from other parts of the deployment however you may choose to use other tools for state management, like Terraform Cloud after making the necessary code changes.
+In this example, state is stored in an Azure Storage account that was created out-of-band.  All deployments reference this storage account to either store state or reference variables from other parts of the deployment however you may choose to use other tools for state management, like Terraform Cloud after making the necessary code changes. See [special considerations](#special-notes-for-customers-using-azure-devops-pipelines) for customers implementing DevOps pipelines.
 
 ## Terraform Variable Definitons File
 In this example, there is a common variable defintions file [parameters.tfvars](./parameters.tfvars) that is shared across all deployments. Review each section and update the variable definitons file as needed. 
@@ -97,7 +97,7 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 
 9. [E2E Deployment using GitHub Action](./09-e2e-githubaction.md)
 
-## Known Issues / Notes
+## Known Issues
   - Please take the following actions before attempting to destroy this deployment.
     - Turn on the Jump Box Virtual Machine
     - If you have deployed Azure Spring apps Enterprise edition, first disable the public endpoint on the Azure Spring apps Enterprise - API Portal
@@ -109,5 +109,18 @@ In this example, there is a common variable defintions file [parameters.tfvars](
     Line 44 - public_network_access_enabled , set it to False
     Then Apply
 
-   
+## Special Notes for customers using Azure DevOps Pipelines
+Please note the expected key/state file name for each module.
+
+|Module | Key/State file name |
+|---|---|
+|02-Hub-Network              | hub-network             |         
+|03-LZ-Network               | lz-network              |
+|04-LZ-SharedResources       | lz-sharedresources      |
+|05-Hub-AzureFirewall        | hub-azurefirewall       |
+|05-Hub-BYO-Firewall-Routes  | hub-byo-firewall-routes |
+|06-LZ-SpringApps-Enterprise | lz-springapps-enterprise|
+|06-LZ-SpringApps-Standard   | lz-springapps-standard  |
+|07-LZ-AppGateway            | appgateway              |
+
 
