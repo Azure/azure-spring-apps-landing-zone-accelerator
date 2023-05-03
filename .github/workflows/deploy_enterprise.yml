@@ -277,7 +277,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Fixe Gateway Routes
         run: | 
-          az extension add --name spring 
+          az extension add --name spring
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
           az configure --defaults group=${{env.SPRING_APPS_RESOURCE_GROUP}} spring=${{ env.SPRING_APPS_SERVICE_NAME }} location=${{ env.REGION }}
           az spring gateway route-config update --name catalog-service --app-name catalog-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/catalog-service.json" 
           az spring gateway route-config update --name frontend --app-name frontend --routes-file "${{ github.workspace }}/fitness-store/azure/routes/frontend.json" 
