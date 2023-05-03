@@ -1,7 +1,7 @@
 
 # NIC for jump_host
 resource "azurerm_network_interface" "jump_host" { 
-    name                              = "${local.jumphost_name}-nic"
+    name                              = "${var.prefix_nic}${local.jumphost_name}${var.suffix_nic}"
     location                          = var.location
     resource_group_name               = azurerm_resource_group.shared_rg.name
     
@@ -35,7 +35,7 @@ resource "azurerm_virtual_machine" "jump_host" {
  }
  
   storage_os_disk {
-    name              = "${local.jumphost_name}-os-disk"
+    name              = "${var.prefix_disk}${local.jumphost_name}${var.suffix_disk}"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"

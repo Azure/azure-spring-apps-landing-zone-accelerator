@@ -1,3 +1,11 @@
+### Notice about changes ######################################################
+# We recommend the use of parameters.tfvars for changes.
+# Have a particular customization in mind not addressable via parameters.tfvars?
+#  Consider filing a feature request at 
+#  https://github.com/Azure/azure-spring-apps-landing-zone-accelerator/issues 
+# 
+
+
 data "terraform_remote_state" "lz-network" {
   backend = "azurerm"
 
@@ -29,8 +37,8 @@ resource "random_string" "random" {
 
 
 locals  {
-  spring_apps_name         = "spring-${var.name_prefix}-${var.environment}-${random_string.random.result}"
-  springapps_rg            = "rg-${var.name_prefix}-APPS"
+  spring_apps_name         = ( var.SpringApps_Name == "" ? "${var.prefix_spring}${var.name_prefix}-${var.environment}-${random_string.random.result}${var.suffix_spring}" : var.SpringApps_Name )
+  springapps_rg            = ( var.SpringApps_Rg == "" ? "${var.prefix_rg}${var.name_prefix}-APPS${var.suffix_rg}" : var.SpringApps_Rg )
 
   spoke_vnet_name            = data.terraform_remote_state.lz-network.outputs.spoke_vnet_name
   spoke_rg                   = data.terraform_remote_state.lz-network.outputs.spoke_rg
@@ -44,6 +52,8 @@ locals  {
   
   
   sc_cidr                  = var.sc_cidr
+
+  app_insights_name        = "${var.prefix_app_insights}${var.name_prefix}${var.suffix_app_insights}"
 }
 
 # Get info about the existing Shared RG
@@ -73,7 +83,7 @@ data "azurerm_subnet" "azuresbcloudapps" {
 data "azurerm_subnet" "azuresbcloudsvc" {
   name                 =  local.subnet_cloudsvc_name
   virtual_network_name =  local.spoke_vnet_name
-  resource_group_name =  local.spoke_rg
+  resource_group_name  =  local.spoke_rg
 }
 
 

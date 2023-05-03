@@ -1,6 +1,6 @@
 
 resource "azurerm_key_vault" "sc_vault" {
-  name                = "kv-${var.name_prefix}-${random_string.random.result}"
+  name                = local.keyvault_name
   location            = var.location
   resource_group_name = azurerm_resource_group.shared_rg.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
