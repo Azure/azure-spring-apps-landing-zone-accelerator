@@ -10,7 +10,7 @@ env:
   SHOULD_DEPLOY_FIREWALL: false
 
   # === Destroy All ==
-  SHOULD_DESTROY: true
+  SHOULD_DESTROY: false
 
   # === Spring Apps Service ===:
   SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -274,6 +274,14 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Fixe Gateway Routes
+        run: | 
+          az extension add --name spring 
+          az spring gateway route-config update --name catalog-service --app-name catalog-service --routes-file "/fitness-store/azure/routes/catalog-service.json" 
+          az spring gateway route-config update --name frontend --app-name frontend --routes-file "/fitness-store/azure/routes/frontend.json" 
+          az spring gateway route-config update --name cart-service --app-name cart-service --routes-file "/fitness-store/azure/routes/cart-service.json" 
+          az spring gateway route-config update --name order-service --app-name order-service --routes-file "/fitness-store/azure/routes/order-service.json" 
+          az spring gateway route-config update --name identity-service --app-name identity-service --routes-file "/fitness-store/azure/routes/identity-service.json" 
 
       - name: Deploy apps/acme-payment
         uses: azure/spring-apps-deploy@v1
