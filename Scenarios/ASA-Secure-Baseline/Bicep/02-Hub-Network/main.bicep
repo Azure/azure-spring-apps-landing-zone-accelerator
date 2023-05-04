@@ -7,31 +7,28 @@ targetScope = 'subscription'
 param azureBastionSubnetPrefix string
 
 @description('Bastion Name. Specify this value in the parameters.json file to override this default.')
-param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
+param bastionName string
 
 @description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
-param bastionNsgName string = 'bastion-nsg'
+param bastionNsgName string
 
 @description('IP CIDR Block for the Hub VNET')
 param hubVnetAddressPrefix string
 
 @description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+param hubVnetName string
 
 @description('Name of the resource group that contains the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
+param hubVnetResourceGroupName string
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
 
-@description('The common prefix used when naming resources')
-param namePrefix string
-
 @description('Azure Resource Tags')
-param tags object = {}
+param tags object
 
 @description('Timestamp value used to group and uniquely identify a given deployment')
-param timeStamp string = utcNow('yyyyMMddHHmm')
+param timeStamp string
 
 /******************************/
 /*     RESOURCES & MODULES    */
@@ -202,3 +199,5 @@ module azureBastion '../Modules/bastion.bicep' = {
     tags: tags
   }
 }
+
+output hubVnetId string = hubVnet.outputs.id

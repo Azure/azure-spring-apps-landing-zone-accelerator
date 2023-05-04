@@ -7,49 +7,46 @@ targetScope = 'subscription'
 param appGwSubnetPrefix string
 
 @description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+param hubVnetName string
 
 @description('Name of the RG that has the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
+param hubVnetResourceGroupName string
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
-
-@description('The common prefix used when naming resources')
-param namePrefix string
 
 @description('The Azure AD Service Principal ID of the Azure Spring Cloud Resource Provider - this value varies by tenant - use the command "az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv" to get the value specific to your tenant')
 param principalId string
 
 @description('Name of the resource group that contains the private DNS zones. Specify this value in the parameters.json file to override this default.')
-param privateZonesRgName string = 'rg-${namePrefix}-PRIVATEZONES'
+param privateZonesRgName string
 
 @description('IP CIDR Block for the Shared Subnet')
 param sharedSubnetPrefix string
 
 @description('Network Security Group name for the Application Gateway subnet should you chose to deploy an AppGW. Specify this value in the parameters.json file to override this default.')
-param snetAppGwNsg string = 'snet-agw-nsg'
+param snetAppGwNsg string
 
 @description('Network Security Group name for the ASA app subnet. Specify this value in the parameters.json file to override this default.')
-param snetAppNsg string = 'snet-app-nsg'
+param snetAppNsg string
 
 @description('Network Security Group name for the ASA runtime subnet. Specify this value in the parameters.json file to override this default.')
-param snetRuntimeNsg string = 'snet-runtime-nsg'
+param snetRuntimeNsg string
 
 @description('Network Security Group name for the shared subnet. Specify this value in the parameters.json file to override this default.')
-param snetSharedNsg string = 'snet-shared-nsg'
+param snetSharedNsg string
 
 @description('Network Security Group name for the support subnet. Specify this value in the parameters.json file to override this default.')
-param snetSupportNsg string = 'snet-support-nsg'
+param snetSupportNsg string
 
 @description('Name of the resource group that contains the spoke VNET. Specify this value in the parameters.json file to override this default.')
-param spokeRgName string = 'rg-${namePrefix}-SPOKE'
+param spokeRgName string
 
 @description('IP CIDR Block for the Spoke VNET')
 param spokeVnetAddressPrefix string
 
 @description('Name of the RG that has the spoke VNET. Specify this value in the parameters.json file to override this default.')
-param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
+param spokeVnetName string
 
 @description('IP CIDR Block for the Spring Apps Subnet')
 param springAppsSubnetPrefix string
@@ -61,10 +58,10 @@ param springAppsRuntimeSubnetPrefix string
 param supportSubnetPrefix string
 
 @description('Azure Resource Tags')
-param tags object = {}
+param tags object
 
 @description('Timestamp value used to group and uniquely identify a given deployment')
-param timeStamp string = utcNow('yyyyMMddHHmm')
+param timeStamp string
 
 /******************************/
 /*     RESOURCES & MODULES    */

@@ -17,41 +17,8 @@ else {
     Write-host "  Name Prefix             : $namePrefix"
     Write-host "  Skip Hub                : $ENV:SkipHub"
     Write-host "  Skip Firewall           : $ENV:SkipFirewall"
-    Write-Host "  Deploy PetClinic        : $ENV:DeployPetClinic"
 }
 
-# Deploy the modules
-$Modules = @()
+$principalId = (az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv)
 
-if ($null -eq $SpecificModules) {
-    if ($ENV:SkipHub -ne "true") { $Modules += "02-Hub-Network" }
-    $Modules += "03-LZ-Network"
-    $Modules += "04-LZ-SharedResources"
-    if ($ENV:SkipFirewall -ne "true") { $Modules += "05-Hub-AzureFirewall" }
-    $Modules += "06-LZ-SpringApps-Standard"
-    if ($ENV:DeployPetClinic -eq "true") { $Modules += "08-Db-PetClinic" }
-}
-else {
-    $Modules = $SpecificModules
-}
-
-$Modules | ForEach-Object {
-    Write-Warning  "Working on $_ ..."
-    Set-Location "..\$_"
-
-    if (Test-Path -Path "main.bicep") {
-
-        az deployment sub create --name "$($timeStamp)-$(Split-Path -Path $PWD -Leaf)" --location $location --template-file "main.bicep" --parameters parameters.json location=$location namePrefix=$namePrefix
-
-        if ($lastexitcode -ne 0) { exit }
-  
-        # Wait 150 seconds between Apply
-        Write-Warning "Waiting 15 seconds...."
-        Start-Sleep 15
-    }
-    else {
-        Write-Warning "No Bicep file found in $($_)"
-    }
-}
-
-Set-Location "..\Deployment"
+az deployment sub create --name "$($timeStamp)-$(Split-Path -Path $PWD -Leaf)" --location $location --template-file "main.bicep" --parameters parameters.json location=$location namePrefix=$namePrefix principalId=$principalId
