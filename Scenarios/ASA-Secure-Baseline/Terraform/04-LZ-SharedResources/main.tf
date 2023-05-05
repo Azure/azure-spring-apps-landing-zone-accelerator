@@ -1,3 +1,9 @@
+### Notice about changes ######################################################
+# We recommend the use of parameters.tfvars for changes.
+# Have a particular customization in mind not addressable via parameters.tfvars?
+#  Consider filing a feature request at 
+#  https://github.com/Azure/azure-spring-apps-landing-zone-accelerator/issues 
+# 
 
 data "terraform_remote_state" "lz-network" {
   backend = "azurerm"
@@ -26,8 +32,8 @@ resource "random_password" "jumphostpass" {
 
 
 locals  {
-  shared_rg                = "rg-${var.name_prefix}-SHARED"
-
+  shared_rg                = ( var.Shared_Rg == "" ? "${var.prefix_rg}${var.name_prefix}-SHARED${var.suffix_rg}" : var.Shared_Rg)
+ 
   spoke_rg                 = data.terraform_remote_state.lz-network.outputs.spoke_rg
   spoke_vnet_name          = data.terraform_remote_state.lz-network.outputs.spoke_vnet_name
   subnet_shared_name       = var.shared-subnet-name
@@ -35,12 +41,15 @@ locals  {
 
   private_dns_rg           = data.terraform_remote_state.lz-network.outputs.private_dns_rg
 
-  jumphost_name            = substr("vm${var.name_prefix}${var.environment}",0,14)
+  jumphost_name            = substr("${var.prefix_vm}${var.name_prefix}${var.environment}${var.suffix_vm}",0,14)
   jumphost_user            = var.jump_host_admin_username
 
   # If a jumphost_pass was provided, then use that, otherwise, use a random password.
   jumphost_pass            = ( var.jump_host_password == "" ? random_password.jumphostpass.result : var.jump_host_password )
   password_notice          = ( var.jump_host_password == "" ? "To get access to the VM, use the Reset Password feature in the Azure Portal.\nAzure Portal > VM > Reset Password" : "A custom password was provided.  To reset go to Azure Portal > VM > Reset Password" )
+
+  keyvault_name            = "${var.prefix_keyvault}${var.name_prefix}-${random_string.random.result}${var.suffix_keyvault}"
+  law_name                 = "${var.prefix_law}${var.name_prefix}-${random_string.random.result}${var.suffix_law}"
 }
 
 # Get info about the current azurerm context
@@ -71,10 +80,6 @@ data "azurerm_private_dns_zone" "keyvault_zone" {
   resource_group_name  =  local.private_dns_rg
 
 }
-
-
-
-
 
 # Create the Shared Resource group 
 resource "azurerm_resource_group" "shared_rg" {

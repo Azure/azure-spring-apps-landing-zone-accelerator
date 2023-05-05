@@ -1,3 +1,10 @@
+### Notice about changes ######################################################
+# We recommend the use of parameters.tfvars for changes.
+# Have a particular customization in mind not addressable via parameters.tfvars?
+#  Consider filing a feature request at 
+#  https://github.com/Azure/azure-spring-apps-landing-zone-accelerator/issues 
+#
+
 data "terraform_remote_state" "lz-network" {
   backend = "azurerm"
 
@@ -17,8 +24,8 @@ locals  {
 
   subnet_appgw_name          = var.appgw-subnet-name
 
-  appgw_rg                   = "rg-${var.name_prefix}-APPGW"
-  appgw_name                 = "appgw-${var.name_prefix}"
+  appgw_rg                   = ( var.APPGW_Rg == "" ? "${var.prefix_rg}${var.name_prefix}-APPGW${var.suffix_rg}" : var.APPGW_Rg )
+  appgw_name                 = ( var.APPGW_Name == "" ? "${var.prefix_appgw}${var.name_prefix}${var.suffix_appgw}" : var.APPGW_Name )
            
     
   backend_address_pool = {

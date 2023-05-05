@@ -41,7 +41,7 @@ resource "azurerm_subnet" "appgwsubnet" {
 
 # NSG for Spring Apps Service subnet
 resource "azurerm_network_security_group" "asa_svc_nsg" { 
-    name                        = "${var.springboot-service-subnet-name}-nsg"
+    name                        = local.nsg_svc_name
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
 
@@ -55,7 +55,7 @@ resource "azurerm_subnet_network_security_group_association" "asa_svc_nsg_assoc"
 
 # NSG for Spring Apps Apps subnet
 resource "azurerm_network_security_group" "asa_apps_nsg" { 
-    name                        = "${var.springboot-apps-subnet-name}-nsg"
+    name                        = local.nsg_apps_name
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
 
@@ -69,7 +69,7 @@ resource "azurerm_subnet_network_security_group_association" "asa_apps_nsg_assoc
 
 # NSG for Support Services Subnet subnet
 resource "azurerm_network_security_group" "support_svc_nsg" { 
-    name                        = "${var.springboot-support-subnet-name}-nsg"
+    name                        = local.nsg_support_name
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
 
@@ -83,7 +83,7 @@ resource "azurerm_subnet_network_security_group_association" "support_svc_nsg_as
 
 # NSG for Shared Subnet
 resource "azurerm_network_security_group" "snetshared_nsg" { 
-    name                        = "${var.shared-subnet-name}-nsg"
+    name                        = local.nsg_shared_name
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
 
@@ -98,7 +98,7 @@ resource "azurerm_subnet_network_security_group_association" "shared_nsg_assoc" 
 # NSG for Appplication Gateway V2
 
 resource "azurerm_network_security_group" "appgw_nsg" { 
-    name                        = "${var.appgw-subnet-name}-nsg"
+    name                        = local.nsg_appgw_name
     location                    = var.location
     resource_group_name         = azurerm_resource_group.spoke_rg.name
 
