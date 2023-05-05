@@ -50,14 +50,25 @@
 # To bring your own HUB VNET (Precreated Hub VNET), then specify the Name/RG/Subscription below, set Bring_Your_Own_Hub=true
 # and do not deploy the plan under "02-Hub-Network"
 
-    # Bring_Your_Own_Hub    = true
-    # Hub_Vnet_Name         = ""
-    # Hub_Vnet_RG           = ""
-    # Hub_Vnet_Subscription = ""
+    # Bring_Your_Own_Hub    = false   # Only set this to true if you have created your own Hub
+
+    # Hub_Vnet_Name         = ""      # Must be set if Bring_Your_Own_Hub is true, otherwise leave empty for auto-naming
+    # Hub_Vnet_RG           = ""      # Must be set if Bring_Your_Own_Hub is true, otherwise leave empty for auto-naming
+    # Hub_Vnet_Subscription = ""      # Must be set if Bring_Your_Own_Hub is true
+
+    # Bastion_Name         = ""       # Leave empty for auto-naming
+    # Bastion_Nsg          = ""       # Leave empty for auto-naming
+    # Bastion_Pip          = ""       # Leave empty for auto-naming
+
 
 ##################################################
 ## 03 Spoke Virtual Network
 ##################################################
+
+    # Spoke_Vnet_Name              = ""    # Leave empty for auto-naming
+    # Spoke_Rg                     = ""    # Leave empty for auto-naming
+    # Spoke_Private_Dns_Rg         = ""    # Leave empty for auto-naming
+
     # spoke_vnet_addr_prefix         = "10.1.0.0/16"
     # springboot-service-subnet-addr = "10.1.0.0/24"
     # springboot-apps-subnet-addr    = "10.1.1.0/24"
@@ -79,6 +90,7 @@
 # If not specified, the random password is not provided.  Use the Reset Password feature to regain access.
 
 
+    # Shared_Rg                = ""   # Leave empty for auto-naming
     # jump_host_admin_username = "lzadmin"
 
     # jump_host_password ="xxxxxx"
@@ -95,6 +107,7 @@
 ##################################################
 ## 05 Hub Azure Firewall
 ##################################################
+    # FW_Name                        = ""     # Leave empty for auto-naming
     # azure_firewall_zones           = [1,2,3]
 
 ##################################################
@@ -107,6 +120,8 @@
 ##################################################
 # 06 Azure Spring Apps
 ##################################################
+    # SpringApps_Name                = ""  # Leave empty for auto-naming
+    # SpringApps_Rg                  = ""  # Leave empty for auto-naming
 
     # spring_apps_zone_redundant     = true
 
@@ -114,6 +129,52 @@
 # 07 Application Gateway
 ##################################################
 
+    # APPGW_Name                     = ""   # Leave empty for auto-naming
+    # APPGW_Rg                       = ""   # Leave empty for auto-naming
     # azure_app_gateway_zones        = [1,2,3]
     # backendPoolFQDN                = "default-replace-me.private.azuremicroservices.io"
     # certfilename                   = "mycertificate.pfx"
+
+
+##################################################
+# NAMING STANDARD CUSTOMIZATION
+##################################################
+
+
+### PREFIXES used when using plan default resource names.
+
+### By default the following prefixes are used.
+### If you prefer to use suffixes, uncomment and set the prefixes to an empty string ""
+### then uncomment the suffixes, and specify as desired.
+
+# prefix_rg           = "rg-"    
+# prefix_vnet         = "vnet-"    
+# prefix_bastion      = "bastion-"      
+# prefix_nsg          = "nsg-"    
+# prefix_pip          = "pip-"    
+# prefix_nic          = "nic-"    
+# prefix_keyvault     = "kv-"    
+# prefix_law          = "law-"    
+# prefix_app_insights = "ai-"    
+# prefix_fw           = "fw-"    
+# prefix_spring       = "spring-"    
+# prefix_appgw        = "appgw-"    
+# prefix_vm           = "vm"
+# prefix_disk         = "disk-"    
+
+# By default suffixes are blank unless uncommented out here
+
+# suffix_rg           = ""    
+# suffix_vnet         = ""    
+# suffix_bastion      = ""      
+# suffix_nsg          = ""    
+# suffix_pip          = ""    
+# suffix_nic          = ""    
+# suffix_keyvault     = ""    
+# suffix_law          = ""    
+# suffix_app_insights = ""    
+# suffix_fw           = ""    
+# suffix_spring       = ""    
+# suffix_appgw        = ""    
+# suffix_vm           = ""
+# suffix_disk         = ""
