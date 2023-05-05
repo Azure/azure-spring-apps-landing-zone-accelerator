@@ -8,6 +8,9 @@ targetScope = 'subscription'
 @description('User name for admin account on the jump host')
 param adminUserName string
 
+@description('Private IP address of the existing firewll. If this script is not configured to deploy a firewall, this value must be set')
+param azureFirewallIp string = ''
+
 @description('Boolean indicating whether or not to deploy the hub module. Set to false and override the hub module parameters if you already have one in place.')
 param deployHub bool = true
 
@@ -173,7 +176,7 @@ module hub '../02-Hub-Network/main.bicep' = if (deployHub) {
     bastionNsgName: bastionNsgName
     hubVnetAddressPrefix: hubVnetAddressPrefix
     hubVnetName: hubVnetName
-    hubVnetResourceGroupName: hubVnetRgName
+    hubVnetRgName: hubVnetRgName
     location: location
     tags: tags
     timeStamp: timeStamp
@@ -185,7 +188,7 @@ module lzNetwork '../03-LZ-Network/main.bicep' = {
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
     hubVnetName: hubVnetName
-    hubVnetResourceGroupName: hubVnetRgName
+    hubVnetRgName: hubVnetRgName
     location: location
     principalId: principalId
     privateZonesRgName: privateZonesRgName
@@ -204,6 +207,9 @@ module lzNetwork '../03-LZ-Network/main.bicep' = {
     tags: tags
     timeStamp: timeStamp
   }
+  dependsOn: [
+    hub
+  ]
 }
 
 module sharedResources '../04-LZ-SharedResources/main.bicep' = {
@@ -235,12 +241,14 @@ module firewall '../05-Hub-AzureFirewall/main.bicep' = if (deployFirewall) {
   name: '${timeStamp}-firewall'
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
+    azureFirewallIp: azureFirewallIp
     azureFirewallName: azureFirewallName
     azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
     defaultAppsRouteName: defaultAppsRouteName
     defaultHubRouteName: defaultHubRouteName
     defaultRuntimeRouteName: defaultRuntimeRouteName
     defaultSharedRouteName: defaultSharedRouteName
+    deployFirewall: deployFirewall
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
     location: location

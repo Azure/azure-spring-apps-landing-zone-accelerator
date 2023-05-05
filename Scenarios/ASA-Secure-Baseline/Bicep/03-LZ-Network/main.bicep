@@ -10,7 +10,7 @@ param appGwSubnetPrefix string
 param hubVnetName string
 
 @description('Name of the RG that has the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetResourceGroupName string
+param hubVnetRgName string
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
@@ -67,7 +67,7 @@ param timeStamp string
 /*     RESOURCES & MODULES    */
 /******************************/
 resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' existing = {
-  name: hubVnetResourceGroupName
+  name: hubVnetRgName
 }
 
 resource hubVnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {

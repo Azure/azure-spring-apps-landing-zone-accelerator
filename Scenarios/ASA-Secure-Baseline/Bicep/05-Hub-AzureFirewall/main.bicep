@@ -9,6 +9,9 @@ param appGwSubnetPrefix string
 @description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
 param azureFirewallName string
 
+@description('Private IP address of the existing firewll. If this script is not configured to deploy a firewall, this value must be set')
+param azureFirewallIp string = ''
+
 @description('IP CIDR Block for the Azure Firewall Subnet')
 param azureFirewallSubnetPrefix string
 
@@ -23,6 +26,9 @@ param defaultRuntimeRouteName string
 
 @description('Name of the default shared route table. Specify this value in the parameters.json file to override this default.')
 param defaultSharedRouteName string
+
+@description('Boolean value indicating whether or not to deploy the Azure Firewall.')
+param deployFirewall bool
 
 @description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
 param hubVnetName string
@@ -80,7 +86,7 @@ param timeStamp string
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
-module azfwSubnet '../Modules/subnet.bicep' = {
+module azfwSubnet '../Modules/subnet.bicep' = if(deployFirewall) {
   name: '${timeStamp}-azfwSubnet'
   scope: resourceGroup(hubVnetRgName)
   params: {
@@ -90,7 +96,7 @@ module azfwSubnet '../Modules/subnet.bicep' = {
   }
 }
 
-module azfw '../Modules/azfw.bicep' = {
+module azfw '../Modules/azfw.bicep' = if(deployFirewall) {
   name: '${timeStamp}-azfw'
   scope: resourceGroup(hubVnetRgName)
   params: {
@@ -592,7 +598,7 @@ module defaultHubRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azfw.outputs.privateIp
+          nextHopIpAddress: deployFirewall ? azfw.outputs.privateIp : azureFirewallIp
         }
       }
     ]
@@ -613,7 +619,7 @@ module defaultAppsRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azfw.outputs.privateIp
+          nextHopIpAddress: deployFirewall ? azfw.outputs.privateIp : azureFirewallIp
         }
       }
     ]
@@ -634,7 +640,7 @@ module defaultRuntimeRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azfw.outputs.privateIp
+          nextHopIpAddress: deployFirewall ? azfw.outputs.privateIp : azureFirewallIp
         }
       }
     ]
@@ -653,7 +659,7 @@ module defaultSharedRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azfw.outputs.privateIp
+          nextHopIpAddress: deployFirewall ? azfw.outputs.privateIp : azureFirewallIp
         }
       }
     ]

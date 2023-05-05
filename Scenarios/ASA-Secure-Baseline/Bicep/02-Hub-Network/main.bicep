@@ -19,7 +19,7 @@ param hubVnetAddressPrefix string
 param hubVnetName string
 
 @description('Name of the resource group that contains the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetResourceGroupName string
+param hubVnetRgName string
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
@@ -34,7 +34,7 @@ param timeStamp string
 /*     RESOURCES & MODULES    */
 /******************************/
 resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: hubVnetResourceGroupName
+  name: hubVnetRgName
   location: location
   tags: tags
 }
