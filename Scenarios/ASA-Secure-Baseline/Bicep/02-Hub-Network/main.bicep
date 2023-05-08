@@ -6,70 +6,95 @@ targetScope = 'subscription'
 @description('Azure Bastion Subnet Address Space')
 param azureBastionSubnetPrefix string
 
+@description('IP CIDR Block for the Azure Firewall Subnet')
+param azureFirewallSubnetPrefix string
+
 @description('Bastion Name. Specify this value in the parameters.json file to override this default.')
-param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
+param bastionName string
 
 @description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
-param bastionNsgName string = 'bastion-nsg'
+param bastionNsgName string
+
+@description('Boolean value indicating whether or not to deploy the Azure Firewall.')
+param deployFirewall bool
 
 @description('IP CIDR Block for the Hub VNET')
 param hubVnetAddressPrefix string
 
 @description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+param hubVnetName string
 
 @description('Name of the resource group that contains the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetResourceGroupName string = 'rg-${namePrefix}-HUB'
+param hubVnetRgName string
 
 @description('The Azure Region in which to deploy the Spring Apps Landing Zone Accelerator')
 param location string
 
-@description('The common prefix used when naming resources')
-param namePrefix string
-
 @description('Azure Resource Tags')
-param tags object = {}
+param tags object
 
 @description('Timestamp value used to group and uniquely identify a given deployment')
-param timeStamp string = utcNow('yyyyMMddHHmm')
+param timeStamp string
+
+var subnets = deployFirewall ? [
+  {
+    name: 'AzureBastionSubnet' //Note: this name must remain this value and cannot be customized for Azure Bastion to deploy correctly
+    properties: {
+      addressPrefix: azureBastionSubnetPrefix
+      networkSecurityGroup: {
+        id: azureBastionNsg.outputs.id
+      }
+    }
+  }
+  {
+    name: 'AzureFirewallSubnet' //Note: this name must remain this value and cannot be customized for Azure Firewall to deploy correctly
+    properties: {
+      addressPrefix: azureFirewallSubnetPrefix
+    }
+  }
+] : [
+  {
+    name: 'AzureBastionSubnet' //Note: this name must remain this value and cannot be customized for Azure Bastion to deploy correctly
+    properties: {
+      addressPrefix: azureBastionSubnetPrefix
+      networkSecurityGroup: {
+        id: azureBastionNsg.outputs.id
+      }
+    }
+  }
+]
+
 
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
 resource hubVnetRg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: hubVnetResourceGroupName
+  name: hubVnetRgName
   location: location
   tags: tags
 }
 
 module hubVnet '../Modules/vnet.bicep' = {
   name: '${timeStamp}-hub-vnet'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(hubVnetRgName)
   params: {
     name: hubVnetName
     addressPrefixes: [
       hubVnetAddressPrefix
     ]
     location: location
-    subnets: [
-      {
-        name: 'AzureBastionSubnet' //Note: this name must remain this value and cannot be customized for Azure Bastion to deploy correctly
-        properties: {
-          addressPrefix: azureBastionSubnetPrefix
-          networkSecurityGroup: {
-            id: azureBastionNsg.outputs.id
-          }
-        }
-      }
-    ]
+    subnets: subnets
     tags: tags
   }
+  dependsOn: [
+    hubVnetRg
+  ]
 }
 
 // NSG for Azure Bastion subnet
 module azureBastionNsg '../Modules/nsg.bicep' = {
   name: '${timeStamp}-nsg-bastion'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(hubVnetRgName)
   params: {
     name: bastionNsgName
     location: location
@@ -190,15 +215,24 @@ module azureBastionNsg '../Modules/nsg.bicep' = {
     ]
     tags: tags
   }
+  dependsOn: [
+    hubVnetRg
+  ]
 }
 
 module azureBastion '../Modules/bastion.bicep' = {
   name: '${timeStamp}-bastion'
-  scope: resourceGroup(hubVnetRg.name)
+  scope: resourceGroup(hubVnetRgName)
   params: {
     name: bastionName
     location: location
     subnetId: '${hubVnet.outputs.id}/subnets/AzureBastionSubnet'
     tags: tags
   }
+  dependsOn: [
+    azureBastionNsg
+    hubVnet
+  ]
 }
+
+output hubVnetId string = hubVnet.outputs.id
