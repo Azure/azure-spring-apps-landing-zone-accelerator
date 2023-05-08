@@ -4,7 +4,128 @@ targetScope = 'subscription'
 /*         PARAMETERS         */
 /******************************/
 
-//Misc.
+//Resource Names - Override these in the parameters.json file to match your organization's naming conventions
+@description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
+param azureFirewallName string = 'fw-${namePrefix}'
+
+@description('Bastion Name. Specify this value in the parameters.json file to override this default.')
+param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
+
+@description('Name of the jump box. Specify this value in the parameters.json file to override this default.')
+param vmName string = length('vm${namePrefix}${environment}') > 14 ? substring('vm${namePrefix}${environment}', 0, 14) : 'vm${namePrefix}${environment}'
+
+@description('Name of the key vault. Specify this value in the parameters.json file to override this default.')
+param keyVaultName string = length(namePrefix) > 16 ? 'kv-${substring(namePrefix, 0, 16)}-${substring(uniqueString(namePrefix), 0, 4)}' : 'kv-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
+
+@description('Name of the application insights instance. Specify this value in the parameters.json file to override this default.')
+param appInsightsName string = '${namePrefix}-ai'
+
+@description('Name of the log analytics workspace instance. Specify this value in the parameters.json file to override this default.')
+param logAnalyticsWorkspaceName string = 'law-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
+
+@description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
+param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(namePrefix), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(namePrefix), 0, 4)}'
+
+//VNET Names - Override these in the parameters.json file to match your organization's naming conventions
+@description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
+param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
+
+@description('Name of the RG that has the spoke VNET. Specify this value in the parameters.json file to override this default.')
+param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
+
+//Subnet Names - These subnets are all created in the SPOKE VNET.  Override these in the parameters.json file to match your organization's naming conventions
+@description('Name of the subnet that has the jump host. Specify this value in the parameters.json file to override this default.')
+param snetSharedName string = 'snet-shared'
+
+@description('Name of the support subnet. Specify this value in the parameters.json file to override this default.')
+param snetSupportName string = 'snet-support'
+
+@description('Name of the Spring Apps Runtime subnet. Specify this value in the parameters.json file to override this default.')
+param snetRuntimeName string = 'snet-runtime'
+
+@description('Name of the Spring Apps subnet. Specify this value in the parameters.json file to override this default.')
+param snetAppName string = 'snet-app'
+
+@description('Name of the App Gateway subnet. Specify this value in the parameters.json file to override this default.')
+param snetAppGwName string = 'snet-appgw'
+
+//Resource Group Names - Override these in the parameters.json file to match your organization's naming conventions
+@description('Name of the resource group that contains the spoke VNET. Specify this value in the parameters.json file to override this default.')
+param spokeRgName string = 'rg-${namePrefix}-SPOKE'
+
+@description('Name of the resource group that contains the private DNS zones. Specify this value in the parameters.json file to override this default.')
+param privateZonesRgName string = 'rg-${namePrefix}-PRIVATEZONES'
+
+@description('Name of the resource group that has the hub VNET. Specify this value in the parameters.json file to override this default.')
+param hubVnetRgName string = 'rg-${namePrefix}-HUB'
+
+@description('Name of the resource group that contains shared resources. Specify this value in the parameters.json file to override this default.')
+param sharedRgName string = 'rg-${namePrefix}-SHARED'
+
+@description('Name of the resource group that contains the Spring Apps instance. Specify this value in the parameters.json file to override this default.')
+param appRgName string = 'rg-${namePrefix}-APPS'
+
+//Network Security Group Names - Override these in the parameters.json file to match your organization's naming conventions
+@description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
+param bastionNsgName string = 'bastion-nsg'
+
+@description('Network Security Group name for the Application Gateway subnet should you chose to deploy an AppGW. Specify this value in the parameters.json file to override this default.')
+param snetAppGwNsg string = 'snet-agw-nsg'
+
+@description('Network Security Group name for the ASA app subnet. Specify this value in the parameters.json file to override this default.')
+param snetAppNsg string = 'snet-app-nsg'
+
+@description('Network Security Group name for the ASA runtime subnet. Specify this value in the parameters.json file to override this default.')
+param snetRuntimeNsg string = 'snet-runtime-nsg'
+
+@description('Network Security Group name for the shared subnet. Specify this value in the parameters.json file to override this default.')
+param snetSharedNsg string = 'snet-shared-nsg'
+
+@description('Network Security Group name for the support subnet. Specify this value in the parameters.json file to override this default.')
+param snetSupportNsg string = 'snet-support-nsg'
+
+//Route Table Names - Override these in the parameters.json file to match your organization's naming conventions
+@description('Name of the default apps route table. Specify this value in the parameters.json file to override this default.')
+param defaultAppsRouteName string = 'default_apps_route'
+
+@description('Name of the default hub route table. Specify this value in the parameters.json file to override this default.')
+param defaultHubRouteName string = 'default_hub_route'
+
+@description('Name of the default runtime route table. Specify this value in the parameters.json file to override this default.')
+param defaultRuntimeRouteName string = 'default_runtime_route'
+
+@description('Name of the default shared route table. Specify this value in the parameters.json file to override this default.')
+param defaultSharedRouteName string = 'default_shared_route'
+
+//CIDR BLOCKS
+@description('IP CIDR Block for the App Gateway Subnet')
+param appGwSubnetPrefix string
+
+@description('IP CIDR Block for the Azure Firewall Subnet')
+param azureFirewallSubnetPrefix string
+
+@description('P CIDR Block for the Azure Bastion Subnet')
+param bastionSubnetPrefix string
+
+@description('IP CIDR Block for the Hub VNET')
+param hubVnetAddressPrefix string
+
+@description('IP CIDR Block for the Shared Subnet')
+param sharedSubnetPrefix string
+
+@description('IP CIDR Block for the Spoke VNET')
+param spokeVnetAddressPrefix string
+
+@description('IP CIDR Block for the Spring Apps Subnet')
+param springAppsSubnetPrefix string
+
+@description('IP CIDR Block for the Spring Apps Runtime Subnet')
+param springAppsRuntimeSubnetPrefix string
+
+@description('IP CIDR Block for the Support Subnet')
+param supportSubnetPrefix string
+
+//Miscellaneous Parameters.  Override as necessary.
 @description('User name for admin account on the jump host')
 param adminUserName string
 
@@ -51,119 +172,6 @@ param vmSize string = 'Standard_DS3_v2'
 @description('The CIDR Range that will be used for the Spring Apps backend cluster')
 param springAppsRuntimeCidr string
 
-//Resource Names
-@description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
-param azureFirewallName string = 'fw-${namePrefix}'
-
-@description('Bastion Name. Specify this value in the parameters.json file to override this default.')
-param bastionName string = 'bastion-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
-
-@description('Name of the jump box. Specify this value in the parameters.json file to override this default.')
-param vmName string = length('vm${namePrefix}${environment}') > 14 ? substring('vm${namePrefix}${environment}', 0, 14) : 'vm${namePrefix}${environment}'
-
-@description('Name of the key vault. Specify this value in the parameters.json file to override this default.')
-param keyVaultName string = length(namePrefix) > 16 ? 'kv-${substring(namePrefix, 0, 16)}-${substring(uniqueString(namePrefix), 0, 4)}' : 'kv-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
-
-@description('Name of the application insights instance. Specify this value in the parameters.json file to override this default.')
-param appInsightsName string = '${namePrefix}-ai'
-
-@description('Name of the log analytics workspace instance. Specify this value in the parameters.json file to override this default.')
-param logAnalyticsWorkspaceName string = 'law-${namePrefix}-${substring(uniqueString(namePrefix), 0, 4)}'
-
-@description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
-param springAppsName string = length('${namePrefix}-${environment}') > 20 ? 'spring-${toLower(substring('${namePrefix}-${environment}', 0, 20))}-${substring(uniqueString(namePrefix), 0, 4)}' : 'spring-${toLower('${namePrefix}-${environment}')}-${substring(uniqueString(namePrefix), 0, 4)}'
-
-//CIDR BLOCKS
-@description('IP CIDR Block for the App Gateway Subnet')
-param appGwSubnetPrefix string
-
-@description('IP CIDR Block for the Azure Firewall Subnet')
-param azureFirewallSubnetPrefix string
-
-@description('P CIDR Block for the Azure Bastion Subnet')
-param bastionSubnetPrefix string
-
-@description('IP CIDR Block for the Hub VNET')
-param hubVnetAddressPrefix string
-
-@description('IP CIDR Block for the Shared Subnet')
-param sharedSubnetPrefix string
-
-@description('IP CIDR Block for the Spoke VNET')
-param spokeVnetAddressPrefix string
-
-@description('IP CIDR Block for the Spring Apps Subnet')
-param springAppsSubnetPrefix string
-
-@description('IP CIDR Block for the Spring Apps Runtime Subnet')
-param springAppsRuntimeSubnetPrefix string
-
-@description('IP CIDR Block for the Support Subnet')
-param supportSubnetPrefix string
-
-//VNET NAMES
-@description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetName string = 'vnet-${namePrefix}-${location}-HUB'
-
-@description('Name of the RG that has the spoke VNET. Specify this value in the parameters.json file to override this default.')
-param spokeVnetName string = 'vnet-${namePrefix}-${location}-SPOKE'
-
-//RG NAMES
-@description('Name of the resource group that contains the spoke VNET. Specify this value in the parameters.json file to override this default.')
-param spokeRgName string = 'rg-${namePrefix}-SPOKE'
-
-@description('Name of the resource group that contains the private DNS zones. Specify this value in the parameters.json file to override this default.')
-param privateZonesRgName string = 'rg-${namePrefix}-PRIVATEZONES'
-
-@description('Name of the resource group that has the hub VNET. Specify this value in the parameters.json file to override this default.')
-param hubVnetRgName string = 'rg-${namePrefix}-HUB'
-
-@description('Name of the resource group that contains shared resources. Specify this value in the parameters.json file to override this default.')
-param sharedRgName string = 'rg-${namePrefix}-SHARED'
-
-@description('Name of the resource group that contains the Spring Apps instance. Specify this value in the parameters.json file to override this default.')
-param appRgName string = 'rg-${namePrefix}-APPS'
-
-//NSG  NAMES
-@description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
-param bastionNsgName string = 'bastion-nsg'
-
-@description('Network Security Group name for the Application Gateway subnet should you chose to deploy an AppGW. Specify this value in the parameters.json file to override this default.')
-param snetAppGwNsg string = 'snet-agw-nsg'
-
-@description('Network Security Group name for the ASA app subnet. Specify this value in the parameters.json file to override this default.')
-param snetAppNsg string = 'snet-app-nsg'
-
-@description('Network Security Group name for the ASA runtime subnet. Specify this value in the parameters.json file to override this default.')
-param snetRuntimeNsg string = 'snet-runtime-nsg'
-
-@description('Network Security Group name for the shared subnet. Specify this value in the parameters.json file to override this default.')
-param snetSharedNsg string = 'snet-shared-nsg'
-
-@description('Network Security Group name for the support subnet. Specify this value in the parameters.json file to override this default.')
-param snetSupportNsg string = 'snet-support-nsg'
-
-//Subnet names
-//TODO: Refactor other subnet names into here
-@description('Name of the subnet that has the jump host. Specify this value in the parameters.json file to override this default.')
-param subnetShared string = 'snet-shared'
-
-@description('Name of the support subnet. Specify this value in the parameters.json file to override this default.')
-param subnetSupport string = 'snet-support'
-
-//Route Table Names
-@description('Name of the default apps route table. Specify this value in the parameters.json file to override this default.')
-param defaultAppsRouteName string = 'default_apps_route'
-
-@description('Name of the default hub route table. Specify this value in the parameters.json file to override this default.')
-param defaultHubRouteName string = 'default_hub_route'
-
-@description('Name of the default runtime route table. Specify this value in the parameters.json file to override this default.')
-param defaultRuntimeRouteName string = 'default_runtime_route'
-
-@description('Name of the default shared route table. Specify this value in the parameters.json file to override this default.')
-param defaultSharedRouteName string = 'default_shared_route'
-
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
@@ -172,8 +180,10 @@ module hub '../02-Hub-Network/main.bicep' = if (deployHub) {
   name: '${timeStamp}-hub-vnet'
   params: {
     azureBastionSubnetPrefix: bastionSubnetPrefix
+    azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
     bastionName: bastionName
     bastionNsgName: bastionNsgName
+    deployFirewall: deployFirewall
     hubVnetAddressPrefix: hubVnetAddressPrefix
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
@@ -193,6 +203,11 @@ module lzNetwork '../03-LZ-Network/main.bicep' = {
     principalId: principalId
     privateZonesRgName: privateZonesRgName
     sharedSubnetPrefix: sharedSubnetPrefix
+    snetAppGwName: snetAppGwName
+    snetAppName: snetAppName
+    snetRuntimeName: snetRuntimeName
+    snetSharedName: snetSharedName
+    snetSupportName: snetSupportName
     snetAppGwNsg: snetAppGwNsg
     snetAppNsg: snetAppNsg
     snetRuntimeNsg: snetRuntimeNsg
@@ -225,8 +240,8 @@ module sharedResources '../04-LZ-SharedResources/main.bicep' = {
     sharedRgName: sharedRgName
     spokeRgName: spokeRgName
     spokeVnetName: spokeVnetName
-    subnetShared: subnetShared
-    subnetSupport: subnetSupport
+    subnetShared: snetSharedName
+    subnetSupport: snetSupportName
     tags: tags
     timeStamp: timeStamp
     vmName: vmName
@@ -237,34 +252,18 @@ module sharedResources '../04-LZ-SharedResources/main.bicep' = {
   ]
 }
 
-module firewall '../05-Hub-AzureFirewall/main.bicep' = if (deployFirewall) {
+module firewall '../05-Hub-AzureFirewall/main.bicep' = {
   name: '${timeStamp}-firewall'
   params: {
-    appGwSubnetPrefix: appGwSubnetPrefix
-    azureFirewallIp: azureFirewallIp
     azureFirewallName: azureFirewallName
     azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
-    defaultAppsRouteName: defaultAppsRouteName
-    defaultHubRouteName: defaultHubRouteName
-    defaultRuntimeRouteName: defaultRuntimeRouteName
-    defaultSharedRouteName: defaultSharedRouteName
     deployFirewall: deployFirewall
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
     location: location
-    principalId: principalId
     sharedSubnetPrefix: sharedSubnetPrefix
-    snetAppGwNsg: snetAppGwNsg
-    snetAppNsg: snetAppNsg
-    snetRuntimeNsg: snetRuntimeNsg
-    snetSharedNsg: snetSharedNsg
-    snetSupportNsg: snetSupportNsg
-    spokeVnetAddressPrefix: spokeVnetAddressPrefix
-    spokeVnetName: spokeVnetName
-    spokeRgName: spokeRgName
     springAppsRuntimeSubnetPrefix: springAppsRuntimeSubnetPrefix
     springAppsSubnetPrefix: springAppsSubnetPrefix
-    supportSubnetPrefix: supportSubnetPrefix
     tags: tags
     timeStamp: timeStamp
   }
@@ -276,19 +275,38 @@ module firewall '../05-Hub-AzureFirewall/main.bicep' = if (deployFirewall) {
 module springApps '../06-LZ-SpringApps-Standard/main.bicep' = {
   name: '${timeStamp}-spring-apps'
   params: {
+    appGwSubnetPrefix: appGwSubnetPrefix
     appInsightsName: appInsightsName
     appRgName: appRgName
+    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : azureFirewallIp
+    defaultAppsRouteName: defaultAppsRouteName
+    defaultHubRouteName: defaultHubRouteName
+    defaultRuntimeRouteName: defaultRuntimeRouteName
+    defaultSharedRouteName: defaultSharedRouteName
+    hubVnetRgName: hubVnetRgName
     location: location
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    principalId: principalId
     sharedRgName: sharedRgName
+    sharedSubnetPrefix: sharedSubnetPrefix
+    snetAppGwNsg: snetAppGwNsg
+    snetAppNsg: snetAppNsg
+    snetRuntimeNsg: snetRuntimeNsg
+    snetSharedNsg: snetSharedNsg
+    snetSupportNsg: snetSupportNsg
     spokeRgName: spokeRgName
+    spokeVnetAddressPrefix: spokeVnetAddressPrefix
     spokeVnetName: spokeVnetName
     springAppsName: springAppsName
     springAppsRuntimeCidr: springAppsRuntimeCidr
+    springAppsRuntimeSubnetPrefix: springAppsRuntimeSubnetPrefix
+    springAppsSubnetPrefix: springAppsSubnetPrefix
+    supportSubnetPrefix: supportSubnetPrefix
     tags: tags
     timeStamp: timeStamp
   }
   dependsOn: [
     sharedResources
+    firewall
   ]
 }

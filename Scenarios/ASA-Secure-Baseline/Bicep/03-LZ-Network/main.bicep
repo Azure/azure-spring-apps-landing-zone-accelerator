@@ -39,6 +39,21 @@ param snetSharedNsg string
 @description('Network Security Group name for the support subnet. Specify this value in the parameters.json file to override this default.')
 param snetSupportNsg string
 
+@description('Name of the Spring Apps Runtime subnet. Specify this value in the parameters.json file to override this default.')
+param snetRuntimeName string
+
+@description('Name of the Spring Apps subnet. Specify this value in the parameters.json file to override this default.')
+param snetAppName string
+
+@description('Name of the Support subnet. Specify this value in the parameters.json file to override this default.')
+param snetSupportName string
+
+@description('Name of the Shared subnet. Specify this value in the parameters.json file to override this default.')
+param snetSharedName string
+
+@description('Name of the App Gateway subnet. Specify this value in the parameters.json file to override this default.')
+param snetAppGwName string
+
 @description('Name of the resource group that contains the spoke VNET. Specify this value in the parameters.json file to override this default.')
 param spokeRgName string
 
@@ -100,7 +115,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
     ]
     subnets: [
       {
-        name: 'snet-runtime'
+        name: snetRuntimeName
         properties: {
           addressPrefix: springAppsRuntimeSubnetPrefix
           networkSecurityGroup: {
@@ -109,7 +124,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
         }
       }
       {
-        name: 'snet-app'
+        name: snetAppName
         properties: {
           addressPrefix: springAppsSubnetPrefix
           networkSecurityGroup: {
@@ -118,7 +133,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
         }
       }
       {
-        name: 'snet-support'
+        name: snetSupportName
         properties: {
           addressPrefix: supportSubnetPrefix
           networkSecurityGroup: {
@@ -127,7 +142,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
         }
       }
       {
-        name: 'snet-shared'
+        name: snetSharedName
         properties: {
           addressPrefix: sharedSubnetPrefix
           networkSecurityGroup: {
@@ -136,7 +151,7 @@ module spokeVnet '../Modules/vnet.bicep' = {
         }
       }
       {
-        name: 'snet-agw'
+        name: snetAppGwName
         properties: {
           addressPrefix: appGwSubnetPrefix
           networkSecurityGroup: {

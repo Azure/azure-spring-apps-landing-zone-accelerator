@@ -15,8 +15,6 @@ else {
     Write-host "Bicep State Configuration:"
     Write-host "  Location (Azure Region) : $location"
     Write-host "  Name Prefix             : $namePrefix"
-    Write-host "  Skip Hub                : $ENV:SkipHub"
-    Write-host "  Skip Firewall           : $ENV:SkipFirewall"
 }
 
 $principalId = (az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv)
