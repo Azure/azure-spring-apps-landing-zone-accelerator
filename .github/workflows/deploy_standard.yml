@@ -19,16 +19,16 @@ env:
   # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
   # Use this command to obtain:
   #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-  SRINGAPPS_SPN_OBJECT_ID: 77e44c53-4911-427e-83c2-e2a52f569dee
+  SRINGAPPS_SPN_OBJECT_ID: 1b7a460f-dc1f-42d5-a4d5-0505272dfd54
 
   # === Pet Clinic Required Settings ===:
   MYSQL_ADMIN_USERNAME: sqlAdmin
   MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
 
   # ==== Terraform Backend ===:
-  TFSTATE_RG: devops-rg
-  STORAGEACCOUNTNAME: jeffdevopssa
-  CONTAINERNAME: springapps-ent
+  TFSTATE_RG: cloud-shell-storage-southcentralus
+  STORAGEACCOUNTNAME: cs7100320022eb75670
+  CONTAINERNAME: tfstateasa
 
   # ==== Terraform Azure Login ===:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -38,8 +38,22 @@ env:
 
   # === Baseline Parameters ====:
   REGION: eastus
-  NAME_PREFIX: springent
+  NAME_PREFIX: springlza
   ENVIRONMENT: dev
+
+  # ==== APPS ====:
+  API_GATEWAY: api-gateway
+  ADMIN_SERVER: admin-server
+  CUSTOMERS_SERVICE: customers-service
+  VETS_SERVICE: vets-service
+  VISITS_SERVICE: visits-service
+
+  # ==== JARS ====:
+  API_GATEWAY_JAR: spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar
+  ADMIN_SERVER_JAR: spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar
+  CUSTOMERS_SERVICE_JAR: spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar
+  VETS_SERVICE_JAR: spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar
+  VISITS_SERVICE_JAR: spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar
 
 jobs:
   conditions:
@@ -184,17 +198,16 @@ jobs:
       - name: Terraform Apply
         if: needs.conditions.outputs.deploy_firewall == 'true'
         run: terraform apply my.plan
-  deploy_lz_enterprise:
+  deploy_lz_standard:
     needs:
       [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
-    name: Deploy 06 LZ Spring Apps Enterprise
+    name: Deploy 06 LZ Spring Apps Standard
     runs-on: ubuntu-latest
     outputs:
       spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
-      spring_apps_rg: ${{ steps.output-apps-rg.outputs.spring_apps_rg }}
     defaults:
       run:
-        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
@@ -223,16 +236,13 @@ jobs:
       - name: Terraform Output
         id: output
         run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
-      - name: Terraform Output
-        id: output-apps-rg
-        run: echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
   deploy_pet_clinic_infra:
-    name: Deploy Fitness Store Clinic Infrastructure
-    needs: [deploy_lz_enterprise, deploy_lz_shared, conditions]
+    name: Deploy Pet Clinic Infrastructure
+    needs: [deploy_lz_standard, deploy_lz_shared, conditions]
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Scenarios/sample-apps/fitness-store/terraform
+        working-directory: Scenarios/sample-apps/petclinic/terraform
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
@@ -249,140 +259,123 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan -out my.plan \
-          -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
+          -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
-          -var="name_prefix=${{ env.NAME_PREFIX }}" 
+          -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
+          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
 
       - name: Terraform Apply
         run: terraform apply my.plan
   build:
     name: Build and Deploy Pet Clinic Microservices
-    needs: [deploy_pet_clinic_infra, deploy_lz_enterprise, conditions]
+    needs: [deploy_pet_clinic_infra, deploy_lz_standard, conditions]
     runs-on: ubuntu-latest
-    
     env:
-      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-      SPRING_APPS_RESOURCE_GROUP: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
     steps:
       - name: Checkout pet clinic sample
         uses: actions/checkout@v3
         with:
-          repository: Azure-Samples/acme-fitness-store.git
-          path: fitness-store
-          ref: Azure
+          repository: Azure-Samples/spring-petclinic-microservices.git
+          path: pet-clinic
+          ref: azure
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: "microsoft"
+          cache: maven
+
+      - name: maven build, clean
+        working-directory: pet-clinic
+        run: |
+          mvn clean package -DskipTests
 
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Fixe Gateway Routes
-        run: | 
-          az extension add --name spring
-          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
-          az configure --defaults group=${{env.SPRING_APPS_RESOURCE_GROUP}} spring=${{ env.SPRING_APPS_SERVICE_NAME }} location=${{ env.REGION }}
-          az spring gateway route-config update --name catalog-service --app-name catalog-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/catalog-service.json" 
-          az spring gateway route-config update --name frontend --app-name frontend --routes-file "${{ github.workspace }}/fitness-store/azure/routes/frontend.json" 
-          az spring gateway route-config update --name cart-service --app-name cart-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/cart-service.json" 
-          az spring gateway route-config update --name order-service --app-name order-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/order-service.json" 
-          az spring gateway route-config update --name identity-service --app-name identity-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/identity-service.json" 
 
-      - name: Deploy apps/acme-payment
+      - name: Deploy api-gateway
         uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: payment-service
+          service-name: ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
+          app-name: ${{ env.API_GATEWAY }}
           use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-payment
+          package: ${{ github.workspace }}/pet-clinic/${{ env.API_GATEWAY_JAR }}
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
           environment-variables: -SPRING_PROFILES_ACTIVE passwordless
-          build-env: "-BP_JVM_VERSION 17"
-          config-file-patterns: payment
 
-      - name: Deploy catalog service
+      - name: Deploy admin-server
         uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: catalog-service
+          app-name: ${{ env.ADMIN_SERVER }}
           use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-catalog
+          package: ${{ github.workspace }}/pet-clinic/${{ env.ADMIN_SERVER_JAR }}
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
           environment-variables: "-SPRING_PROFILES_ACTIVE passwordless"
-          build-env: "-BP_JVM_VERSION 17"
-          config-file-patterns: catalog
 
-      - name: Deploy apps/acme-order
+      - name: Deploy customers-service
         uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: order-service
+          app-name: ${{ env.CUSTOMERS_SERVICE }}
           use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-order
+          package: ${{ github.workspace }}/pet-clinic/${{ env.CUSTOMERS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
 
-      - name: Deploy apps/acme-cart 
+      - name: Deploy vets-service
         uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: cart-service
+          app-name: ${{ env.VETS_SERVICE }}
           use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-cart 
-          environment-variables: -CART_PORT 8080
+          package: ${{ github.workspace }}/pet-clinic/${{ env.VETS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
 
-      - name: Deploy apps/acme-shopping
+      - name: Deploy visits-service
         uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: frontend
+          app-name: ${{ env.VISITS_SERVICE }}
           use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-shopping
-  prepare_destroy:
-    needs: [conditions, build, deploy_lz_enterprise]
-    name: Prepare Spring Enterprise for Destroy
-    runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
-    steps:
-      - name: Azure CLI Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Remove Ip from API
-        run: az extension add --name spring
-      - name: Remove Ip from API
-        run: az spring api-portal update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
-      - name: Remove Ip from gateway
-        run: az spring gateway update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
-         
-  destroy_sample_app_infra:
-    name: Destroy Fitness Store Infrastructure
+          package: ${{ github.workspace }}/pet-clinic/${{ env.VISITS_SERVICE_JAR }}
+          jvm-options: -Xms2048m -Xmx2048m
+          runtime-version: Java_17
+          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+  destroy_pet_clinic_infra:
+    name: Destroy Pet Clinic Infrastructure
     needs:
       [
         conditions,
-        deploy_lz_enterprise,
+        deploy_lz_standard,
         deploy_lz_shared,
         deploy_pet_clinic_infra,
-        prepare_destroy
+        build,
       ]
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
     defaults:
       run:
-        working-directory: Scenarios/sample-apps/fitness-store/terraform
+        working-directory: Scenarios/sample-apps/petclinic/terraform
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
@@ -399,19 +392,20 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan -destroy -out my.plan \
-           -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
+          -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
-          -var="name_prefix=${{ env.NAME_PREFIX }}"
+          -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
+          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
       - name: Terraform Apply
         run: terraform apply my.plan
-  destroy_lz_enterprise:
-    needs: [conditions, prepare_destroy,destroy_sample_app_infra]
-    name: Destroy 06 LZ Spring Apps Enterprise
+  destroy_lz_standard:
+    needs: [conditions, deploy_lz_standard, destroy_pet_clinic_infra]
+    name: Destroy 06 LZ Spring Apps Standard
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
     defaults:
       run:
-        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v3
@@ -438,7 +432,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_hub_firewall:
-    needs: [ destroy_lz_enterprise, conditions]
+    needs: [destroy_lz_standard, conditions]
     name: Destroy 05 Hub Firewall
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
