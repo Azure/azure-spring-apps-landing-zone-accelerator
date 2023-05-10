@@ -1,7 +1,7 @@
 # Azure Bastion needed Network components
 
 resource "azurerm_subnet" "azure_bastion" {
-    provider = azurerm.hub
+    provider = azurerm.hub-subscription
 
     name                        = "AzureBastionSubnet"
     resource_group_name         = azurerm_resource_group.hub_rg.name
@@ -13,9 +13,9 @@ resource "azurerm_subnet" "azure_bastion" {
 # NSG for Bastion subnet
 
 resource "azurerm_network_security_group" "bastion_nsg" { 
-    provider = azurerm.hub
+    provider = azurerm.hub-subscription
 
-    name                        = "bastion-nsg"
+    name                        = local.bastion_nsg
     location                    = var.location
     resource_group_name         = azurerm_resource_group.hub_rg.name
 
@@ -112,7 +112,7 @@ resource "azurerm_network_security_group" "bastion_nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "bastion_nsg_assoc" {
-  provider = azurerm.hub
+  provider = azurerm.hub-subscription
 
   subnet_id                 = azurerm_subnet.azure_bastion.id
   network_security_group_id = azurerm_network_security_group.bastion_nsg.id
@@ -125,9 +125,9 @@ resource "azurerm_subnet_network_security_group_association" "bastion_nsg_assoc"
 # Azure Bastion
 
 resource "azurerm_public_ip" "azure_bastion" {
-    provider = azurerm.hub
+    provider = azurerm.hub-subscription
 
-    name                        = "azure-bastion-ip"
+    name                        = local.bastion_pip
     location                    = var.location
     resource_group_name         = azurerm_resource_group.hub_rg.name
     allocation_method           = "Static"
@@ -140,7 +140,7 @@ resource "azurerm_public_ip" "azure_bastion" {
 
 
 resource "azurerm_bastion_host" "azure_bastion_instance" {
-    provider = azurerm.hub
+    provider = azurerm.hub-subscription
     
     name                        = local.bastion_name
     location                    = var.location

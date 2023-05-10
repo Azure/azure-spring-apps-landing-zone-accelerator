@@ -1,3 +1,11 @@
+### Notice about changes ######################################################
+# We recommend the use of parameters.tfvars for changes.
+# Have a particular customization in mind not addressable via parameters.tfvars?
+#  Consider filing a feature request at 
+#  https://github.com/Azure/azure-spring-apps-landing-zone-accelerator/issues 
+# 
+
+
 data "terraform_remote_state" "lz-network" {
   backend = "azurerm"
 
@@ -33,7 +41,7 @@ locals  {
   spoke_rg                   = data.terraform_remote_state.lz-network.outputs.spoke_rg
   shared_rg                  = data.terraform_remote_state.lz-sharedresources.outputs.shared_rg
 
-  fw_name                  = "fw-${var.name_prefix}"
+  fw_name                  = ( var.FW_Name == "" ? "${var.prefix_fw}${var.name_prefix}${var.suffix_fw}" : var.FW_Name )
 
   subnet_shared_name       = var.shared-subnet-name
   subnet_cloudapps_name    = var.springboot-apps-subnet-name
