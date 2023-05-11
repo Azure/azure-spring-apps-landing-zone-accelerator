@@ -12,7 +12,7 @@ env:
   # === Destroy All ==
   SHOULD_DESTROY: true
 
-  
+
   # === Spring Apps Service ===:
   SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   JUMP_BOX_USERNAME: lzadmin
@@ -283,7 +283,7 @@ jobs:
         id: route_exists
         run: echo route_exists=$(az spring gateway route-config show --name catalog-service) >> $GITHUB_OUTPUT
       - name: Create Gateway Routes
-        if: contains(steps.route_exists.outputs.route_exists,'catalog-servie') == false
+        if: contains(steps.route_exists.outputs.route_exists,'ERROR') == true
         run: | 
           az spring gateway route-config create --name catalog-service --app-name catalog-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/catalog-service.json" 
           az spring gateway route-config create --name frontend --app-name frontend --routes-file "${{ github.workspace }}/fitness-store/azure/routes/frontend.json" 
@@ -291,7 +291,7 @@ jobs:
           az spring gateway route-config create --name order-service --app-name order-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/order-service.json" 
           az spring gateway route-config create --name identity-service --app-name identity-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/identity-service.json" 
       - name: Update Gateway Routes
-        if: contains(steps.route_exists.outputs.route_exists,'catalog-servie') == true
+        if: contains(steps.route_exists.outputs.route_exists,'ERROR') == false
         run: | 
           az spring gateway route-config update --name catalog-service --app-name catalog-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/catalog-service.json" 
           az spring gateway route-config update --name frontend --app-name frontend --routes-file "${{ github.workspace }}/fitness-store/azure/routes/frontend.json" 
