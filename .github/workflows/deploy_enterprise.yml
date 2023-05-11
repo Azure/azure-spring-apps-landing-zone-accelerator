@@ -259,7 +259,6 @@ jobs:
     name: Build and Deploy Pet Clinic Microservices
     needs: [deploy_pet_clinic_infra, deploy_lz_enterprise, conditions]
     runs-on: ubuntu-latest
-    
     env:
       SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
       SPRING_APPS_RESOURCE_GROUP: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
@@ -270,7 +269,6 @@ jobs:
           repository: Azure-Samples/acme-fitness-store.git
           path: fitness-store
           ref: Azure
-
       - name: Azure CLI Login
         uses: azure/login@v1
         with:
@@ -299,7 +297,6 @@ jobs:
           az spring gateway route-config update --name cart-service --app-name cart-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/cart-service.json" 
           az spring gateway route-config update --name order-service --app-name order-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/order-service.json" 
           az spring gateway route-config update --name identity-service --app-name identity-service --routes-file "${{ github.workspace }}/fitness-store/azure/routes/identity-service.json" 
-
       - name: Deploy apps/acme-payment
         uses: azure/spring-apps-deploy@v1
         if: needs.conditions.outputs.destroy == 'false'
