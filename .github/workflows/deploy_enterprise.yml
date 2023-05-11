@@ -373,13 +373,22 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Remove Ip from API
-        run: az extension add --name spring
+      - name: Set Defaults
+        run: |
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+          az configure --defaults group=${{env.SPRING_APPS_RESOURCE_GROUP}} spring=${{ env.SPRING_APPS_SERVICE_NAME }} location=${{ env.REGION }}
+          az extension add --name spring
       - name: Remove Ip from API
         run: az spring api-portal update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
       - name: Remove Ip from gateway
         run: az spring gateway update -g ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}} -s ${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}} --assign-endpoint false
-         
+      - name: Delete Route Configs
+        run: |
+          az spring gateway route-config remove --name catalog-service   
+          az spring gateway route-config remove --name frontend   
+          az spring gateway route-config remove --name cart-service   
+          az spring gateway route-config remove --name order-service   
+          az spring gateway route-config remove --name identity-service  
   destroy_sample_app_infra:
     name: Destroy Fitness Store Infrastructure
     needs:
