@@ -65,6 +65,12 @@ param sharedRgName string = 'rg-${namePrefix}-SHARED'
 @description('Name of the resource group that contains the Spring Apps instance. Specify this value in the parameters.json file to override this default.')
 param appRgName string = 'rg-${namePrefix}-APPS'
 
+@description('Name of the resource group that Spring Apps creates for its runtime. Specify this value in the parameters.json file to override this default.')
+param serviceRuntimeNetworkResourceGroup string = '${springAppsName}-runtime-rg'
+
+@description('Name of the resource group that Spring Apps creates for its app space. Specify this value in the parameters.json file to override this default.')
+param appNetworkResourceGroup string = '${springAppsName}-apps-rg'
+
 //Network Security Group Names - Override these in the parameters.json file to match your organization's naming conventions
 @description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
 param bastionNsgName string = 'bastion-nsg'
@@ -277,6 +283,7 @@ module springApps '../06-LZ-SpringApps-Standard/main.bicep' = {
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
     appInsightsName: appInsightsName
+    appNetworkResourceGroup: appNetworkResourceGroup
     appRgName: appRgName
     azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : azureFirewallIp
     defaultAppsRouteName: defaultAppsRouteName
@@ -287,6 +294,8 @@ module springApps '../06-LZ-SpringApps-Standard/main.bicep' = {
     location: location
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     principalId: principalId
+    privateZonesRgName: privateZonesRgName
+    serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
     sharedRgName: sharedRgName
     sharedSubnetPrefix: sharedSubnetPrefix
     snetAppGwNsg: snetAppGwNsg

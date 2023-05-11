@@ -9,6 +9,9 @@ param appRgName string
 @description('IP CIDR Block for the App Gateway Subnet')
 param appGwSubnetPrefix string
 
+@description('Name of the resource group that Spring Apps creates for its app space. Specify this value in the parameters.json file to override this default.')
+param appNetworkResourceGroup string
+
 @description('Private IP address of the existing firewll. If this script is not configured to deploy a firewall, this value must be set')
 param azureFirewallIp string
 
@@ -35,6 +38,9 @@ param logAnalyticsWorkspaceName string
 
 @description('The Azure AD Service Principal ID of the Azure Spring Cloud Resource Provider - this value varies by tenant - use the command "az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv" to get the value specific to your tenant')
 param principalId string
+
+@description('Name of the resource group that contains the private DNS zones. Specify this value in the parameters.json file to override this default.')
+param privateZonesRgName string
 
 @description('Name of the spring apps instance. Specify this value in the parameters.json file to override this default.')
 param springAppsName string
@@ -77,6 +83,9 @@ param springAppsSubnetPrefix string
 
 @description('IP CIDR Block for the Spring Apps Runtime Subnet')
 param springAppsRuntimeSubnetPrefix string
+
+@description('Name of the resource group that contains the Spring Apps Runtime Network. Specify this value in the parameters.json file to override this default.')
+param serviceRuntimeNetworkResourceGroup string
 
 @description('IP CIDR Block for the Support Subnet')
 param supportSubnetPrefix string
@@ -300,11 +309,13 @@ module springApps '../Modules/springApps.bicep' = {
   name: '${timeStamp}-spring-apps'
   scope: resourceGroup(appRgName)
   params: {
+    appNetworkResourceGroup: appNetworkResourceGroup
     appSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeRgName}/providers/Microsoft.Network/virtualNetworks/${spokeVnetName}/subnets/snet-app'
     location: location
     name: springAppsName
     serviceCidr: springAppsRuntimeCidr
     serviceRuntimeSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeRgName}/providers/Microsoft.Network/virtualNetworks/${spokeVnetName}/subnets/snet-runtime'
+    serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
     tags: tags
   }
   dependsOn: [
@@ -312,5 +323,19 @@ module springApps '../Modules/springApps.bicep' = {
     defaultAppsRoute
     defaultRuntimeRoute
     spokeVnet
+  ]
+}
+
+module springAppsDns '../Modules/springAppsDnsZoneARecord.bicep' = {
+  name: '${timeStamp}-spring-apps-dns-record'
+  scope: resourceGroup(privateZonesRgName)
+  params: {
+    dnsZone: 'private.azuremicroservices.io'
+    name: '*'
+    runtimeRgName: serviceRuntimeNetworkResourceGroup
+    ttl: 10
+  }
+  dependsOn: [
+    springApps
   ]
 }
