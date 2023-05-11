@@ -12,6 +12,7 @@ env:
   # === Destroy All ==
   SHOULD_DESTROY: true
 
+  
   # === Spring Apps Service ===:
   SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   JUMP_BOX_USERNAME: lzadmin
