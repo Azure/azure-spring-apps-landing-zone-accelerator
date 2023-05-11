@@ -227,8 +227,8 @@ jobs:
       - name: Terraform Output
         id: output-apps-rg
         run: echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
-  deploy_pet_clinic_infra:
-    name: Deploy Fitness Store Clinic Infrastructure
+  deploy_acme_fitness_infra:
+    name: Deploy ACME Fitness Store Infrastructure
     needs: [deploy_lz_enterprise, deploy_lz_shared, conditions]
     runs-on: ubuntu-latest
     defaults:
@@ -257,8 +257,8 @@ jobs:
       - name: Terraform Apply
         run: terraform apply my.plan
   build:
-    name: Build and Deploy Pet Clinic Microservices
-    needs: [deploy_pet_clinic_infra, deploy_lz_enterprise, conditions]
+    name: Build and Deploy ACME Fitness Microservices
+    needs: [deploy_acme_fitness_infra, deploy_lz_enterprise, conditions]
     runs-on: ubuntu-latest
     env:
       SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
@@ -368,6 +368,9 @@ jobs:
     name: Prepare Spring Enterprise for Destroy
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+      SPRING_APPS_RESOURCE_GROUP: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
     steps:
       - name: Azure CLI Login
         uses: azure/login@v1
@@ -396,7 +399,7 @@ jobs:
         conditions,
         deploy_lz_enterprise,
         deploy_lz_shared,
-        deploy_pet_clinic_infra,
+        deploy_acme_fitness_infra,
         prepare_destroy
       ]
     runs-on: ubuntu-latest
