@@ -45,7 +45,7 @@ The repo contains a single parameters.json file in the Deployment folder. Resour
     1. You will be prompted for the admin password for the jumpbox VM.  This value will be stored within Key Vault for secure access at a later time.
 
 ## Bringing your own Hub or Firewall
-If you have an existing network hub and/or firewall you can override the details of the hub and firewall in the `paramters.json` file and this script will use your existing resources.  Add the following values to the bottom of the `parameters.json` file:
+If you have an existing network hub and/or firewall you can override the details of the hub and firewall in the `parameters.json` file and this script will use your existing resources.  Add the following values to the bottom of the `parameters.json` file:
 
     ```json
     "deployHub": {
