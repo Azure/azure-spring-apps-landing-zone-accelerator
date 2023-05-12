@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUserName": {
+      "value": "ITADMIN"
+    },
+    "appGwSubnetPrefix": {
+      "value": "10.1.5.0/24"
+    },
+    "azureFirewallSubnetPrefix": {
+      "value": "10.0.1.0/24"
+    },
+    "bastionSubnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "hubVnetAddressPrefix": {
+      "value": "10.0.0.0/16"
+    },
+    "spokeVnetAddressPrefix": {
+      "value": "10.1.0.0/16"
+    },
+    "springAppsRuntimeSubnetPrefix": {
+      "value": "10.1.0.0/24"
+    },
+    "springAppsSubnetPrefix": {
+      "value": "10.1.1.0/24"
+    },
+    "supportSubnetPrefix": {
+      "value": "10.1.2.0/24"
+    },
+    "sharedSubnetPrefix": {
+      "value": "10.1.4.0/24"
+    },
+    "springAppsRuntimeCidr": {
+      "value": "10.3.0.0/16,10.4.0.0/16,10.5.0.1/16"
+    },
+    "tags": {
+      "value": {
+        "project": "SpringAppsLZA",
+        "environment": "Dev"
+      }
+    }
+  }
+}

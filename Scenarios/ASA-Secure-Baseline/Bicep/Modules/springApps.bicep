@@ -1,8 +1,10 @@
 
 param appSubnetId string
+param appNetworkResourceGroup string
 param location string
 param name string
 param serviceCidr string
+param serviceRuntimeNetworkResourceGroup string
 param serviceRuntimeSubnetId string
 param tags object
 
@@ -11,9 +13,9 @@ resource springApps 'Microsoft.AppPlatform/Spring@2022-12-01' = {
   location: location
   properties: {
     networkProfile: {
-      appNetworkResourceGroup: '${name}-apps-rg'
+      appNetworkResourceGroup: appNetworkResourceGroup
       appSubnetId: appSubnetId
-      serviceRuntimeNetworkResourceGroup: '${name}-runtime-rg'
+      serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
       serviceRuntimeSubnetId: serviceRuntimeSubnetId
       serviceCidr: serviceCidr
     }
