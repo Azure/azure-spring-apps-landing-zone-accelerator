@@ -390,6 +390,7 @@ jobs:
       [
         conditions,
         deploy_lz_standard,
+        deploy_lz_network,
         deploy_lz_shared,
         deploy_pet_clinic_infra,
         build,
@@ -416,9 +417,14 @@ jobs:
         run: |
           terraform plan -destroy -out my.plan \
           -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
+          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_standard.outputs.spring_apps_rg }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
           -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
-          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
+          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}" \
+          -var="resource_group=${{ needs.deploy_lz_network.outputs.spoke_rg }}" \
+          -var="vnet_spoke_name=${{ needs.deploy_lz_network.outputs.spoke_vnet_name }}" \
+          -var="private_zones_resource_group_name=${{ needs.deploy_lz_network.outputs.private_dns_rg }}" \
+          -var="key_vault_rg=${{ needs.deploy_lz_shared.outputs.shared_rg }}" 
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_lz_standard:
