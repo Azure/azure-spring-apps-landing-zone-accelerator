@@ -64,7 +64,7 @@ To create a new Service Principal, run the following commands:
     AZURE_CREDENTIALS=$(
       MSYS_NO_PATHCONV=1 az ad sp create-for-rbac \
         --name="sp-${PROJECT}-${UNIQUE_IDENTIFIER}" \
-        --role="Contributor" \
+        --role="Owner" \
         --scopes="/subscriptions/$SUBSCRIPTION_ID" \
         --sdk-auth \
         --only-show-errors

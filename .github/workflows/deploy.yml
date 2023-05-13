@@ -1,5 +1,5 @@
 name: Deploy to Azure Spring Apps using passwordless connections
-on: [push]
+on: [push,workflow_dispatch]
 
 permissions:
   id-token: write
@@ -198,44 +198,50 @@ jobs:
       - name: Terraform Apply
         if: needs.conditions.outputs.deploy_firewall == 'true'
         run: terraform apply my.plan
+
   deploy_lz_standard:
-    needs:
-      [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
-    name: Deploy 06 LZ Spring Apps Standard
-    runs-on: ubuntu-latest
-    outputs:
-      spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
-    defaults:
-      run:
-        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
-    steps:
-      - name: Checkout this repository
-        uses: actions/checkout@v3
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
-        with:
-          terraform_wrapper: false
-      - name: Terraform Init
-        run: |
-          terraform init \
-          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
-          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
-          -backend-config="container_name=${{ env.CONTAINERNAME }}"
-      - name: Terraform Plan
-        run: |
-          terraform plan -out my.plan \
-          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
-          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
-          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
-          -var="location=${{ env.REGION }}" \
-          -var="name_prefix=${{ env.NAME_PREFIX }}" \
-          -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
-      - name: Terraform Apply
-        run: terraform apply my.plan
-      - name: Terraform Output
-        id: output
-        run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
+          needs:
+            [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
+          name: Deploy 06 LZ Spring Apps Standard
+          runs-on: ubuntu-latest
+          outputs:
+            spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
+            spring_apps_rg: ${{ steps.output.outputs.spring_apps_rg }}
+          defaults:
+            run:
+              working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
+          steps:
+            - name: Checkout this repository
+              uses: actions/checkout@v3
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v2.0.3
+              with:
+                terraform_wrapper: false
+            - name: Terraform Init
+              run: |
+                terraform init \
+                -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+                -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+                -backend-config="container_name=${{ env.CONTAINERNAME }}"
+            - name: Terraform Plan
+              run: |
+                terraform plan -out my.plan \
+                -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+                -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+                -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+                -var="location=${{ env.REGION }}" \
+                -var="name_prefix=${{ env.NAME_PREFIX }}" \
+                -var="environment=${{ env.ENVIRONMENT }}" \
+                -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+            - name: Terraform Apply
+              run: terraform apply my.plan
+            - name: Terraform Output
+              id: output
+              run: |
+                echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
+                echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
+      
+
   deploy_pet_clinic_infra:
     name: Deploy Pet Clinic Infrastructure
     needs: [deploy_lz_standard, deploy_lz_shared, conditions]
@@ -297,70 +303,63 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+
+      - name: Install Azure CLI Spring Extension
+        run: |
+          az extension add --name spring -y
+          az spring list -o table
+
       - name: Deploy api-gateway
-        uses: azure/spring-apps-deploy@v1
-        with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
-          app-name: ${{ env.API_GATEWAY }}
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/pet-clinic/${{ env.API_GATEWAY_JAR }}
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+        run: |          
+          az spring app deploy \
+              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
+              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
+              --name ${{ env.API_GATEWAY }} \
+              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.API_GATEWAY_JAR }} \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless 
 
       - name: Deploy admin-server
-        uses: azure/spring-apps-deploy@v1
-        with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: ${{ env.ADMIN_SERVER }}
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/pet-clinic/${{ env.ADMIN_SERVER_JAR }}
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          environment-variables: "-SPRING_PROFILES_ACTIVE passwordless"
+        run: |          
+          az spring app deploy \
+              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
+              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
+              --name ${{ env.ADMIN_SERVER }} \
+              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.ADMIN_SERVER_JAR }} \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless 
 
       - name: Deploy customers-service
-        uses: azure/spring-apps-deploy@v1
-        with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: ${{ env.CUSTOMERS_SERVICE }}
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/pet-clinic/${{ env.CUSTOMERS_SERVICE_JAR }}
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+        run: |          
+          az spring app deploy \
+              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
+              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
+              --name ${{ env.CUSTOMERS_SERVICE }} \
+              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.CUSTOMERS_SERVICE_JAR }} \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless 
 
       - name: Deploy vets-service
-        uses: azure/spring-apps-deploy@v1
-        with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: ${{ env.VETS_SERVICE }}
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/pet-clinic/${{ env.VETS_SERVICE_JAR }}
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+        run: |          
+          az spring app deploy \
+              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
+              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
+              --name ${{ env.VETS_SERVICE }} \
+              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.VETS_SERVICE_JAR }} \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless 
 
       - name: Deploy visits-service
-        uses: azure/spring-apps-deploy@v1
-        with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: ${{ env.VISITS_SERVICE }}
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/pet-clinic/${{ env.VISITS_SERVICE_JAR }}
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
+        run: |          
+          az spring app deploy \
+              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
+              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
+              --name ${{ env.VISITS_SERVICE}} \
+              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.VISITS_SERVICE_JAR }} \
+              --jvm-options='-Xms2048m -Xmx2048m' \
+              --env SPRING_PROFILES_ACTIVE=passwordless 
+
+
   destroy_pet_clinic_infra:
     name: Destroy Pet Clinic Infrastructure
     needs:
