@@ -103,6 +103,10 @@ jobs:
     needs: [deploy_hub_network, conditions]
     name: Deploy 03 LZ Network
     runs-on: ubuntu-latest
+    outputs:
+      spoke_vnet_name: ${{ steps.output.outputs.spoke_vnet_name }}
+      spoke_rg: ${{ steps.output.outputs.spoke_rg }}
+      private_dns_rg: ${{ steps.output.outputs.private_dns_rg }}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
@@ -131,10 +135,19 @@ jobs:
           -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
+      - name: Terraform Output
+        id: output
+        run: |
+          echo spoke_vnet_name=$(terraform output -raw spoke_vnet_name) >> $GITHUB_OUTPUT
+          echo spoke_rg=$(terraform output -raw spoke_rg) >> $GITHUB_OUTPUT
+          echo private_dns_rg=$(terraform output -raw private_dns_rg) >> $GITHUB_OUTPUT
+
   deploy_lz_shared:
     needs: [deploy_lz_network, conditions]
     name: Deploy 04 LZ Shared Resources
     runs-on: ubuntu-latest
+    outputs:
+      shared_rg: ${{ steps.output.outputs.shared_rg }}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
@@ -165,6 +178,11 @@ jobs:
           -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
       - name: Terraform Apply
         run: terraform apply my.plan
+      - name: Terraform Output
+        id: output
+        run: |
+          echo shared_rg=$(terraform output -raw shared_rg) >> $GITHUB_OUTPUT
+
   deploy_hub_firewall:
     needs: [deploy_hub_network, deploy_lz_shared, conditions]
     name: Deploy 05 Hub Firewall
@@ -244,7 +262,7 @@ jobs:
 
   deploy_pet_clinic_infra:
     name: Deploy Pet Clinic Infrastructure
-    needs: [deploy_lz_standard, deploy_lz_shared, conditions]
+    needs: [deploy_lz_standard, deploy_lz_shared, deploy_lz_network, conditions]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -266,9 +284,15 @@ jobs:
         run: |
           terraform plan -out my.plan \
           -var="spring_cloud_service=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}" \
+          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_standard.outputs.spring_apps_rg }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
           -var="mysql_server_admin_password=${{ env.MYSQL_ADMIN_PASSWORD }}" \
-          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}"
+          -var="mysql_server_admin_username=${{ env.MYSQL_ADMIN_USERNAME }}" \
+          -var="resource_group=${{ needs.deploy_lz_network.outputs.spoke_rg }}" \
+          -var="vnet_spoke_name=${{ needs.deploy_lz_network.outputs.spoke_vnet_name }}" \
+          -var="private_zones_resource_group_name=${{ needs.deploy_lz_network.outputs.private_dns_rg }}" \
+          -var="key_vault_rg=${{ needs.deploy_lz_shared.outputs.shared_rg }}" 
+          
 
       - name: Terraform Apply
         run: terraform apply my.plan

@@ -6,6 +6,12 @@ variable "resource_group" {
   type    = string
   default = "rg-springlza-SPOKE"
 }
+
+variable "vnet_spoke_name" {
+  type    = string
+  default = "vnet-springlza-eastus-SPOKE"
+}
+
 variable "spring_cloud_service" {
   type = string
 }
