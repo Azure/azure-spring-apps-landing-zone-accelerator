@@ -1,4 +1,4 @@
-name: Deploy to Azure Spring Apps using passwordless connections
+name: Deploy ASA Enterprise with ACME Fitness
 on: [push]
 
 permissions:

@@ -28,8 +28,13 @@ variable "shared_rg" {
   type    = string
   default = "rg-springent-SHARED"
 }
-variable "mysql_CIDR" {
+
+variable "postgresql_CIDR" {
   type    = string
   default = "10.1.6.0/24"
+}
+variable "redis_CIDR" {
+  type    = string
+  default = "10.1.7.0/24"
 
 }

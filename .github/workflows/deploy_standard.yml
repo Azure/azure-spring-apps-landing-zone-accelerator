@@ -1,4 +1,4 @@
-name: Deploy to Azure Spring Apps using passwordless connections
+name: Deploy Azure Spring Apps Standard with Pet Clinic
 on: [push]
 
 permissions:
