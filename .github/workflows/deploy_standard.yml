@@ -28,7 +28,7 @@ env:
   # ==== Terraform Backend ===:
   TFSTATE_RG: devops-rg
   STORAGEACCOUNTNAME: jeffdevopssa
-  CONTAINERNAME: springapps-ent
+  CONTAINERNAME: springapps
 
   # ==== Terraform Azure Login ===:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
