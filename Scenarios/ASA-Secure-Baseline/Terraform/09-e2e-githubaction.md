@@ -44,7 +44,7 @@ Then select New repository secret and create secrets for JUMP_BOX_PASSWORD and M
 
 ## [!TIP]
 
-You can also use the <https://cli.github.com[GitHub> CLI] to define your secrets, using the command `gh secret set <MY_SECRET> -b"<SECRET_VALUE>" -R <repository_url>`
+You can also use the [GitHub CLI](https://cli.github.com) to define your secrets, using the command `gh secret set <MY_SECRET> -b"<SECRET_VALUE>" -R <repository_url>`
 
 ## Creating an Azure Service Principal
 
@@ -61,10 +61,11 @@ To create a new Service Principal, run the following commands:
         --only-show-errors
     )
 
+    # Modify --name to your liking - must be unique in the directory
     AZURE_CREDENTIALS=$(
       MSYS_NO_PATHCONV=1 az ad sp create-for-rbac \
         --name="sp-${PROJECT}-${UNIQUE_IDENTIFIER}" \
-        --role="Contributor" \
+        --role="Owner" \
         --scopes="/subscriptions/$SUBSCRIPTION_ID" \
         --sdk-auth \
         --only-show-errors
