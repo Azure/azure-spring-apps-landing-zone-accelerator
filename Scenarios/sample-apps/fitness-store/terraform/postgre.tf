@@ -15,7 +15,7 @@ resource "random_password" "password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "azurerm_subnet" "postgresql_subnet" {
+resource "azurerm_subnet" "postgres" {
   name                 = "snet-postgres"
   resource_group_name  = data.azurerm_resource_group.spoke_rg.name
   virtual_network_name = data.azurerm_virtual_network.spoke_vnet.name
