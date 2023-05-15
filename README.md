@@ -68,7 +68,7 @@ Deployment Details:
 | Deployment Methodology | GitHub Actions
 |--------------|--------------|
 |Terraform|[Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction.md)|
-|Bicep|Coming soon|
+|Bicep|Power shell available, GitHub Actions Coming soon|
 
 ## Got a feedback
 Please leverage issues if you have any feedback or request on how we can improve on this repository.
