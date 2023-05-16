@@ -189,168 +189,168 @@ resource "azurerm_spring_cloud_connection" "asa_app_catalog_connection" {
 ##########################################
 
 # # Create Routing for Catalog Service
-# resource "azurerm_spring_cloud_gateway_route_config" "asa_app_catalog_routing" {
-#   name                    = var.asa_catalog_service
-#   spring_cloud_gateway_id = local.spring_gateway_id
-#   spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service_bind[0].id
+resource "azurerm_spring_cloud_gateway_route_config" "asa_app_catalog_routing" {
+  name                    = var.asa_catalog_service
+  spring_cloud_gateway_id = local.spring_gateway_id
+  spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service_bind[0].id
 
-#   route {
-#     filters             = ["StripPrefix=0"]
-#     order               = 100
-#     predicates          = ["Path=/products", "Method=GET"]
-#     classification_tags = ["catalog"]
-#   }
-#   route {
-#     filters             = ["StripPrefix=0"]
-#     order               = 101
-#     predicates          = ["Path=/products/{id}", "Method=GET"]
-#     classification_tags = ["catalog"]
-#   }
-#   route {
-#     filters             = ["StripPrefix=0", "SetPath=/actuator/health/liveness"]
-#     order               = 103
-#     predicates          = ["Path=/catalogliveness", "Method=GET"]
-#     classification_tags = ["catalog"]
-#   }
-#   route {
-#     filters             = ["StripPrefix=0"]
-#     order               = 104
-#     predicates          = ["Path=/static/images/{id}", "Method=GET"]
-#     classification_tags = ["catalog"]
-#   }
-#   depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
-# }
+  route {
+    filters             = ["StripPrefix=0"]
+    order               = 100
+    predicates          = ["Path=/products", "Method=GET"]
+    classification_tags = ["catalog"]
+  }
+  route {
+    filters             = ["StripPrefix=0"]
+    order               = 101
+    predicates          = ["Path=/products/{id}", "Method=GET"]
+    classification_tags = ["catalog"]
+  }
+  route {
+    filters             = ["StripPrefix=0", "SetPath=/actuator/health/liveness"]
+    order               = 103
+    predicates          = ["Path=/catalogliveness", "Method=GET"]
+    classification_tags = ["catalog"]
+  }
+  route {
+    filters             = ["StripPrefix=0"]
+    order               = 104
+    predicates          = ["Path=/static/images/{id}", "Method=GET"]
+    classification_tags = ["catalog"]
+  }
+  depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
+}
 
-# # Create Routing for Order Service
-# resource "azurerm_spring_cloud_gateway_route_config" "asa_app_order_routing" {
-#   name                    = var.asa_order_service
-#   spring_cloud_gateway_id = local.spring_gateway_id
-#   spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service[0].id
+# Create Routing for Order Service
+resource "azurerm_spring_cloud_gateway_route_config" "asa_app_order_routing" {
+  name                    = var.asa_order_service
+  spring_cloud_gateway_id = local.spring_gateway_id
+  spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service[0].id
 
-#   route {
-#     description            = "Creates an order for the user."
-#     filters                = ["StripPrefix=0"]
-#     order                  = 200
-#     predicates             = ["Path=/order/add/{userId}", "Method=POST"]
-#     sso_validation_enabled = true
-#     title                  = "Create an order."
-#     token_relay            = true
-#     classification_tags    = ["order"]
-#   }
-#   route {
-#     description            = "Lookup all orders for the given user"
-#     filters                = ["StripPrefix=0"]
-#     order                  = 201
-#     predicates             = ["Path=/order/{userId}", "Method=GET"]
-#     sso_validation_enabled = true
-#     title                  = "Retrieve User's Orders."
-#     token_relay            = true
-#     classification_tags    = ["order"]
-#   }
-#   depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
-# }
+  route {
+    description            = "Creates an order for the user."
+    filters                = ["StripPrefix=0"]
+    order                  = 200
+    predicates             = ["Path=/order/add/{userId}", "Method=POST"]
+    sso_validation_enabled = true
+    title                  = "Create an order."
+    token_relay            = true
+    classification_tags    = ["order"]
+  }
+  route {
+    description            = "Lookup all orders for the given user"
+    filters                = ["StripPrefix=0"]
+    order                  = 201
+    predicates             = ["Path=/order/{userId}", "Method=GET"]
+    sso_validation_enabled = true
+    title                  = "Retrieve User's Orders."
+    token_relay            = true
+    classification_tags    = ["order"]
+  }
+  depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
+}
 
-# # Create Routing for Cart Service
-# resource "azurerm_spring_cloud_gateway_route_config" "asa_app_cart_routing" {
-#   name                    = var.asa_cart_service
-#   spring_cloud_gateway_id = local.spring_gateway_id
-#   spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service[1].id
+# Create Routing for Cart Service
+resource "azurerm_spring_cloud_gateway_route_config" "asa_app_cart_routing" {
+  name                    = var.asa_cart_service
+  spring_cloud_gateway_id = local.spring_gateway_id
+  spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service[1].id
 
-#   route {
-#     filters                = ["StripPrefix=0"]
-#     order                  = 300
-#     predicates             = ["Path=/cart/item/add/{userId}", "Method=POST"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["cart"]
-#   }
-#   route {
-#     filters                = ["StripPrefix=0"]
-#     order                  = 301
-#     predicates             = ["Path=/cart/item/modify/{userId}", "Method=POST"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["cart"]
-#   }
-#   route {
-#     filters                = ["StripPrefix=0"]
-#     order                  = 302
-#     predicates             = ["Path=/cart/items/{userId}", "Method=GET"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["cart"]
-#   }
-#   route {
-#     filters                = ["StripPrefix=0"]
-#     order                  = 303
-#     predicates             = ["Path=/cart/clear/{userId}", "Method=GET"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["cart"]
-#   }
-#   route {
-#     filters                = ["StripPrefix=0"]
-#     order                  = 304
-#     predicates             = ["Path=/cart/total/{userId}", "Method=GET"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["cart"]
-#   }
-#   depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
-# }
+  route {
+    filters                = ["StripPrefix=0"]
+    order                  = 300
+    predicates             = ["Path=/cart/item/add/{userId}", "Method=POST"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["cart"]
+  }
+  route {
+    filters                = ["StripPrefix=0"]
+    order                  = 301
+    predicates             = ["Path=/cart/item/modify/{userId}", "Method=POST"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["cart"]
+  }
+  route {
+    filters                = ["StripPrefix=0"]
+    order                  = 302
+    predicates             = ["Path=/cart/items/{userId}", "Method=GET"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["cart"]
+  }
+  route {
+    filters                = ["StripPrefix=0"]
+    order                  = 303
+    predicates             = ["Path=/cart/clear/{userId}", "Method=GET"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["cart"]
+  }
+  route {
+    filters                = ["StripPrefix=0"]
+    order                  = 304
+    predicates             = ["Path=/cart/total/{userId}", "Method=GET"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["cart"]
+  }
+  depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
+}
 
-# # Create Routing for Identity Service
-# resource "azurerm_spring_cloud_gateway_route_config" "asa_app_identity_routing" {
-#   name                    = var.asa_identity_service
-#   spring_cloud_gateway_id = local.spring_gateway_id
-#   spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service_bind[2].id
+# Create Routing for Identity Service
+resource "azurerm_spring_cloud_gateway_route_config" "asa_app_identity_routing" {
+  name                    = var.asa_identity_service
+  spring_cloud_gateway_id = local.spring_gateway_id
+  spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service_bind[2].id
 
-#   route {
-#     filters                = ["RedirectTo=302, /"]
-#     order                  = 1
-#     predicates             = ["Path=/acme-login", "Method=GET"]
-#     sso_validation_enabled = true
-#     classification_tags    = ["sso"]
-#   }
-#   route {
-#     filters                = ["RedirectTo=302, /whoami", "SetResponseHeader=Cache-Control, no-store"]
-#     order                  = 2
-#     predicates             = ["Path=/userinfo", "Method=GET"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["users"]
-#   }
-#   route {
-#     order                  = 3
-#     predicates             = ["Path=/verify-token", "Method=POST"]
-#     sso_validation_enabled = true
-#     uri                    = "no://op"
-#     classification_tags    = ["users"]
-#   }
-#   route {
-#     filters                = ["StripPrefix=0"]
-#     order                  = 4
-#     predicates             = ["Path=/whoami", "Method=GET"]
-#     sso_validation_enabled = true
-#     token_relay            = true
-#     classification_tags    = ["users"]
+  route {
+    filters                = ["RedirectTo=302, /"]
+    order                  = 1
+    predicates             = ["Path=/acme-login", "Method=GET"]
+    sso_validation_enabled = true
+    classification_tags    = ["sso"]
+  }
+  route {
+    filters                = ["RedirectTo=302, /whoami", "SetResponseHeader=Cache-Control, no-store"]
+    order                  = 2
+    predicates             = ["Path=/userinfo", "Method=GET"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["users"]
+  }
+  route {
+    order                  = 3
+    predicates             = ["Path=/verify-token", "Method=POST"]
+    sso_validation_enabled = true
+    uri                    = "no://op"
+    classification_tags    = ["users"]
+  }
+  route {
+    filters                = ["StripPrefix=0"]
+    order                  = 4
+    predicates             = ["Path=/whoami", "Method=GET"]
+    sso_validation_enabled = true
+    token_relay            = true
+    classification_tags    = ["users"]
 
-#   }
-#   depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
-# }
+  }
+  depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
+}
 
-# # Create Routing for Frontend
-# resource "azurerm_spring_cloud_gateway_route_config" "asa_app_frontend_routing" {
-#   name                    = var.asa_frontend
-#   spring_cloud_gateway_id = local.spring_gateway_id
-#   spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service[2].id
+# Create Routing for Frontend
+resource "azurerm_spring_cloud_gateway_route_config" "asa_app_frontend_routing" {
+  name                    = var.asa_frontend
+  spring_cloud_gateway_id = local.spring_gateway_id
+  spring_cloud_app_id     = azurerm_spring_cloud_app.asa_app_service[2].id
 
-#   route {
-#     filters             = ["StripPrefix=0"]
-#     order               = 1000
-#     predicates          = ["Path=/**", "Method=GET"]
-#     classification_tags = ["frontend"]
-#   }
-#   depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
-# }
+  route {
+    filters             = ["StripPrefix=0"]
+    order               = 1000
+    predicates          = ["Path=/**", "Method=GET"]
+    classification_tags = ["frontend"]
+  }
+  depends_on = [azurerm_spring_cloud_active_deployment.asa_app_deployment_activation]
+}
 
