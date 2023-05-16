@@ -67,7 +67,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql_server" {
   sku_name               = "GP_Standard_D4s_v3"
   storage_mb             = 32768
   zone                   = "1"
-  delegated_subnet_id    = azurerm_subnet.postgresql_subnet.id
+  delegated_subnet_id    = azurerm_subnet.postgres.id
   private_dns_zone_id    = azurerm_private_dns_zone.postgres.id
 
   depends_on = [
