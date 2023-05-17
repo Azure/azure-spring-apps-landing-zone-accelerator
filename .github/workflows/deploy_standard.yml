@@ -1,5 +1,5 @@
 name: Deploy Azure Spring Apps Standard with Pet Clinic
-on: [push]
+on: []
 
 permissions:
   id-token: write
