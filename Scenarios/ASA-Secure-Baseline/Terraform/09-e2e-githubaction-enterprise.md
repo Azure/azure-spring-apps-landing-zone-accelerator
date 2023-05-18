@@ -26,7 +26,7 @@ It's a great way to automate your CI/CD pipelines, and it's free for public repo
 To set up GitHub Actions for deployment, we'll need to use the new workflow file in our repository.
 This file will contain the instructions for our CI/CD pipeline.
 
-## Setup secrets
+## Setup secrets and variables
 
 We are using different secrets in our workflow: JUMP_BOX_PASSWORD and MYSQL_ADMIN_PASSWORD. Secrets in GitHub are encrypted and allow you to store sensitive information such as passwords or API keys, and use them in your workflows using the ${{ secrets.MY_SECRET }} syntax.
 
@@ -41,6 +41,7 @@ In GitHub, secrets can be defined at three different levels:
 For this workshop, we’ll define our secrets at the repository level. To do so, go to the Settings tab of your repository, and select Secrets then Actions under it, in the left menu.
 
 Then select New repository secret and create secrets for JUMP_BOX_PASSWORD and MYSQL_ADMIN_PASSWORD.
+
 
 ## [!TIP]
 
@@ -79,17 +80,25 @@ Then just like in the previous step, create a new secret in your repository name
 
 ![GitHub Secrets](../../../images/github_asa_secrets.png)
 
-## Modify variables in `deploy.yml`
+## Modify variables in `deploy_enterprise.yml`
 
-The workflow file can be found in your repository with the path [`.github/workflows/deploy.yml`](../../../.github/workflows/deploy.yml) :
+While still in the Actions Secrets and Variables settings select the Variables tab and create the following repository variables with your settings
 
-* Replace the value of the `SRINGAPPS_SPN_OBJECT_ID` environment variable in the [deploy.yaml](../../../.github/workflows/deploy.yml) file with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
+![GitHub Variables](../../../images/asa_github_variables_ent.png)
+
+* Create a repository variable for  `SRINGAPPS_SPN_OBJECT_ID` with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
+  
 You use the command below to obtain the value of the variable:
 
       az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
 
-* Replace the value of  TFSTATE_RG, STORAGEACCOUNTNAME and CONTAINERNAME in [deploy.yaml](../../../.github/workflows/deploy.yml) to point to your Terraform backend.
-* You can also set the deploy_firewall and destroy values in [deploy.yaml](../../../.github/workflows/deploy.yml) depending on your usecase.
+* Create repository variables for  TFSTATE_RG, STORAGEACCOUNTNAME and CONTAINERNAME_ENTERPRISE with the values to point to your Terraform backend.
+  
+## Optionally deploy Azure Firewall
+  
+* You can also set the deploy_firewall and destroy values in [deploy_enterprise.yaml](../../../.github/workflows/deploy_enterprise.yml) depending on your usecase.
+
+The workflow file can be found in your repository with the path [`.github/workflows/deploy_enterprise.yml`](../../../.github/workflows/deploy_enterprise.yml) :
 
 This workflow will be triggered every time a commit is pushed to the `main` branch.
 It will then run a job with the following steps:
@@ -98,14 +107,14 @@ It will then run a job with the following steps:
 * Deploy 03 LZ Network
 * Deploy 04 LZ Shared Resources
 * Deploy 05 Hub Firewall
-* Deploy 06 LZ Spring Apps Standard
-* Deploy Pet Clinic Infrastructure
+* Deploy 06 LZ Spring Apps Enterprise
+* Deploy ACME Fitness Store Infrastructure
 
-After the above steps are successful, you will have a functioning landing zone and the Azure Spring App instance available. After the above, the workflow also runs the below build step to build and deploy the petclinic microservices in the Azure Spring Apps instance.
+After the above steps are successful, you will have a functioning landing zone and the Azure Spring App instance available. After the above, the workflow also runs the below build step to build and deploy the ACME Fitness microservices in the Azure Spring Apps instance.
 
-* Build and Deploy Pet Clinic Microservices
+* Build and Deploy ACME Fitness Microservices
 
-Make sure to keep the correct indentation for the steps if you make changes to the deploy.yaml file directly.
+Make sure to keep the correct indentation for the steps if you make changes to the deploy_enterprise.yaml file directly.
 YAML is very sensitive to indentation.
 
 ## [!TIP]
@@ -120,7 +129,7 @@ Commit and push your changes to your repository, and go to the `Actions` tab of 
 It should take a few minutes to complete.
 A successful run using github actions should look like below:
 
-![successful e2e run](../../../images/github_asa_successful_run.png)
+![successful e2e run](../../../images/asa_enterprise_successful.png)
 
 ## Testing the deployed application
 
@@ -128,8 +137,7 @@ Once your workflow is completed, let's make a quick test on our deployed apps.
 First we need to get the ingress URL by running the following command:
 
 ```bash
-    az spring app show -g rg-springlza-APPS -s spring-springlza-dev-o7o6 \
-    --name api-gateway --query "properties.url" --output tsv    
+    az spring gateway show -g rg-springent-APPS -s spring-springent-dev-z3rw --query "properties.url" --output tsv    
 ```
 
-Then we can use `curl` to test our applications using the above endpoint. This assumes that there's no Application Gateway and you would access your spring app using the spring apps ingress url for the api-gateway app instance. Since the applications are deployed in an internal only environment you would need to do the curl from a jumpbox or bastion host.
+Then we can use `curl` to test our applications using the above endpoint. This assumes that there's no Application Gateway and you would access your spring app using the spring apps ingress url for the Spring Cloud Gateway. Since the applications are deployed in an internal only environment you would need to do the curl from a jumpbox or bastion host.

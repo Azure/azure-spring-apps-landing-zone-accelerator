@@ -95,7 +95,9 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 
 8. [Cleanup](./08-cleanup.md)
 
-9. [E2E Deployment using GitHub Action](./09-e2e-githubaction.md)
+9. [E2E Deployment using GitHub Action for Azure Spring Apps Standard](./09-e2e-githubaction-standard.md)
+
+10. [E2E Deployment using GitHub Action for Azure Spring Apps Enterprise](./09-e2e-githubaction-enterprise.md)
 
 ## Known Issues
   - Please take the following actions before attempting to destroy this deployment.
@@ -112,15 +114,15 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 ## Special Notes for customers using Azure DevOps Pipelines
 Please note the expected key/state file name for each module.
 
-|Module | Key/State file name |
-|---|---|
-|02-Hub-Network              | hub-network             |         
-|03-LZ-Network               | lz-network              |
-|04-LZ-SharedResources       | lz-sharedresources      |
-|05-Hub-AzureFirewall        | hub-azurefirewall       |
-|05-Hub-BYO-Firewall-Routes  | hub-byo-firewall-routes |
-|06-LZ-SpringApps-Enterprise | lz-springapps-enterprise|
-|06-LZ-SpringApps-Standard   | lz-springapps-standard  |
-|07-LZ-AppGateway            | appgateway              |
+| Module                      | Key/State file name      |
+| --------------------------- | ------------------------ |
+| 02-Hub-Network              | hub-network              |
+| 03-LZ-Network               | lz-network               |
+| 04-LZ-SharedResources       | lz-sharedresources       |
+| 05-Hub-AzureFirewall        | hub-azurefirewall        |
+| 05-Hub-BYO-Firewall-Routes  | hub-byo-firewall-routes  |
+| 06-LZ-SpringApps-Enterprise | lz-springapps-enterprise |
+| 06-LZ-SpringApps-Standard   | lz-springapps-standard   |
+| 07-LZ-AppGateway            | appgateway               |
 
 
