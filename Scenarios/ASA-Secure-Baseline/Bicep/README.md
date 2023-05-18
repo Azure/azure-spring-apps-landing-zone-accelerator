@@ -1,33 +1,66 @@
-# Project
+# Azure Spring Apps Landing Zone Accelerator - VNet Injection Scenario for Bicep
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Accounting for Separation of Duties 
+While the code here is located in a single repo, the steps are segregated by section folder and are designed to mimic how an organization may break up the deployment of various Azure components across teams, into different code repos or have them run by different pipelines with specific credentials. 
 
-As the maintainer of this project, please make a few updates:
+## Bicep Parameter Files
+The repo contains a single parameters.json file in the Deployment folder. Resource names are all exposed as Bicep parameters with default values.  View `\Deployment\main.bicep` to see the complete list of resource names and additional parameters.  You can run the deployment as-is and accept the default resource names, or you can add override the values in the parameter.json file to values that correspond with your organization's naming convention.
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Prerequisites 
+1. Clone this repo, install or upgrade [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli), Ensure you have the latest [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install#azure-cli) by running `az bicep upgrade`
 
-## Contributing
+    ### To clone this repo
+    `git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git`
+    
+    ### To authenticate Azure CLI
+    `az login`
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+    ### To set a specific subscription
+    `az account list --output table`<br>
+    `az account set --subscription <name-of-subscription>`
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+2. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+    `az provider register --namespace 'Microsoft.AppPlatform'`
+    `az provider register --namespace 'Microsoft.ContainerService'`
+    `az provider register --namespace 'Microsoft.ServiceLinker'`
 
-## Trademarks
+4. Modify the variables within the parameters.json files as needed
+    ```json
+    # EXAMPLE - These correspond to the Azure tag key value pairs applied to all resources deployed as part of the landing zone.  You could inlcude environment information, team details, or other tags required by your organization.
+    
+    "tags": {
+            "value": {
+                "{YourFirstTag}": "{YourFirstTagValue}",
+                "{YourSecondTag}": "{YourSecondTagValue}",
+            ...
+        }
+    }
+    ```
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+## Deployment via PowerShell
+1. Define a local variable called _$location_ and set it to the value of the target region. i.e. `$location = 'eastus'`
+2. Define a local variable called _$namePrefix_ and set it to a value appropriate for your organization. i.e. `$namePrefix = 'myorg'`
+3. Execute _deploy_standard.ps1_ in the Deployment folder
+    1. You will be prompted for the admin password for the jumpbox VM.  This value will be stored within Key Vault for secure access at a later time.
+
+## Bringing your own Hub or Firewall
+If you have an existing network hub and/or firewall you can override the details of the hub and firewall in the `parameters.json` file and this script will use your existing resources.  Add the following values to the bottom of the `parameters.json` file:
+
+    ```json
+    "deployHub": {
+      "value": false
+    },
+    "hubVnetName": {
+      "value": "{name-of-your-hub-vnet}"
+    },
+    "hubVnetRgName": {
+      "value": "{name-of-resource-group-containing-your-hub-vnet}"
+    },
+    "deployFirewall": {
+      "value": false
+    },
+    "azureFirewallIp": {
+      "value": "{internal-ip-of-your-firewall}"
+    }
+    ```
