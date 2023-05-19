@@ -79,7 +79,7 @@ Then just like in the previous step, create a new secret in your repository name
 
 ![GitHub Secrets](../../../images/github_asa_secrets.png)
 
-## Modify variables in `deploy.yml`
+## Modify variables in `deploy_standard.yml`
 
 The workflow file can be found in your repository with the path [`.github/workflows/deploy_standard.yml`](../../../.github/workflows/deploy_standard.yml) :
 
