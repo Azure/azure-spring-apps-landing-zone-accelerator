@@ -7,10 +7,10 @@ permissions:
 
 env:
   # === Deploy Firewall ===:
-  SHOULD_DEPLOY_FIREWALL: false
+  DEPLOY_FIREWALL_ENTERPRISE: ${{ vars.DEPLOY_FIREWALL_ENTERPRISE }}
 
   # === Destroy All ==
-  SHOULD_DESTROY: true
+  DESTROY_ENTERPRISE: ${{ vars.DESTROY_ENTERPRISE }}
 
 
   # === Baseline Parameters ====:
@@ -19,17 +19,13 @@ env:
   ENVIRONMENT: ${{ vars.ENVIRONMENT_ENTERPRISE}}
 
   # === Spring Apps Service ===:
-  SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  JUMP_BOX_USERNAME: lzadmin
+  SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  JUMP_BOX_USERNAME: ${{ vars.JUMP_BOX_USERNAME}}
   JUMP_BOX_PASSWORD: ${{ secrets.JUMP_BOX_PASSWORD }}
   # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
   # Use this command to obtain:
   #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
   SRINGAPPS_SPN_OBJECT_ID: ${{ vars.SRINGAPPS_SPN_OBJECT_ID }}
-
-  # === Pet Clinic Required Settings ===:
-  MYSQL_ADMIN_USERNAME: sqlAdmin
-  MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
 
   # ==== Terraform Backend ===:
   TFSTATE_RG: ${{ vars.TFSTATE_RG }}
@@ -37,23 +33,23 @@ env:
   CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE }}
 
   # ==== Terraform Azure Login ===:
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }} 
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
 
 
 jobs:
   conditions:
     runs-on: ubuntu-latest
     outputs:
-      deploy_firewall: "${{ env.SHOULD_DEPLOY_FIREWALL }}"
-      destroy: "${{ env.SHOULD_DESTROY }}"
+      deploy_firewall: "${{ env.DEPLOY_FIREWALL_ENTERPRISE }}"
+      destroy: "${{ env.DESTROY_ENTERPRISE }}"
     steps:
       - name: echo
         run: |
-          echo ${{ env.SHOULD_DEPLOY_FIREWALL }} \
-          echo ${{ env.SHOULD_DESTROY }}
+          echo ${{ env.DEPLOY_FIREWALL_ENTERPRISE }} \
+          echo ${{ env.DESTROY_ENTERPRISE }}
   deploy_hub_network:
     name: Deploy 02 Hub Network
     needs: conditions
@@ -278,7 +274,7 @@ jobs:
       - name: Set az defaults
         run: | 
           az extension add --name spring
-          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+          az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }} 
           az configure --defaults group=${{env.SPRING_APPS_RESOURCE_GROUP}} spring=${{ env.SPRING_APPS_SERVICE_NAME }} location=${{ env.REGION }}
       - name: Update Gateway Routes
         if: needs.conditions.outputs.destroy == 'false'
@@ -292,7 +288,7 @@ jobs:
         uses: azure/spring-apps-deploy@v1
         if: needs.conditions.outputs.destroy == 'false'
         with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
           app-name: payment-service
@@ -308,7 +304,7 @@ jobs:
         uses: azure/spring-apps-deploy@v1
         if: needs.conditions.outputs.destroy == 'false'
         with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
           app-name: catalog-service
@@ -324,7 +320,7 @@ jobs:
         uses: azure/spring-apps-deploy@v1
         if: needs.conditions.outputs.destroy == 'false'
         with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
           app-name: order-service
@@ -335,7 +331,7 @@ jobs:
         uses: azure/spring-apps-deploy@v1
         if: needs.conditions.outputs.destroy == 'false'
         with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
           app-name: cart-service
@@ -347,7 +343,7 @@ jobs:
         uses: azure/spring-apps-deploy@v1
         if: needs.conditions.outputs.destroy == 'false'
         with:
-          azure-subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
           action: deploy
           service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
           app-name: frontend
@@ -368,7 +364,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Set Defaults
         run: |
-          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} 
+          az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }} 
           az configure --defaults group=${{env.SPRING_APPS_RESOURCE_GROUP}} spring=${{ env.SPRING_APPS_SERVICE_NAME }} location=${{ env.REGION }}
           az extension add --name spring
       - name: Remove Ip from API
