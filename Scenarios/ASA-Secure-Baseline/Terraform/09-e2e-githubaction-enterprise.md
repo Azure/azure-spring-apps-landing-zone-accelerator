@@ -26,27 +26,6 @@ It's a great way to automate your CI/CD pipelines, and it's free for public repo
 To set up GitHub Actions for deployment, we'll need to use the new workflow file in our repository.
 This file will contain the instructions for our CI/CD pipeline.
 
-## Setup secrets and variables
-
-We are using different secrets in our workflow: JUMP_BOX_PASSWORD and MYSQL_ADMIN_PASSWORD. Secrets in GitHub are encrypted and allow you to store sensitive information such as passwords or API keys, and use them in your workflows using the ${{ secrets.MY_SECRET }} syntax.
-
-In GitHub, secrets can be defined at three different levels:
-
-* Repository level: secrets defined at the repository level are available in all workflows of the repository.
-
-* Organization level: secrets defined at the organization level are available in all workflows of the GitHub organization.
-
-* Environment level: secrets defined at the environment level are available only in workflows referencing the specified environment.
-
-For this workshop, we’ll define our secrets at the repository level. To do so, go to the Settings tab of your repository, and select Secrets then Actions under it, in the left menu.
-
-Then select New repository secret and create secrets for JUMP_BOX_PASSWORD and MYSQL_ADMIN_PASSWORD.
-
-
-## [!TIP]
-
-You can also use the [GitHub CLI](https://cli.github.com) to define your secrets, using the command `gh secret set <MY_SECRET> -b"<SECRET_VALUE>" -R <repository_url>`
-
 ## Creating an Azure Service Principal
 
 In order to deploy our Landing Zone and application to Azure Spring Apps, we'll need to create an Azure Service Principal.
@@ -75,29 +54,71 @@ To create a new Service Principal, run the following commands:
     echo $AZURE_CREDENTIALS
     echo $SUBSCRIPTION_ID     
 ```
+In the next step we'll setup secrets in Github Actions to store $AZURE_CREDENTIALS securely for use by the workflow.
 
-Then just like in the previous step, create a new secret in your repository named `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`. You can copy paste these values from the AZURE_CREDENTIALS value returned in the cli. Also create another secret for  `AZURE_CREDENTIALS` and paste the value of the `AZURE_CREDENTIALS` variable as the secret value (make sure to _copy the entire JSon_).
+## Setup secrets and variables
 
-![GitHub Secrets](../../../images/github_asa_secrets.png)
+Secrets in GitHub are encrypted and allow you to store sensitive information such as passwords or API keys, and use them in your workflows using the ${{ secrets.MY_SECRET }} syntax.
 
-## Modify variables in `deploy_enterprise.yml`
+In GitHub, secrets and variables can be defined at three different levels:
 
-While still in the Actions Secrets and Variables settings select the Variables tab and create the following repository variables with your settings
+* Repository level: secrets defined at the repository level are available in all workflows of the repository.
 
-![GitHub Variables](../../../images/asa_github_variables_ent.png)
+* Organization level: secrets defined at the organization level are available in all workflows of the GitHub organization.
 
-* Create a repository variable for  `SRINGAPPS_SPN_OBJECT_ID` with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
+* Environment level: secrets defined at the environment level are available only in workflows referencing the specified environment.
+
+For this workshop, we’ll define our secrets and variables at the repository level. To do so, go to the Settings tab of your repository, and select Secrets and variables then Actions under it, in the left menu.
+
+## [!TIP]
+
+You can also use the [GitHub CLI](https://cli.github.com) to define your secrets, using the command `gh secret set <MY_SECRET> -b"<SECRET_VALUE>" -R <repository_url>`
+
+## Create Secrets for this workflow
+
+| Secret Name            | Value                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `JUMP_BOX_PASSWORD`    | Enter a strong password and store it securely for future use, possible in Azure Key Vault                     |
+| `MYSQL_ADMIN_PASSWORD` | Enter a strong password and store it securely for future use, possible in Azure Key Vault                     |
+| `AZURE_CREDENTIALS`    | Paste the value of the `AZURE_CREDENTIALS` variable as the secret value (make sure to _copy the entire JSon_) |
+| `AZURE_CLIENT_SECRET`  | You can copy paste these values from the AZURE_CREDENTIALS value returned in the cli.                         |
+
+The secrets tab should look like the following:
+![GitHub Secrets](../../../images/asa_actions_secrets.png)
+
+## Create variables for this workflow
+
+Switch to the Variables tab and create the following variables
+
+| Variable Name                | Value                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `AZURE_CLIENT_ID`            | Your tenant id can be found in Azure Active Directory                                                               |
+| `AZURE_SUBSCRIPTION_ID`      | Your subscription id                                                                                                |
+| `AZURE_TENANT_ID`            | Your Service Principal Client ID                                                                                    |
+| `STORAGEACCOUNTNAME`         | Storage Account for storing terraform state                                                                         |
+| `TFSTATE_RG`                 | Resource group where Storage Account is located for storing terraform state                                         |
+| `CONTAINERNAME_ENTERPRISE`   | COntainer in the Storage Account for storing terraform state                                                        |
+| `ENVIRONMENT_ENTERPRISE`     | Environment (Dev,Stage,Prod) for this deployment. Will be added to resource names                                   |
+| `NAME_PREFIX_ENTERPRISE`     | Name Prefix (springlza) for this deployment. Will be used to create resource names                                  |
+| `REGION_ENTERPRISE`          | Azure Region to deploy resources (eastus)                                                                           |
+| `DEPLOY_FIREWALL_ENTERPRISE` | Optionally deploy Azure firewall : true or false                                                                    |
+| `DESTROY_ENTERPRISE`         | Optionally destroy the resources : true or false                                                                    |
+| `SPRINGAPPS_SPN_OBJECT_ID`   | Object name for the Spring Apps built in service principle, see below for how to retreive the value for your tenate |
+
+
+The variables tab should look like the following:
+![GitHub variables](../../../images/asa_actions_variables.png)
+
+
+## Find the Object ID for Spring Apps Service Principal
+* Retrieve the `SPRINGAPPS_SPN_OBJECT_ID` with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
   
 You use the command below to obtain the value of the variable:
 
       az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-
-* Create repository variables for  TFSTATE_RG, STORAGEACCOUNTNAME and CONTAINERNAME_ENTERPRISE with the values to point to your Terraform backend.
   
-## Optionally deploy Azure Firewall
-  
-* You can also set the deploy_firewall and destroy values in [deploy_enterprise.yaml](../../../.github/workflows/deploy_enterprise.yml) depending on your usecase.
 
+## Where to find the workflow `deploy_enterprise.yml`
 The workflow file can be found in your repository with the path [`.github/workflows/deploy_enterprise.yml`](../../../.github/workflows/deploy_enterprise.yml) :
 
 This workflow will be triggered every time a commit is pushed to the `main` branch.

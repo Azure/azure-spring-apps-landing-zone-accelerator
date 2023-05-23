@@ -25,7 +25,7 @@ env:
   # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
   # Use this command to obtain:
   #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-  SRINGAPPS_SPN_OBJECT_ID: ${{ vars.SRINGAPPS_SPN_OBJECT_ID }}
+  SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID }}
 
   # === Pet Clinic Required Settings ===:
   MYSQL_ADMIN_USERNAME: ${{ vars.MYSQL_ADMIN_USERNAME}}
@@ -97,7 +97,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
 
       - name: Terraform Apply
         run: terraform apply my.plan
@@ -134,7 +134,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
       - name: Terraform Output
@@ -175,7 +175,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}" \
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}" \
           -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
           -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
       - name: Terraform Apply
@@ -214,7 +214,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         if: needs.conditions.outputs.deploy_firewall == 'true'
         run: terraform apply my.plan
@@ -252,7 +252,7 @@ jobs:
                 -var="location=${{ env.REGION }}" \
                 -var="name_prefix=${{ env.NAME_PREFIX }}" \
                 -var="environment=${{ env.ENVIRONMENT }}" \
-                -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+                -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
             - name: Terraform Apply
               run: terraform apply my.plan
             - name: Terraform Output
@@ -459,7 +459,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_hub_firewall:
@@ -492,7 +492,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_lz_shared:
@@ -525,7 +525,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}" \
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}" \
           -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
           -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
       - name: Terraform Apply
@@ -560,7 +560,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_hub_network:
@@ -593,6 +593,6 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
