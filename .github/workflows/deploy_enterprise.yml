@@ -1,5 +1,5 @@
 name: Deploy Azure Spring Apps Enterprise with ACME Fitness
-on: [push]
+on: [workflow_dispatch]
 
 permissions:
   id-token: write
