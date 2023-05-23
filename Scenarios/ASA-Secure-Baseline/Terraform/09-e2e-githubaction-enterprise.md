@@ -76,12 +76,11 @@ You can also use the [GitHub CLI](https://cli.github.com) to define your secrets
 
 ## Create Secrets for this workflow
 
-| Secret Name            | Value                                                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `JUMP_BOX_PASSWORD`    | Enter a strong password and store it securely for future use, possible in Azure Key Vault                     |
-| `MYSQL_ADMIN_PASSWORD` | Enter a strong password and store it securely for future use, possible in Azure Key Vault                     |
-| `AZURE_CREDENTIALS`    | Paste the value of the `AZURE_CREDENTIALS` variable as the secret value (make sure to _copy the entire JSon_) |
-| `AZURE_CLIENT_SECRET`  | You can copy paste these values from the AZURE_CREDENTIALS value returned in the cli.                         |
+| Secret Name           | Value                                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `JUMP_BOX_PASSWORD`   | Enter a strong password and store it securely for future use, possible in Azure Key Vault                     |
+| `AZURE_CREDENTIALS`   | Paste the value of the `AZURE_CREDENTIALS` variable as the secret value (make sure to _copy the entire JSon_) |
+| `AZURE_CLIENT_SECRET` | You can copy paste these values from the AZURE_CREDENTIALS value returned in the cli.                         |
 
 The secrets tab should look like the following:
 ![GitHub Secrets](../../../images/asa_actions_secrets.png)
