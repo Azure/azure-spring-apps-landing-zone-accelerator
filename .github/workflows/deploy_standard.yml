@@ -7,19 +7,19 @@ permissions:
 
 env:
   # === Deploy Firewall ===:
-  DEPLOY_FIREWALL_STANDARD: ${{ vars.DEPLOY_FIREWALL_STANDARD}}
+  DEPLOY_FIREWALL_STANDARD: false
 
   # === Destroy All ==
-  DESTROY_STANDARD: ${{ vars.DESTROY_STANDARD }}
+  DESTROY_STANDARD: false
 
   # === Baseline Parameters ====:
-  REGION: ${{ vars.REGION_STANDARD }}
-  NAME_PREFIX: ${{ vars.NAME_PREFIX_STANDARD }}
-  ENVIRONMENT: ${{ vars.ENVIRONMENT_STANDARD }}
+  REGION: eastus
+  NAME_PREFIX: springlza
+  ENVIRONMENT: dev
 
   # === Spring Apps Service ===:
   SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-  JUMP_BOX_USERNAME: ${{ vars.JUMP_BOX_USERNAME }}
+  JUMP_BOX_USERNAME: ltzadmin
   JUMP_BOX_PASSWORD: ${{ secrets.JUMP_BOX_PASSWORD }}
   
   # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
@@ -28,7 +28,7 @@ env:
   SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID }}
 
   # === Pet Clinic Required Settings ===:
-  MYSQL_ADMIN_USERNAME: ${{ vars.MYSQL_ADMIN_USERNAME}}
+  MYSQL_ADMIN_USERNAME: mySqlAdmin
   MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
 
   # ==== Terraform Backend ===:
@@ -64,10 +64,27 @@ jobs:
       deploy_firewall: "${{ env.DEPLOY_FIREWALL_STANDARD }}"
       destroy: "${{ env.DESTROY_STANDARD }}"
     steps:
-      - name: echo
-        run: |
-          echo ${{ env.DEPLOY_FIREWALL_STANDARD }} \
-          echo ${{ env.DESTROY_STANDARD }}
+      - name: Deploy Firewall Override
+        if: ${{vars.DEPLOY_FIREWALL_STANDARD != 0 }} 
+        run: echo "DEPLOY_FIREWALL_STANDARD=${{ vars.DEPLOY_FIREWALL_STANDARD }}" >> $GITHUB_ENV
+      - name: Destroy Override DESTROY_STANDARD
+        if: ${{vars.DESTROY_STANDARD != 0 }} 
+        run: echo "DESTROY_STANDARD=${{ vars.DESTROY_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Deployment Region
+        if: ${{vars.REGION_STANDARD != 0 }} 
+        run: echo "REGION_STANDARD=${{ vars.REGION_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Name Prefix
+        if: ${{vars.NAME_PREFIX_STANDARD != 0 }} 
+        run: echo "NAME_PREFIX_STANDARD=${{ vars.NAME_PREFIX_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Environment Token
+        if: ${{vars.ENVIRONMENT_STANDARD != 0 }} 
+        run: echo "ENVIRONMENT=${{ vars.ENVIRONMENT_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Jump Box Username
+        if: ${{vars.JUMP_BOX_USERNAME != 0 }} 
+        run: echo "JUMP_BOX_USERNAME=${{ vars.JUMP_BOX_USERNAME }}" >> $GITHUB_ENV
+      - name: Override MySQl Admin Username
+        if: ${{vars.MYSQL_ADMIN_USERNAME != 0 }} 
+        run: echo "MYSQL_ADMIN_USERNAME=${{ vars.MYSQL_ADMIN_USERNAME }}" >> $GITHUB_ENV
   deploy_hub_network:
     name: Deploy 02 Hub Network
     needs: conditions
