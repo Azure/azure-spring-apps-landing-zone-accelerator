@@ -72,10 +72,10 @@ jobs:
         run: echo "DESTROY_STANDARD=${{ vars.DESTROY_STANDARD }}" >> $GITHUB_ENV
       - name: Override Deployment Region
         if: ${{vars.REGION_STANDARD != 0 }} 
-        run: echo "REGION_STANDARD=${{ vars.REGION_STANDARD }}" >> $GITHUB_ENV
+        run: echo "REGION=${{ vars.REGION_STANDARD }}" >> $GITHUB_ENV
       - name: Override Name Prefix
         if: ${{vars.NAME_PREFIX_STANDARD != 0 }} 
-        run: echo "NAME_PREFIX_STANDARD=${{ vars.NAME_PREFIX_STANDARD }}" >> $GITHUB_ENV
+        run: echo "NAME_PREFIX=${{ vars.NAME_PREFIX_STANDARD }}" >> $GITHUB_ENV
       - name: Override Environment Token
         if: ${{vars.ENVIRONMENT_STANDARD != 0 }} 
         run: echo "ENVIRONMENT=${{ vars.ENVIRONMENT_STANDARD }}" >> $GITHUB_ENV
