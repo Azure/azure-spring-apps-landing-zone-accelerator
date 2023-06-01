@@ -63,6 +63,7 @@ jobs:
     outputs:
       deploy_firewall: "${{ env.DEPLOY_FIREWALL_STANDARD }}"
       destroy: "${{ env.DESTROY_STANDARD }}"
+      name_prefix: ${{ env.NAME_PREFIX}}
     steps:
       - name: Deploy Firewall Override
         if: ${{vars.DEPLOY_FIREWALL_STANDARD != 0 }} 
@@ -89,6 +90,8 @@ jobs:
     name: Deploy 02 Hub Network
     needs: conditions
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
