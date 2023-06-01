@@ -1,5 +1,5 @@
 name: Deploy to Azure Spring Apps Standard with Petclinic
-on: [push,workflow_dispatch]
+on: [workflow_dispatch]
 
 permissions:
   id-token: write
@@ -304,8 +304,6 @@ jobs:
               run: |
                 echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
                 echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
-      
-
   deploy_pet_clinic_infra:
     name: Deploy Pet Clinic Infrastructure
     needs: [deploy_lz_standard, deploy_lz_shared, deploy_lz_network, conditions]
