@@ -64,6 +64,10 @@ jobs:
       deploy_firewall: "${{ env.DEPLOY_FIREWALL_STANDARD }}"
       destroy: "${{ env.DESTROY_STANDARD }}"
       name_prefix: ${{ env.NAME_PREFIX}}
+      environment: ${{ env.ENVIRONMENT}}
+      region: ${{env.REGION}}
+      jumpbox_username: ${{ env.JUMP_BOX_USERNAME}}
+      mysql_admin_name: ${{env.MYSQL_ADMIN_USERNAME}}
     steps:
       - name: Deploy Firewall Override
         if: ${{vars.DEPLOY_FIREWALL_STANDARD != 0 }} 
@@ -92,6 +96,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
@@ -125,6 +131,11 @@ jobs:
     needs: [deploy_hub_network, conditions]
     name: Deploy 03 LZ Network
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+
     outputs:
       spoke_vnet_name: ${{ steps.output.outputs.spoke_vnet_name }}
       spoke_rg: ${{ steps.output.outputs.spoke_rg }}
@@ -168,6 +179,11 @@ jobs:
     needs: [deploy_lz_network, conditions]
     name: Deploy 04 LZ Shared Resources
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      JUMP_BOX_USERNAME: ${{ needs.conditions.outputs.jumpbox_username}}
     outputs:
       shared_rg: ${{ steps.output.outputs.shared_rg }}
     defaults:
@@ -209,6 +225,10 @@ jobs:
     needs: [deploy_hub_network, deploy_lz_shared, conditions]
     name: Deploy 05 Hub Firewall
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
@@ -244,6 +264,10 @@ jobs:
             [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
           name: Deploy 06 LZ Spring Apps Standard
           runs-on: ubuntu-latest
+          env:
+            NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+            ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+            REGION: ${{ needs.conditions.outputs.region}}
           outputs:
             spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
             spring_apps_rg: ${{ steps.output.outputs.spring_apps_rg }}
@@ -286,6 +310,11 @@ jobs:
     name: Deploy Pet Clinic Infrastructure
     needs: [deploy_lz_standard, deploy_lz_shared, deploy_lz_network, conditions]
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/sample-apps/petclinic/terraform
@@ -419,6 +448,11 @@ jobs:
       ]
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/sample-apps/petclinic/terraform
@@ -454,6 +488,11 @@ jobs:
     name: Destroy 06 LZ Spring Apps Standard
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
@@ -487,6 +526,11 @@ jobs:
     name: Destroy 05 Hub Firewall
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
@@ -520,6 +564,11 @@ jobs:
     name: Destroy 04 LZ Shared Resources
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      JUMP_BOX_USERNAME: ${{needs.conditions.outputs.jumpbox_username}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
@@ -555,6 +604,10 @@ jobs:
     name: Destroy 03 LZ Network
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
@@ -588,6 +641,10 @@ jobs:
     needs: [destroy_lz_network, conditions]
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
