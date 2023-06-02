@@ -19,4 +19,4 @@ else {
 
 $principalId = (az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv)
 
-az deployment sub create --name "$($timeStamp)-$(Split-Path -Path $PWD -Leaf)" --location $location --template-file "main.bicep" --parameters parameters.json location=$location namePrefix=$namePrefix principalId=$principalId
+az deployment sub create --name "$($timeStamp)-$(Split-Path -Path $PWD -Leaf)" --location $location --template-file "../main.bicep" --parameters "../main.parameters.json" location=$location namePrefix=$namePrefix principalId=$principalId
