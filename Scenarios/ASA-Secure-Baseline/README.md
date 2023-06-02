@@ -39,4 +39,4 @@ Pick one of the IaC options below and follow the instructions to deploy the Azur
 
 :arrow_forward: [Terraform](./Terraform)
 
-:arrow_forward: [Bicep](./Bicep) (coming soon)
+:arrow_forward: [Bicep](./Bicep)
