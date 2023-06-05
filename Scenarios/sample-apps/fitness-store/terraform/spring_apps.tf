@@ -83,6 +83,19 @@ resource "azurerm_spring_cloud_configuration_service" "asa_config_svc" {
   }
 }
 
+# Configure Tanzu Build Service for ASA
+resource "azurerm_spring_cloud_builder" "asa_builder" {
+  name                    = "no-bindings-builder"
+  spring_cloud_service_id = data.azurerm_spring_cloud_service.sc_enterprise.id
+  build_pack_group {
+    name           = "default"
+    build_pack_ids = ["tanzu-buildpacks/nodejs", "tanzu-buildpacks/dotnet-core", "tanzu-buildpacks/go", "tanzu-buildpacks/python"]
+  }
+  stack {
+    id      = "io.buildpacks.stacks.bionic"
+    version = "full"
+  }
+}
 # Create ASA Apps Service
 resource "azurerm_spring_cloud_app" "asa_app_service" {
   name = lookup(zipmap(var.asa_apps,
