@@ -56,7 +56,7 @@ You can also use the [GitHub CLI](https://cli.github.com) to define your secrets
 The secrets tab should look like the following:
 ![GitHub Secrets](../../../images/asa_actions_secrets.png)
 
-## Create variables for this workflow
+## Create required variables for this workflow
 
 Switch to the Variables tab and create the following variables
 
@@ -68,16 +68,23 @@ Switch to the Variables tab and create the following variables
 | `STORAGEACCOUNTNAME`       | Storage Account for storing terraform state                                                                         |
 | `TFSTATE_RG`               | Resource group where Storage Account is located for storing terraform state                                         |
 | `CONTAINERNAME_STANDARD`   | COntainer in the Storage Account for storing terraform state                                                        |
-| `ENVIRONMENT_STANDARD`     | Environment (Dev,Stage,Prod) for this deployment. Will be added to resource names                                   |
-| `NAME_PREFIX_STANDARD`     | Name Prefix (springlza) for this deployment. Will be used to create resource names                                  |
-| `REGION_STANDARD`          | Azure Region to deploy resources (eastus)                                                                           |
-| `DEPLOY_FIREWALL_STANDARD` | Optionally deploy Azure firewall : true or false                                                                    |
-| `DESTROY_STANDARD`         | Optionally destroy the resources : true or false                                                                    |
 | `SPRINGAPPS_SPN_OBJECT_ID` | Object name for the Spring Apps built in service principle, see below for how to retreive the value for your tenate |
 
 
-The variables tab should look like the following:
-![GitHub variables](../../../images/asa_actions_variables.png)
+The variables tab should look similar to the following:
+![GitHub Variables](../../../images/asa_actions_variables_standard.png)
+
+## Optional Variables 
+
+Optionally you may set the following variables to control the behavoir of the workflow. 
+
+| Variable Name              | Value                                                                              | Default Value |
+| -------------------------- | ---------------------------------------------------------------------------------- | ------------- |
+| `ENVIRONMENT_STANDARD`     | Environment (Dev,Stage,Prod) for this deployment. Will be added to resource names  | dev           |
+| `NAME_PREFIX_STANDARD`     | Name Prefix (springlza) for this deployment. Will be used to create resource names | springlza     |
+| `REGION_STANDARD`          | Azure Region to deploy resources (eastus)                                          | eastus        |
+| `DEPLOY_FIREWALL_STANDARD` | Optionally deploy Azure firewall : true or false                                   | false         |
+| `DESTROY_STANDARD`         | Optionally destroy the resources : true or false                                   | false         |
 
 
 ## Find the Object ID for Spring Apps Service Principal
