@@ -326,7 +326,6 @@ jobs:
           package: ${{ github.workspace }}/fitness-store/apps/acme-payment
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
-          environment-variables: -SPRING_PROFILES_ACTIVE passwordless
           build-env: "-BP_JVM_VERSION 17"
           config-file-patterns: payment
 
@@ -342,7 +341,6 @@ jobs:
           package: ${{ github.workspace }}/fitness-store/apps/acme-catalog
           jvm-options: -Xms2048m -Xmx2048m
           runtime-version: Java_17
-          environment-variables: "-SPRING_DATASOURCE_AZURE_PASSWORDLESSENABLED true"
           build-env: "-BP_JVM_VERSION 17"
           config-file-patterns: catalog
 
