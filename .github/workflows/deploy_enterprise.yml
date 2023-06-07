@@ -10,7 +10,7 @@ env:
   DEPLOY_FIREWALL_ENTERPRISE: false
 
   # === Destroy All ==
-  DESTROY_ENTERPRISE: true
+  DESTROY_ENTERPRISE: false
 
 
   # === Baseline Parameters ====:
