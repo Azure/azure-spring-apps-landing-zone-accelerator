@@ -5,13 +5,13 @@
 
 
 resource "azurerm_role_assignment" "sc_apps_route_owner" {
-  scope                   = azurerm_route_table.default_apps_route.id
-  role_definition_name    = "Owner"
-  principal_id            = var.SRINGAPPS_SPN_OBJECT_ID
+  scope                = azurerm_route_table.default_apps_route.id
+  role_definition_name = "Owner"
+  principal_id         = var.SPRINGAPPS_SPN_OBJECT_ID
 }
 
 resource "azurerm_role_assignment" "sc_runtime_route_owner" {
-  scope                   =  azurerm_route_table.default_runtime_route.id
-  role_definition_name    = "Owner"
-  principal_id            = var.SRINGAPPS_SPN_OBJECT_ID
+  scope                = azurerm_route_table.default_runtime_route.id
+  role_definition_name = "Owner"
+  principal_id         = var.SPRINGAPPS_SPN_OBJECT_ID
 }

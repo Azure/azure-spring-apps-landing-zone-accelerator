@@ -9,12 +9,12 @@ This repository provides packaged guidance for customer scenarios, reference arc
 ## Enterprise-Scale Architecture
 
 The enterprise architecture is broken down into key design areas, where you can find the links to each at:
-| Design Area|Considerations and Recommendations|
-|:--------------:|:--------------:|
-| Identity and Access Management|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/identity-and-access-management)
-| Network Topology and Connectivity|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/network-topology-and-connectivity)
-| Management and Monitoring|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/management)
-| Security, Governance, and Compliance|[Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/security)
+|             Design Area              |                                                                      Considerations and Recommendations                                                                      |
+| :----------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|    Identity and Access Management    |  [Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/identity-and-access-management)   |
+|  Network Topology and Connectivity   | [Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/network-topology-and-connectivity) |
+|      Management and Monitoring       |            [Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/management)             |
+| Security, Governance, and Compliance |             [Design Considerations and Recommendations](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/app-platform/spring-apps/security)              |
 
 ## Enterprise-Scale Reference Implementation
 
@@ -65,10 +65,10 @@ Pick the below scenario to get started on a reference implementation.
 :arrow_forward: [Azure Spring Apps Secure Baseline](/Scenarios/ASA-Secure-Baseline/README.md)
 
 Deployment Details:
-| Deployment Methodology | GitHub Actions
-|--------------|--------------|
-|Terraform|[Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction.md)|
-|Bicep|Power shell available, GitHub Actions Coming soon|
+| Deployment Methodology | GitHub Actions                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-standard.md) |
+| Bicep                  | Power shell available, GitHub Actions Coming soon                                      |
 
 ## Got a feedback
 Please leverage issues if you have any feedback or request on how we can improve on this repository.
