@@ -1,1 +1,110 @@
 # ADO Pipeline
+name: Azure Springs Apps 
+
+trigger: none
+
+variables:
+  - group: "Standard Deployment Configuration"
+  - group: "Applications"
+  - name: apiGatewayJar
+    value: "spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar"
+  - name: adminServerJar
+    value: "spring-petclinic-admin-server/target/spring-petclinic-admin-server-3.0.1.jar"
+  - name: customersServiceJar
+    value: "spring-petclinic-customers-service/target/spring-petclinic-customers-service-3.0.1.jar"
+  - name: vetsServiceJar
+    value: "spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar" 
+  - name: visitsServiceJar
+    value: "spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar" 
+
+jobs:
+  - job: deploy-hub-network
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: deploy-spoke-network
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: deploy-shared-resources
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: deploy-hub-firewall
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: deploy-standard-sa
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: deploy-pet-clinic-infra
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: deploy-and-deploy-pet-clinic-ms
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: destroy-pet-clinic-infra
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: destroy-spoke-infra
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: destroy-hub-firewall
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: destroy-shared-resources
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: destroy-spoke-network
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+  - job: destroy-hub-network
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
