@@ -18,7 +18,7 @@ variables:
     value: "spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar" 
 
 jobs:
-  - job: deploy-hub-network
+  - job: deploy_hub_network
     displayName: Deploy 02 Hub Network
     variables: 
       - name: workingDirectory
@@ -89,9 +89,9 @@ jobs:
           workingDirectory: $(workingDirectory)
           addSpnToEnvironment: true
 
-  # - job: deploy-spoke-network
+  # - job: deploy_spoke_network
   #   displayName: Deploy 03 LZ Network
-  #   dependsOn: [deploy-hub-network]
+  #   dependsOn: [deploy_hub_network]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network"
@@ -101,9 +101,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: deploy-shared-resources
+  # - job: deploy_shared_resources
   #   displayName: Deploy 04 LZ Shared Resources
-  #   dependsOn: [deploy-spoke-network]
+  #   dependsOn: [deploy_spoke_network]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources"
@@ -113,9 +113,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: deploy-hub-firewall
+  # - job: deploy_hub_firewall
   #   displayName: Deploy 05 Hub Firewall
-  #   dependsOn: [deploy-shared-resources, deploy-hub-network]
+  #   dependsOn: [deploy_shared_resources, deploy_hub_network]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall"
@@ -125,9 +125,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: deploy-standard-sa
+  # - job: deploy_standard_sa
   #   displayName: Deploy 06 LZ Spring Apps Standard
-  #   dependsOn: [deploy-hub-network, deploy-shared-resources, deploy-hub-firewall]
+  #   dependsOn: [deploy_hub_network, deploy_shared_resources, deploy_hub_firewall]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard"
@@ -137,9 +137,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: deploy-pet-clinic-infra
+  # - job: deploy_pet_clinic_infra
   #   displayName: Deploy Pet Clinic Infrastructure
-  #   dependsOn: [deploy-spoke-network, deploy-shared-resources, deploy-standard-sa]
+  #   dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_standard_sa]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/sample-apps/petclinic/terraform"
@@ -149,18 +149,18 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: build-and-deploy-pet-clinic-ms
+  # - job: build_and_deploy_pet_clinic_ms
   #   displayName: Build and Deploy Pet Clinic Microservices
-  #   dependsOn: [deploy-pet-clinic-infra, deploy-standard-sa ]
+  #   dependsOn: [deploy_pet_clinic_infra, deploy_standard_sa ]
   #   pool: 
   #     vmImage: 'ubuntu-latest'
 
   #   steps:
   #     - checkout: self
 
-  # - job: destroy-pet-clinic-infra
+  # - job: destroy_pet_clinic_infra
   #   displayName: Destroy Pet Clinic Infrastructure
-  #   dependsOn: [deploy-spoke-network, deploy-shared-resources, deploy-shared-resources, deploy-pet-clinic-infra, build-and-deploy-pet-clinic-ms]
+  #   dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_shared_resources, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/sample-apps/petclinic/terraform"
@@ -170,9 +170,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: destroy-spring-apps-standard
+  # - job: destroy_spring_apps_standard
   #   displayName: Destroy 06 LZ Spring Apps Standard
-  #   dependsOn: [destroy-pet-clinic-infra,  deploy-standard-sa]
+  #   dependsOn: [destroy_pet_clinic_infra,  deploy_standard_sa]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard"
@@ -184,7 +184,7 @@ jobs:
 
   # - job: destroy-hub-firewall
   #   displayName: Destroy 05 Hub Firewall
-  #   dependsOn: [destroy-spring-apps-standard]
+  #   dependsOn: [destroy_spring_apps_standard]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall"
@@ -194,7 +194,7 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: destroy-shared-resources
+  # - job: destroy_shared_resources
   #   displayName: Destroy 04 LZ Shared Resources
   #   dependsOn: [destroy-hub-firewall]
   #   variables: 
@@ -206,9 +206,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: destroy-spoke-network
+  # - job: destroy_spoke_network
   #   displayName: Destroy 03 LZ Network
-  #   dependsOn: [destroy-shared-resources]
+  #   dependsOn: [destroy_shared_resources]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network"
@@ -218,9 +218,9 @@ jobs:
   #   steps:
   #     - checkout: self
 
-  # - job: destroy-hub-network
+  # - job: destroy_hub_network
   #   displayName: Destroy 02 Hub Network
-  #   dependsOn: [destroy-spoke-network]
+  #   dependsOn: [destroy_spoke_network]
   #   variables: 
   #     - name: workingDirectory
   #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
