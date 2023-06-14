@@ -47,6 +47,7 @@ jobs:
         inputs:
           provider: 'azurerm'
           command: 'init'
+          workingDirectory: $(workingDirectory)
           backendServiceArm: $(azureServiceConnection)
           backendAzureRmResourceGroupName: $(terraformStateRg)
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
@@ -59,6 +60,7 @@ jobs:
         inputs:
           provider: 'azurerm'
           command: 'plan'
+          workingDirectory: $(workingDirectory)
           commandOptions: '-out main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
@@ -69,7 +71,8 @@ jobs:
         inputs:
           provider: 'azurerm'
           command: 'apply'
-          commandOptions: 'main.tfplan'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan -auto-approve'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       # - task: AzureCLI@2
       #   displayName: Terraform init
