@@ -28,8 +28,7 @@ jobs:
 
     steps:
       - checkout: self
-      - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@1
-        displayName: Install Terraform
+
       - task: AzureCLI@2
         displayName: Terraform credentials
         inputs:
@@ -43,51 +42,79 @@ jobs:
             echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
             echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
           addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'hub-network.tfstate'
 
-      - task: AzureCLI@2
-        displayName: Terraform init
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
         inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptLocation: inlineScript
-          scriptType: bash
-          inlineScript: |
-            set -eux  # fail on error
-            terraform init \
-              -backend-config=storage_account_name=$(stateStorageAccountName) \
-              -backend-config=container_name=$(stateStorageContainerName) \
-              -backend-config=key=hub-network.tfstate \
-              -backend-config=resource_group_name=$(terraformStateRg)
-          workingDirectory: $(workingDirectory)
-          addSpnToEnvironment: true
-      - task: AzureCLI@2
-        displayName: Terraform plan
+          provider: 'azurerm'
+          command: 'plan'
+          commandOptions: '-out main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptLocation: inlineScript
-          scriptType: bash
-          inlineScript: |
-            set -eux  # fail on error
-            terraform plan -out my.plan \
-              -var="state_sa_rg=$(terraformStateRg)" \
-              -var="state_sa_name=$(stateStorageAccountName)" \
-              -var="state_sa_container_name=$(stateStorageContainerName)" \
-              -var="location=$(region)" \
-              -var="name_prefix=$(namePrefix)" \
-              -var="environment=$(environment)" \
-              -var="SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId)"
-          workingDirectory: $(workingDirectory)
-          addSpnToEnvironment: true
-      - task: AzureCLI@2
-        displayName: Terraform apply
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptLocation: inlineScript
-          scriptType: bash
-          inlineScript: |
-            set -eux  # fail on error
-            terraform apply my.plan
-          workingDirectory: $(workingDirectory)
-          addSpnToEnvironment: true
+          provider: 'azurerm'
+          command: 'apply'
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+      # - task: AzureCLI@2
+      #   displayName: Terraform init
+      #   inputs:
+      #     azureSubscription: $(azureServiceConnection)
+      #     scriptLocation: inlineScript
+      #     scriptType: bash
+      #     inlineScript: |
+      #       set -eux  # fail on error
+      #       terraform init \
+      #         -backend-config=storage_account_name=$(stateStorageAccountName) \
+      #         -backend-config=container_name=$(stateStorageContainerName) \
+      #         -backend-config=key=hub-network.tfstate \
+      #         -backend-config=resource_group_name=$(terraformStateRg)
+      #     workingDirectory: $(workingDirectory)
+      #     addSpnToEnvironment: true
+      # - task: AzureCLI@2
+      #   displayName: Terraform plan
+      #   inputs:
+      #     azureSubscription: $(azureServiceConnection)
+      #     scriptLocation: inlineScript
+      #     scriptType: bash
+      #     inlineScript: |
+      #       set -eux  # fail on error
+      #       terraform plan -out my.plan \
+      #         -var="state_sa_rg=$(terraformStateRg)" \
+      #         -var="state_sa_name=$(stateStorageAccountName)" \
+      #         -var="state_sa_container_name=$(stateStorageContainerName)" \
+      #         -var="location=$(region)" \
+      #         -var="name_prefix=$(namePrefix)" \
+      #         -var="environment=$(environment)" \
+      #         -var="SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId)"
+      #     workingDirectory: $(workingDirectory)
+      #     addSpnToEnvironment: true
+      # - task: AzureCLI@2
+      #   displayName: Terraform apply
+      #   inputs:
+      #     azureSubscription: $(azureServiceConnection)
+      #     scriptLocation: inlineScript
+      #     scriptType: bash
+      #     inlineScript: |
+      #       set -eux  # fail on error
+      #       terraform apply my.plan
+      #     workingDirectory: $(workingDirectory)
+      #     addSpnToEnvironment: true
 
   # - job: deploy_spoke_network
   #   displayName: Deploy 03 LZ Network
