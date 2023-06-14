@@ -124,6 +124,7 @@ jobs:
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
+        name: terraformApply
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
@@ -132,6 +133,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
           outputFormat: default
+
       - powershell: |
           $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
           $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
