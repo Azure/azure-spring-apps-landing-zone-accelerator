@@ -1,5 +1,5 @@
 # ADO Pipeline
-name: Azure Springs Apps 
+name: Azure Springs Apps LZA Deployment
 
 trigger: none
 
