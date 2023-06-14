@@ -24,6 +24,52 @@ jobs:
 
     steps:
       - checkout: self
+      - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@1
+        displayName: Install Terraform
+      - task: AzureCLI@1
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: ${{ parameters.TerraformEnvironmentServiceConnection }}
+          scriptLocation: inlineScript
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$()"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$()"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+
+      - task: AzureCLI@1
+        displayName: Terraform init
+        inputs:
+          azureSubscription: ${{ parameters.TerraformBackendServiceConnection }}
+          scriptLocation: inlineScript
+          inlineScript: |
+            set -eux  # fail on error
+            terraform init \
+              -backend-config=storage_account_name=$() \
+              -backend-config=container_name=$() \
+              -backend-config=key=$().tfstate \
+              -backend-config=resource_group_name=$()
+          workingDirectory: $()
+          addSpnToEnvironment: true
+      - task: AzureCLI@1
+        displayName: Terraform plan
+        inputs:
+          azureSubscription: ${{ parameters.TerraformBackendServiceConnection }}
+          scriptLocation: inlineScript
+          inlineScript: |
+            set -eux  # fail on error
+            terraform plan -out my.plan \
+              -var="state_sa_rg=$()" \
+              -var="state_sa_name=$()" \
+              -var="state_sa_container_name=$()" \
+              -var="location=$()" \
+              -var="name_prefix=$()" \
+              -var="environment=$()" \
+              -var="SPRINGAPPS_SPN_OBJECT_ID=$()"
+          workingDirectory: $()
+          addSpnToEnvironment: true
 
   - job: deploy-spoke-network
     pool: 
