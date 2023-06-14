@@ -61,7 +61,7 @@ jobs:
           provider: 'azurerm'
           command: 'plan'
           workingDirectory: $(workingDirectory)
-          commandOptions: '-out main.tfplan'
+          commandOptions: '-out main.tfplan -var="location=$(region) -var="name_prefix=$(namePrefix) -var="environment=$(environment)" -var="SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId)"'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
