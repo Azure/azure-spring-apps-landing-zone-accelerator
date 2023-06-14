@@ -35,7 +35,7 @@ jobs:
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
-          scriptType: ps
+          scriptType: bash
           inlineScript: |
             set -eu
             echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
