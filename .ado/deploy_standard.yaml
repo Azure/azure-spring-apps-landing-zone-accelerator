@@ -72,7 +72,7 @@ jobs:
           provider: 'azurerm'
           command: 'apply'
           workingDirectory: $(workingDirectory)
-          commandOptions: 'main.tfplan -auto-approve'
+          commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       # - task: AzureCLI@2
       #   displayName: Terraform init
