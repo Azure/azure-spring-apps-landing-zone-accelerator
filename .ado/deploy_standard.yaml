@@ -77,7 +77,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       - task: TerraformTaskV3@3
-        name: terraformOutput
+        name: terraformOutputs
         displayName: Create Terraform Outputs
         inputs:
           provider: 'azurerm'
@@ -88,7 +88,7 @@ jobs:
           outputTo: file
 
       - powershell: |
-          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput = Get-Content "$(terraformOutputs.jsonOutputVariablesPath)" | ConvertFrom-Json
           $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
         name: terraformOutput
         displayName: Read terraform outputs
@@ -151,7 +151,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       - task: TerraformTaskV3@3
-        name: terraformOutput
+        name: terraformOutputs
         displayName: Create Terraform Outputs
         inputs:
           provider: 'azurerm'
@@ -162,7 +162,7 @@ jobs:
           outputTo: file
 
       - powershell: |
-          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput = Get-Content "$(terraformOutputs.jsonOutputVariablesPath)" | ConvertFrom-Json
           $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
         name: terraformOutput
         displayName: Read terraform outputs
@@ -226,7 +226,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       - task: TerraformTaskV3@3
-        name: terraformOutput
+        name: terraformOutputs
         displayName: Create Terraform Outputs
         inputs:
           provider: 'azurerm'
@@ -237,7 +237,7 @@ jobs:
           outputTo: file
 
       - powershell: |
-          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput = Get-Content "$(terraformOutputs.jsonOutputVariablesPath)" | ConvertFrom-Json
           $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
         name: terraformOutput
         displayName: Read terraform outputs
@@ -300,7 +300,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       - task: TerraformTaskV3@3
-        name: terraformOutput
+        name: terraformOutputs
         displayName: Create Terraform Outputs
         inputs:
           provider: 'azurerm'
@@ -311,7 +311,7 @@ jobs:
           outputTo: file
 
       - powershell: |
-          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput = Get-Content "$(terraformOutputs.jsonOutputVariablesPath)" | ConvertFrom-Json
           $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
         name: terraformOutput
         displayName: Read terraform outputs
@@ -375,7 +375,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
       - task: TerraformTaskV3@3
-        name: terraformOutput
+        name: terraformOutputs
         displayName: Create Terraform Outputs
         inputs:
           provider: 'azurerm'
@@ -386,7 +386,7 @@ jobs:
           outputTo: file
 
       - powershell: |
-          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput = Get-Content "$(terraformOutputs.jsonOutputVariablesPath)" | ConvertFrom-Json
           $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
         name: terraformOutput
         displayName: Read terraform outputs
