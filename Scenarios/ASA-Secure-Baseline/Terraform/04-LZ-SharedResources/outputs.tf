@@ -9,7 +9,3 @@ output "law_name" {
 output "PASSWORD_NOTICE" {
   value = local.password_notice
 }
-
-output "jump_host_name" {
-  value = azurerm_virtual_machine.jump_host.name
-}
