@@ -14,7 +14,7 @@ environment = "dev"
 # Use this command to obtain:
 #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
 
-SRINGAPPS_SPN_OBJECT_ID = "77e44c53-4911-427e-83c2-e2a52f569dee"
+SRINGAPPS_SPN_OBJECT_ID = "<change this>"
 
 # tags = { 
 #    project = "ASA-Accelerator"
@@ -27,9 +27,9 @@ SRINGAPPS_SPN_OBJECT_ID = "77e44c53-4911-427e-83c2-e2a52f569dee"
 ##################################################
 
 # Deployment state storage information
-state_sa_name           = "jeffdevopssa"
-state_sa_rg             = "devops-rg"
-state_sa_container_name = "springapps-ent"
+state_sa_name           = "<change this>"
+state_sa_rg             = "<change this>"
+state_sa_container_name = "<change this>"
 
 ##################################################
 ## 02 Hub Virtual Network
