@@ -698,7 +698,7 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
   
-  - job: destroy-hub-firewall
+  - job: destroy_hub_firewall
     displayName: Destroy 05 Hub Firewall
     dependsOn: [destroy_spring_apps_standard]
     variables: 
@@ -758,7 +758,7 @@ jobs:
 
   - job: destroy_shared_resources
     displayName: Destroy 04 LZ Shared Resources
-    dependsOn: [destroy-hub-firewall]
+    dependsOn: [destroy_hub_firewall]
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources"
@@ -813,6 +813,7 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
+
   - job: destroy_spoke_network
     displayName: Destroy 03 LZ Network
     dependsOn: [destroy_shared_resources]
