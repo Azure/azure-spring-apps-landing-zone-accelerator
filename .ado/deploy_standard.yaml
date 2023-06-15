@@ -316,17 +316,17 @@ jobs:
       - name: workingDirectory
         value:  "Scenarios/sample-apps/petclinic/terraform"
       - name: spring_apps_service_name 
-        value: dependencies.deploy_standard_sa.outputs['terraformApply.spring_apps_service_name']
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformApply.spring_apps_service_name'] ]
       - name: spring_apps_rg 
-        value: dependencies.deploy_standard_sa.outputs['terraformApply.spring_apps_service_name']
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformApply.spring_apps_service_name'] ]
       - name: spoke_rg 
-        value: dependencies.deploy_spoke_network.outputs['terraformApply.spoke_rg']
+        value: $[ dependencies.deploy_spoke_network.outputs['terraformApply.spoke_rg'] ]
       - name: spoke_vnet_name 
-        value: dependencies.deploy_spoke_network.outputs['terraformApply.spoke_vnet_name']
+        value: $[ dependencies.deploy_spoke_network.outputs['terraformApply.spoke_vnet_name'] ]
       - name: private_dns_rg 
-        value: dependencies.deploy_spoke_network.outputs['terraformApply.private_dns_rg']
+        value: $[ dependencies.deploy_spoke_network.outputs['terraformApply.private_dns_rg'] ]
       - name: shared_rg 
-        value: dependencies.deploy_shared_resources.outputs['terraformApply.shared_rg']
+        value: $[ dependencies.deploy_shared_resources.outputs['terraformApply.shared_rg'] ]
     pool: 
       vmImage: 'ubuntu-latest'
 
