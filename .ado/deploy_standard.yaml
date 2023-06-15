@@ -400,7 +400,7 @@ jobs:
       - name: spring_apps_service_name 
         value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
       - name: spring_apps_rg 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_rg'] ]
       - name: spoke_rg 
         value: $[ dependencies.deploy_spoke_network.outputs['terraformOutput.spoke_rg'] ]
       - name: spoke_vnet_name 
