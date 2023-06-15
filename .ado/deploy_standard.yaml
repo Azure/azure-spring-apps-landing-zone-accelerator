@@ -372,7 +372,7 @@ jobs:
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
         name: terraformApply
-        condition: eq(variables['terraformPlan.changesPresent'], 'true') && eq(variables['deployFirewall'], 'true')
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
           command: 'apply'
