@@ -109,7 +109,7 @@ jobs:
           backendAzureRmResourceGroupName: $(terraformStateRg)
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
           backendAzureRmContainerName: $(stateStorageContainerName)
-          backendAzureRmKey: 'spoke-network.tfstate'
+          backendAzureRmKey: 'lz-network.tfstate'
 
       - task: TerraformTaskV3@3
         name: terraformPlan
@@ -168,7 +168,7 @@ jobs:
           backendAzureRmResourceGroupName: $(terraformStateRg)
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
           backendAzureRmContainerName: $(stateStorageContainerName)
-          backendAzureRmKey: 'shared-resources.tfstate'
+          backendAzureRmKey: 'lz-sharedresources.tfstate'
 
       - task: TerraformTaskV3@3
         name: terraformPlan
@@ -226,7 +226,7 @@ jobs:
           backendAzureRmResourceGroupName: $(terraformStateRg)
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
           backendAzureRmContainerName: $(stateStorageContainerName)
-          backendAzureRmKey: 'shared-resources.tfstate'
+          backendAzureRmKey: 'hub-azurefirewall.tfstate'
 
       - task: TerraformTaskV3@3
         name: terraformPlan
@@ -285,7 +285,7 @@ jobs:
           backendAzureRmResourceGroupName: $(terraformStateRg)
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
           backendAzureRmContainerName: $(stateStorageContainerName)
-          backendAzureRmKey: 'shared-resources.tfstate'
+          backendAzureRmKey: 'lz-springapps-standard.tfstate'
 
       - task: TerraformTaskV3@3
         name: terraformPlan
