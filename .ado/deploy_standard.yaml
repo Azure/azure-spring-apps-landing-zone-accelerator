@@ -422,7 +422,6 @@ jobs:
 
     steps:
       - checkout: self
-      - bash: echo $(spring_apps_service_name)
       - task: AzureCLI@2
         displayName: Terraform credentials
         inputs:
@@ -583,74 +582,350 @@ jobs:
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
 
-  # - job: destroy_pet_clinic_infra
-  #   displayName: Destroy Pet Clinic Infrastructure
-  #   dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_shared_resources, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/sample-apps/petclinic/terraform"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+  - job: destroy_pet_clinic_infra
+    displayName: Destroy Pet Clinic Infrastructure
+    dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_shared_resources, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/sample-apps/petclinic/terraform"
+    pool: 
+      vmImage: 'ubuntu-latest'
 
-  #   steps:
-  #     - checkout: self
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'pet-clinic-infra'
 
-  # - job: destroy_spring_apps_standard
-  #   displayName: Destroy 06 LZ Spring Apps Standard
-  #   dependsOn: [destroy_pet_clinic_infra,  deploy_standard_sa]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var subscription_id=$(subscriptionId) -var mysql_server_admin_password=$(mySQLAdminPassword) -var mysql_server_admin_username=$(mySQLAdminUsername) -var resource_group=$(spoke_rg) -var vnet_spoke_name=$(spoke_vnet_name) -var private_zones_resource_group_name=$(private_dns_rg) -var key_vault_rg=$(shared_rg)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  #   steps:
-  #     - checkout: self
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  # - job: destroy-hub-firewall
-  #   displayName: Destroy 05 Hub Firewall
-  #   dependsOn: [destroy_spring_apps_standard]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+  - job: destroy_spring_apps_standard
+    displayName: Destroy 06 LZ Spring Apps Standard
+    dependsOn: [destroy_pet_clinic_infra,  deploy_standard_sa]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard"
+    pool: 
+      vmImage: 'ubuntu-latest'
 
-  #   steps:
-  #     - checkout: self
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'lz-springapps-standard'
 
-  # - job: destroy_shared_resources
-  #   displayName: Destroy 04 LZ Shared Resources
-  #   dependsOn: [destroy-hub-firewall]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  #   steps:
-  #     - checkout: self
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+  
+  - job: destroy-hub-firewall
+    displayName: Destroy 05 Hub Firewall
+    dependsOn: [destroy_spring_apps_standard]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall"
+    pool: 
+      vmImage: 'ubuntu-latest'
 
-  # - job: destroy_spoke_network
-  #   displayName: Destroy 03 LZ Network
-  #   dependsOn: [destroy_shared_resources]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'hub-azurefirewall'
 
-  #   steps:
-  #     - checkout: self
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  # - job: destroy_hub_network
-  #   displayName: Destroy 02 Hub Network
-  #   dependsOn: [destroy_spoke_network]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  #   steps:
-  #     - checkout: self
+  - job: destroy_shared_resources
+    displayName: Destroy 04 LZ Shared Resources
+    dependsOn: [destroy-hub-firewall]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources"
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'lz-sharedresources'
+
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName) -var jump_host_admin_username=$(jumpBoxUsername) -var jump_host_password=$(jumpBoxPassword) '
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+  - job: destroy_spoke_network
+    displayName: Destroy 03 LZ Network
+    dependsOn: [destroy_shared_resources]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network"
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'lz-network'
+
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName) -var jump_host_admin_username=$(jumpBoxUsername) -var jump_host_password=$(jumpBoxPassword) '
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+
+  - job: destroy_hub_network
+    displayName: Destroy 02 Hub Network
+    dependsOn: [destroy_spoke_network]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'hub-network'
+
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
