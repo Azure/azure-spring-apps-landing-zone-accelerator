@@ -3,6 +3,14 @@ name: Azure Springs Apps LZA Deployment
 
 trigger: none
 
+resources:
+  repositories:
+  - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: ibersanoMS
+    name: Azure-Samples/spring-petclinic-microservices.git
+    ref: azure
+
 variables:
   - group: "Standard Deployment Configuration"
   - group: "Applications"
@@ -462,14 +470,15 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  # - job: build_and_deploy_pet_clinic_ms
-  #   displayName: Build and Deploy Pet Clinic Microservices
-  #   dependsOn: [deploy_pet_clinic_infra, deploy_standard_sa ]
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+  - job: build_and_deploy_pet_clinic_ms
+    displayName: Build and Deploy Pet Clinic Microservices
+    dependsOn: [deploy_pet_clinic_infra, deploy_standard_sa ]
+    pool: 
+      vmImage: 'ubuntu-latest'
 
-  #   steps:
-  #     - checkout: self
+    steps:
+      - checkout: pet-clinic-microservices
+        path: pet-clinic
 
   # - job: destroy_pet_clinic_infra
   #   displayName: Destroy Pet Clinic Infrastructure
