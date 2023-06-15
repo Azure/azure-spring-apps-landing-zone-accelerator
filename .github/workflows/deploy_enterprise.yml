@@ -311,9 +311,9 @@ jobs:
           -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
-          -var="private_zones_resource_group_name=${{ needs.deploy_lz_network.outputs.private_dns_rg }}"\
-          -var="resource_group=${{ needs.deploy_lz_network.outputs.spoke_rg }}"\
-          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}"\
+          -var="private_zones_resource_group_name=${{ needs.deploy_lz_network.outputs.private_dns_rg }}" \
+          -var="resource_group=${{ needs.deploy_lz_network.outputs.spoke_rg }}" \
+          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}" \
           -var="shared_rg=${{ needs.deploy_lz_shared.outputs.shared_rg }}"
 
       - name: Terraform Apply
@@ -467,9 +467,9 @@ jobs:
            -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
           -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
-          -var="private_zones_resource_group_name=${{ needs.deploy_lz_network.outputs.private_dns_rg }}"\
-          -var="resource_group=${{ needs.deploy_lz_network.outputs.spoke_rg }}"\
-          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}"\
+          -var="private_zones_resource_group_name=${{ needs.deploy_lz_network.outputs.private_dns_rg }}" \
+          -var="resource_group=${{ needs.deploy_lz_network.outputs.spoke_rg }}" \
+          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}" \
           -var="shared_rg=${{ needs.deploy_lz_shared.outputs.shared_rg }}"
       - name: Terraform Apply
         run: terraform apply my.plan
