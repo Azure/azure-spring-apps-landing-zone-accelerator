@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "= 3.32.0"
+      version = "= 3.58.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -15,7 +15,7 @@ terraform {
     # resource_group_name  = ""   # Partial configuration, provided during "terraform init"
     # storage_account_name = ""   # Partial configuration, provided during "terraform init"
     # container_name       = ""   # Partial configuration, provided during "terraform init"
-    key = "lz-petclinic"
+    key = "lz-acme-fitness"
   }
 }
 
@@ -25,7 +25,7 @@ provider "azurerm" {
 }
 
 locals {
-  vnet_spoke_name = var.vnet_spoke_name
+  vnet_spoke_name = "vnet-${var.name_prefix}-${data.azurerm_resource_group.spoke_rg.location}-SPOKE"
 }
 
 data "azurerm_resource_group" "spoke_rg" {
@@ -36,16 +36,16 @@ data "azurerm_resource_group" "private_zones_rg" {
   name = var.private_zones_resource_group_name
 }
 
-data "azurerm_resource_group" "spring_apps_rg" {
+data "azurerm_resource_group" "springapps_rg" {
   name = var.spring_cloud_resource_group_name
 }
 
-data "azurerm_spring_cloud_service" "spring_cloud" {
+data "azurerm_spring_cloud_service" "sc_enterprise" {
   name                = var.spring_cloud_service
   resource_group_name = var.spring_cloud_resource_group_name
 }
 
-data "azurerm_virtual_network" "spoke" {
+data "azurerm_virtual_network" "spoke_vnet" {
   name                = local.vnet_spoke_name
   resource_group_name = data.azurerm_resource_group.spoke_rg.name
 }

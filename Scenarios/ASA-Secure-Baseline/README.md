@@ -38,5 +38,4 @@ for applications deployed to Azure Spring Apps.
 Pick one of the IaC options below and follow the instructions to deploy the Azure Spring Apps reference implementation.
 
 :arrow_forward: [Terraform](./Terraform)
-
-:arrow_forward: [Bicep](./Bicep) (coming soon)
+:arrow_forward: [Bicep](./Bicep)

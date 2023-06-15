@@ -1,4 +1,4 @@
-name: Deploy to Azure Spring Apps using passwordless connections
+name: Deploy to Azure Spring Apps Standard with Petclinic
 on: workflow_dispatch
 
 permissions:
@@ -7,39 +7,41 @@ permissions:
 
 env:
   # === Deploy Firewall ===:
-  SHOULD_DEPLOY_FIREWALL: false
+  DEPLOY_FIREWALL_STANDARD: false
 
   # === Destroy All ==
-  SHOULD_DESTROY: false
-
-  # === Spring Apps Service ===:
-  SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  JUMP_BOX_USERNAME: lzadmin
-  JUMP_BOX_PASSWORD: ${{ secrets.JUMP_BOX_PASSWORD }}
-  # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
-  # Use this command to obtain:
-  #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-  SRINGAPPS_SPN_OBJECT_ID: 1b7a460f-dc1f-42d5-a4d5-0505272dfd54
-
-  # === Pet Clinic Required Settings ===:
-  MYSQL_ADMIN_USERNAME: sqlAdmin
-  MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
-
-  # ==== Terraform Backend ===:
-  TFSTATE_RG: cloud-shell-storage-southcentralus
-  STORAGEACCOUNTNAME: cs7100320022eb75670
-  CONTAINERNAME: tfstateasa
-
-  # ==== Terraform Azure Login ===:
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  DESTROY_STANDARD: false
 
   # === Baseline Parameters ====:
   REGION: eastus
   NAME_PREFIX: springlza
   ENVIRONMENT: dev
+
+  # === Spring Apps Service ===:
+  SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  JUMP_BOX_USERNAME: ltzadmin
+  JUMP_BOX_PASSWORD: ${{ secrets.JUMP_BOX_PASSWORD }}
+  
+  # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
+  # Use this command to obtain:
+  #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+  SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID }}
+
+  # === Pet Clinic Required Settings ===:
+  MYSQL_ADMIN_USERNAME: mySqlAdmin
+  MYSQL_ADMIN_PASSWORD: ${{ secrets.MYSQL_ADMIN_PASSWORD }}
+
+  # ==== Terraform Backend ===:
+  TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+  STORAGEACCOUNTNAME: ${{ vars.STORAGEACCOUNTNAME }}
+  CONTAINERNAME: ${{ vars.CONTAINERNAME_STANDARD }}
+
+  # ==== Terraform Azure Login ===:
+  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+
 
   # ==== APPS ====:
   API_GATEWAY: api-gateway
@@ -59,17 +61,43 @@ jobs:
   conditions:
     runs-on: ubuntu-latest
     outputs:
-      deploy_firewall: "${{ env.SHOULD_DEPLOY_FIREWALL }}"
-      destroy: "${{ env.SHOULD_DESTROY }}"
+      deploy_firewall: "${{ env.DEPLOY_FIREWALL_STANDARD }}"
+      destroy: "${{ env.DESTROY_STANDARD }}"
+      name_prefix: ${{ env.NAME_PREFIX}}
+      environment: ${{ env.ENVIRONMENT}}
+      region: ${{env.REGION}}
+      jumpbox_username: ${{ env.JUMP_BOX_USERNAME}}
+      mysql_admin_name: ${{env.MYSQL_ADMIN_USERNAME}}
     steps:
-      - name: echo
-        run: |
-          echo ${{ env.SHOULD_DEPLOY_FIREWALL }} \
-          echo ${{ env.SHOULD_DESTROY }}
+      - name: Deploy Firewall Override
+        if: ${{vars.DEPLOY_FIREWALL_STANDARD != 0 }} 
+        run: echo "DEPLOY_FIREWALL_STANDARD=${{ vars.DEPLOY_FIREWALL_STANDARD }}" >> $GITHUB_ENV
+      - name: Destroy Override DESTROY_STANDARD
+        if: ${{vars.DESTROY_STANDARD != 0 }} 
+        run: echo "DESTROY_STANDARD=${{ vars.DESTROY_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Deployment Region
+        if: ${{vars.REGION_STANDARD != 0 }} 
+        run: echo "REGION=${{ vars.REGION_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Name Prefix
+        if: ${{vars.NAME_PREFIX_STANDARD != 0 }} 
+        run: echo "NAME_PREFIX=${{ vars.NAME_PREFIX_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Environment Token
+        if: ${{vars.ENVIRONMENT_STANDARD != 0 }} 
+        run: echo "ENVIRONMENT=${{ vars.ENVIRONMENT_STANDARD }}" >> $GITHUB_ENV
+      - name: Override Jump Box Username
+        if: ${{vars.JUMP_BOX_USERNAME != 0 }} 
+        run: echo "JUMP_BOX_USERNAME=${{ vars.JUMP_BOX_USERNAME }}" >> $GITHUB_ENV
+      - name: Override MySQl Admin Username
+        if: ${{vars.MYSQL_ADMIN_USERNAME != 0 }} 
+        run: echo "MYSQL_ADMIN_USERNAME=${{ vars.MYSQL_ADMIN_USERNAME }}" >> $GITHUB_ENV
   deploy_hub_network:
     name: Deploy 02 Hub Network
     needs: conditions
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
@@ -95,7 +123,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
 
       - name: Terraform Apply
         run: terraform apply my.plan
@@ -103,6 +131,11 @@ jobs:
     needs: [deploy_hub_network, conditions]
     name: Deploy 03 LZ Network
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+
     outputs:
       spoke_vnet_name: ${{ steps.output.outputs.spoke_vnet_name }}
       spoke_rg: ${{ steps.output.outputs.spoke_rg }}
@@ -132,7 +165,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
       - name: Terraform Output
@@ -146,6 +179,11 @@ jobs:
     needs: [deploy_lz_network, conditions]
     name: Deploy 04 LZ Shared Resources
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      JUMP_BOX_USERNAME: ${{ needs.conditions.outputs.jumpbox_username}}
     outputs:
       shared_rg: ${{ steps.output.outputs.shared_rg }}
     defaults:
@@ -173,7 +211,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}" \
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}" \
           -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
           -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
       - name: Terraform Apply
@@ -187,6 +225,10 @@ jobs:
     needs: [deploy_hub_network, deploy_lz_shared, conditions]
     name: Deploy 05 Hub Firewall
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
@@ -212,7 +254,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         if: needs.conditions.outputs.deploy_firewall == 'true'
         run: terraform apply my.plan
@@ -222,6 +264,10 @@ jobs:
             [deploy_hub_network, deploy_lz_shared, deploy_hub_firewall, conditions]
           name: Deploy 06 LZ Spring Apps Standard
           runs-on: ubuntu-latest
+          env:
+            NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+            ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+            REGION: ${{ needs.conditions.outputs.region}}
           outputs:
             spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
             spring_apps_rg: ${{ steps.output.outputs.spring_apps_rg }}
@@ -250,7 +296,7 @@ jobs:
                 -var="location=${{ env.REGION }}" \
                 -var="name_prefix=${{ env.NAME_PREFIX }}" \
                 -var="environment=${{ env.ENVIRONMENT }}" \
-                -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+                -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
             - name: Terraform Apply
               run: terraform apply my.plan
             - name: Terraform Output
@@ -258,12 +304,15 @@ jobs:
               run: |
                 echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
                 echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
-      
-
   deploy_pet_clinic_infra:
     name: Deploy Pet Clinic Infrastructure
     needs: [deploy_lz_standard, deploy_lz_shared, deploy_lz_network, conditions]
     runs-on: ubuntu-latest
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/sample-apps/petclinic/terraform
@@ -397,6 +446,11 @@ jobs:
       ]
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/sample-apps/petclinic/terraform
@@ -432,6 +486,11 @@ jobs:
     name: Destroy 06 LZ Spring Apps Standard
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard
@@ -457,7 +516,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_hub_firewall:
@@ -465,6 +524,11 @@ jobs:
     name: Destroy 05 Hub Firewall
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      MYSQL_ADMIN_USERNAME: ${{needs.conditions.outputs.mysql_admin_name}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
@@ -490,7 +554,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_lz_shared:
@@ -498,6 +562,11 @@ jobs:
     name: Destroy 04 LZ Shared Resources
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
+      JUMP_BOX_USERNAME: ${{needs.conditions.outputs.jumpbox_username}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
@@ -523,7 +592,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}" \
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}" \
           -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
           -var="jump_host_password=${{ env.JUMP_BOX_PASSWORD}}"
       - name: Terraform Apply
@@ -533,6 +602,10 @@ jobs:
     name: Destroy 03 LZ Network
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
@@ -558,7 +631,7 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
   destroy_hub_network:
@@ -566,6 +639,10 @@ jobs:
     needs: [destroy_lz_network, conditions]
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
+    env:
+      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
+      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
+      REGION: ${{ needs.conditions.outputs.region}}
     defaults:
       run:
         working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
@@ -591,6 +668,6 @@ jobs:
           -var="location=${{ env.REGION }}" \
           -var="name_prefix=${{ env.NAME_PREFIX }}" \
           -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SRINGAPPS_SPN_OBJECT_ID=${{ env.SRINGAPPS_SPN_OBJECT_ID }}"
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
       - name: Terraform Apply
         run: terraform apply my.plan
