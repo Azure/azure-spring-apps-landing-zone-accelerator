@@ -475,7 +475,11 @@ jobs:
     dependsOn: [deploy_pet_clinic_infra, deploy_standard_sa ]
     pool: 
       vmImage: 'ubuntu-latest'
-
+    variables:
+      - name: spring_apps_service_name 
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
+      - name: spring_apps_rg 
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_rg'] ]
     steps:
       - checkout: pet-clinic-microservices
         path: pet-clinic
@@ -510,12 +514,13 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
+          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
-              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
-              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
-              --name ${{ env.API_GATEWAY }} \
-              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.API_GATEWAY_JAR }} \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(apiGateway) \
+              --artifact-path $(apiGatewayJar) \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
@@ -525,12 +530,13 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
+          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
-              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
-              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
-              --name ${{ env.ADMIN_SERVER }} \
-              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.ADMIN_SERVER_JAR }} \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(adminServer) \
+              --artifact-path $(adminServerJar) \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
@@ -540,12 +546,13 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
+          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
-              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
-              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
-              --name ${{ env.CUSTOMERS_SERVICE }} \
-              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.CUSTOMERS_SERVICE_JAR }} \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(customerService) \
+              --artifact-path $(customersServiceJar) \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
@@ -555,12 +562,13 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
+          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
-              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
-              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
-              --name ${{ env.VETS_SERVICE }} \
-              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.VETS_SERVICE_JAR }} \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(vetsService) \
+              --artifact-path $(vetsServiceJar) \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
@@ -570,12 +578,13 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
+          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
-              --resource-group ${{ needs.deploy_lz_standard.outputs.spring_apps_rg}} \
-              --service ${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }} \
-              --name ${{ env.VISITS_SERVICE}} \
-              --artifact-path ${{ github.workspace }}/pet-clinic/${{ env.VISITS_SERVICE_JAR }} \
+              --resource-group $(spring_apps_rg) \
+              --service $(spring_apps_service_name) \
+              --name $(visitsService) \
+              --artifact-path $(visitsServiceJar) \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --env SPRING_PROFILES_ACTIVE=passwordless
           addSpnToEnvironment: true 
