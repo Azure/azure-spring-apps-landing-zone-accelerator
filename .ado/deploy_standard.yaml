@@ -250,29 +250,135 @@ jobs:
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
-  # - job: deploy_standard_sa
-  #   displayName: Deploy 06 LZ Spring Apps Standard
-  #   dependsOn: [deploy_hub_network, deploy_shared_resources, deploy_hub_firewall]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+  - job: deploy_standard_sa
+    displayName: Deploy 06 LZ Spring Apps Standard
+    dependsOn: [deploy_hub_network, deploy_shared_resources, deploy_hub_firewall]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Standard"
+    pool: 
+      vmImage: 'ubuntu-latest'
 
-  #   steps:
-  #     - checkout: self
+    steps:
+      - checkout: self
 
-  # - job: deploy_pet_clinic_infra
-  #   displayName: Deploy Pet Clinic Infrastructure
-  #   dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_standard_sa]
-  #   variables: 
-  #     - name: workingDirectory
-  #       value:  "Scenarios/sample-apps/petclinic/terraform"
-  #   pool: 
-  #     vmImage: 'ubuntu-latest'
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'shared-resources.tfstate'
 
-  #   steps:
-  #     - checkout: self
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory)
+          commandOptions: '-out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+  
+  - job: deploy_pet_clinic_infra
+    displayName: Deploy Pet Clinic Infrastructure
+    dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_standard_sa]
+    variables: 
+      - name: workingDirectory
+        value:  "Scenarios/sample-apps/petclinic/terraform"
+      - name: spring_apps_service_name 
+        value: dependencies.deploy_standard_sa.outputs['terraformApply.spring_apps_service_name']
+      - name: spring_apps_rg 
+        value: dependencies.deploy_standard_sa.outputs['terraformApply.spring_apps_service_name']
+      - name: spoke_rg 
+        value: dependencies.deploy_spoke_network.outputs['terraformApply.spoke_rg']
+      - name: spoke_vnet_name 
+        value: dependencies.deploy_spoke_network.outputs['terraformApply.spoke_vnet_name']
+      - name: private_dns_rg 
+        value: dependencies.deploy_spoke_network.outputs['terraformApply.private_dns_rg']
+      - name: shared_rg 
+        value: dependencies.deploy_shared_resources.outputs['terraformApply.shared_rg']
+    pool: 
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: Terraform credentials
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |
+            set -eu
+            echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(armClientId)"
+            echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$(armClientSecret)"
+            echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+          addSpnToEnvironment: true
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(azureServiceConnection)
+          backendAzureRmResourceGroupName: $(terraformStateRg)
+          backendAzureRmStorageAccountName: $(stateStorageAccountName)
+          backendAzureRmContainerName: $(stateStorageContainerName)
+          backendAzureRmKey: 'shared-resources.tfstate'
+
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var subscription_id=$(subscriptionId) -var mysql_server_admin_password=$(mySQLAdminPassword) -var mysql_server_admin_username=$(mySQLAdminUsername) -var resource_group=$(spoke_rg) -var vnet_spoke_name=$(spoke_vnet_name) -var private_zones_resource_group_name=$(private_dns_rg) -var key_vault_rg=$(shared_rg )'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
+      # Only runs if the 'terraformPlan' task has detected changes the in state. 
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true') && eq(variables['deployFirewall'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
 
   # - job: build_and_deploy_pet_clinic_ms
   #   displayName: Build and Deploy Pet Clinic Microservices
