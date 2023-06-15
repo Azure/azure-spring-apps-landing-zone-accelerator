@@ -496,7 +496,6 @@ jobs:
           goals: 'package'
       
       - bash: mvn clean package -DskipTests
-        workingDirectory: pet-clinic
       - task: AzureCLI@2
         displayName: Install Azure CLI Spring Extension
         inputs:
@@ -514,7 +513,6 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
-          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
               --resource-group $(spring_apps_rg) \
@@ -530,7 +528,6 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
-          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
               --resource-group $(spring_apps_rg) \
@@ -546,7 +543,6 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
-          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
               --resource-group $(spring_apps_rg) \
@@ -562,7 +558,6 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
-          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
               --resource-group $(spring_apps_rg) \
@@ -578,7 +573,6 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: bash
-          workingDirectory: pet-clinic
           inlineScript: |
             az spring app deploy \
               --resource-group $(spring_apps_rg) \
