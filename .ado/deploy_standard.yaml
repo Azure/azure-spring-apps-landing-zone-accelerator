@@ -332,7 +332,7 @@ jobs:
 
     steps:
       - checkout: self
-
+      - bash: echo $(spring_apps_service_name)
       - task: AzureCLI@2
         displayName: Terraform credentials
         inputs:
