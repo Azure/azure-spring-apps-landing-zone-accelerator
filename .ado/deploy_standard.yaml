@@ -365,7 +365,7 @@ jobs:
           provider: 'azurerm'
           command: 'plan'
           workingDirectory: $(workingDirectory) 
-          commandOptions: '-out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var subscription_id=$(subscriptionId) -var mysql_server_admin_password=$(mySQLAdminPassword) -var mysql_server_admin_username=$(mySQLAdminUsername) -var resource_group=$(spoke_rg) -var vnet_spoke_name=$(spoke_vnet_name) -var private_zones_resource_group_name=$(private_dns_rg) -var key_vault_rg=$(shared_rg )'
+          commandOptions: '-out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var subscription_id=$(subscriptionId) -var mysql_server_admin_password=$(mySQLAdminPassword) -var mysql_server_admin_username=$(mySQLAdminUsername) -var resource_group=$(spoke_rg) -var vnet_spoke_name=$(spoke_vnet_name) -var private_zones_resource_group_name=$(private_dns_rg) -var key_vault_rg=$(shared_rg)'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
