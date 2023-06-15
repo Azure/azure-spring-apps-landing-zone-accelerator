@@ -63,7 +63,9 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: '-out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
           environmentServiceNameAzureRM: $(azureServiceConnection)
-
+          outputFormat: json
+          outputTo: file
+      
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -74,6 +76,22 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        name: terraformOutput
+        displayName: Create Terraform Outputs
+        inputs:
+          provider: 'azurerm'
+          command: 'output'
+          workingDirectory: $(workingDirectory)
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+          outputFormat: json
+          outputTo: file
+
+      - powershell: |
+          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
+        name: terraformOutput
+        displayName: Read terraform outputs
 
   - job: deploy_spoke_network
     displayName: Deploy 03 LZ Network
@@ -132,6 +150,22 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        name: terraformOutput
+        displayName: Create Terraform Outputs
+        inputs:
+          provider: 'azurerm'
+          command: 'output'
+          workingDirectory: $(workingDirectory)
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+          outputFormat: json
+          outputTo: file
+
+      - powershell: |
+          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
+        name: terraformOutput
+        displayName: Read terraform outputs
 
   - job: deploy_shared_resources
     displayName: Deploy 04 LZ Shared Resources
@@ -191,6 +225,22 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        name: terraformOutput
+        displayName: Create Terraform Outputs
+        inputs:
+          provider: 'azurerm'
+          command: 'output'
+          workingDirectory: $(workingDirectory)
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+          outputFormat: json
+          outputTo: file
+
+      - powershell: |
+          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
+        name: terraformOutput
+        displayName: Read terraform outputs
 
   - job: deploy_hub_firewall
     displayName: Deploy 05 Hub Firewall
@@ -249,6 +299,22 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        name: terraformOutput
+        displayName: Create Terraform Outputs
+        inputs:
+          provider: 'azurerm'
+          command: 'output'
+          workingDirectory: $(workingDirectory)
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+          outputFormat: json
+          outputTo: file
+
+      - powershell: |
+          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
+        name: terraformOutput
+        displayName: Read terraform outputs
 
   - job: deploy_standard_sa
     displayName: Deploy 06 LZ Spring Apps Standard
@@ -308,6 +374,22 @@ jobs:
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        name: terraformOutput
+        displayName: Create Terraform Outputs
+        inputs:
+          provider: 'azurerm'
+          command: 'output'
+          workingDirectory: $(workingDirectory)
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+          outputFormat: json
+          outputTo: file
+
+      - powershell: |
+          $terraformOutput = Get-Content "$(terraformApply.jsonOutputVariablesPath)" | ConvertFrom-Json
+          $terraformOutput | Get-Member -MemberType NoteProperty | % { $o = $terraformOutput.($_.Name); Write-Host "##vso[task.setvariable variable=$($_.Name);isoutput=true;issecret=$($o.sensitive)]$($o.value)" }
+        name: terraformOutput
+        displayName: Read terraform outputs
   
   - job: deploy_pet_clinic_infra
     displayName: Deploy Pet Clinic Infrastructure
