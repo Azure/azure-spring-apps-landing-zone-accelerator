@@ -8,7 +8,7 @@ resources:
   - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
     type: github
     endpoint: ibersanoMS
-    name: Azure-Samples/spring-petclinic-microservices.git
+    name: Azure-Samples/spring-petclinic-microservices
     ref: azure
 
 variables:
