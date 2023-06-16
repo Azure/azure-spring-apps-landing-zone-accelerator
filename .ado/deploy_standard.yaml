@@ -584,10 +584,22 @@ jobs:
 
   - job: destroy_pet_clinic_infra
     displayName: Destroy Pet Clinic Infrastructure
-    dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_shared_resources, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
+    dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_standard_sa, deploy_pet_clinic_infra, build_and_deploy_pet_clinic_ms]
     variables: 
       - name: workingDirectory
         value:  "Scenarios/sample-apps/petclinic/terraform"
+      - name: spring_apps_service_name 
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
+      - name: spring_apps_rg 
+        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_rg'] ]
+      - name: spoke_rg 
+        value: $[ dependencies.deploy_spoke_network.outputs['terraformOutput.spoke_rg'] ]
+      - name: spoke_vnet_name 
+        value: $[ dependencies.deploy_spoke_network.outputs['terraformOutput.spoke_vnet_name'] ]
+      - name: private_dns_rg 
+        value: $[ dependencies.deploy_spoke_network.outputs['terraformOutput.private_dns_rg'] ]
+      - name: shared_rg 
+        value: $[ dependencies.deploy_shared_resources.outputs['terraformOutput.shared_rg'] ]
     pool: 
       vmImage: 'ubuntu-latest'
 
