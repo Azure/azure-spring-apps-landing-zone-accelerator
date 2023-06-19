@@ -1,7 +1,7 @@
 
 # Deploying the Landing Zones and Pet-Clinic microservices E2E using GitHub Actions
 
- To deploy the Azure Spring App Landing Zoner and deploy the petclinic microservices to Azure Spring Apps, we'll setup a GitHub Actions CI/CD workflow that will build and deploy our application whenever we push new commits to the main branch of our repository.
+ To deploy the Azure Spring App Landing Zone and deploy the petclinic microservices to Azure Spring Apps, we'll setup a GitHub Actions CI/CD workflow that will build and deploy our application whenever we push new commits to the main branch of our repository.
 
 ## What's CI/CD?
 
