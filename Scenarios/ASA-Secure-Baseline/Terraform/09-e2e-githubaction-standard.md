@@ -1,7 +1,7 @@
 
 # Deploying the Landing Zones and Pet-Clinic microservices E2E using GitHub Actions
 
- To deploy the Azure Spring App Landing Zoner and deploy the petclinic microservices to Azure Spring Apps, we'll setup a GitHub Actions CI/CD workflow that will build and deploy our application whenever we push new commits to the main branch of our repository.
+ To deploy the Azure Spring App Landing Zone and deploy the petclinic microservices to Azure Spring Apps, we'll setup a GitHub Actions CI/CD workflow that will build and deploy our application whenever we push new commits to the main branch of our repository.
 
 ## What's CI/CD?
 
@@ -67,7 +67,7 @@ Switch to the Variables tab and create the following variables
 | `AZURE_TENANT_ID`          | Your Service Principal Client ID                                                                                    |
 | `STORAGEACCOUNTNAME`       | Storage Account for storing terraform state                                                                         |
 | `TFSTATE_RG`               | Resource group where Storage Account is located for storing terraform state                                         |
-| `CONTAINERNAME_STANDARD`   | COntainer in the Storage Account for storing terraform state                                                        |
+| `CONTAINERNAME_STANDARD`   | Container in the Storage Account for storing terraform state                                                        |
 | `SPRINGAPPS_SPN_OBJECT_ID` | Object name for the Spring Apps built in service principle, see below for how to retreive the value for your tenate |
 
 
@@ -117,7 +117,7 @@ YAML is very sensitive to indentation.
 
 ## [!TIP]
 
-* If you do not want to provision the firewall or destroy the E2E infra once the pipeline run in complete, make sure to set those values to false in the deploy.yaml
+* If you do not want to provision the firewall or destroy the E2E infra once the pipeline run in complete, make sure to set those values to false in the deploy_standard.yml or in GitHub actions variables.
 * If a particular step errors out you can run only that step from the pipeline directly.Most errors should be transient errors.
 
 ## Running the workflow

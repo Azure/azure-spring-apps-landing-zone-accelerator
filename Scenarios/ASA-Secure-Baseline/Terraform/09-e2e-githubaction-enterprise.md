@@ -1,7 +1,7 @@
 
-# Deploying the Landing Zones and Pet-Clinic microservices E2E using GitHub Actions
+# Deploying the Landing Zones and ACME Fitness Store  microservices E2E using GitHub Actions
 
- To deploy the Azure Spring App Landing Zoner and deploy the petclinic microservices to Azure Spring Apps, we'll setup a GitHub Actions CI/CD workflow that will build and deploy our application whenever we push new commits to the main branch of our repository.
+ To deploy the Azure Spring App Landing Zone and deploy the ACME Fitness Store microservices to Azure Spring Apps, we'll setup a GitHub Actions CI/CD workflow that will build and deploy our application whenever we push new commits to the main branch of our repository.
 
 ## What's CI/CD?
 
@@ -96,7 +96,7 @@ Switch to the Variables tab and create the following variables
 | `AZURE_TENANT_ID`          | Your Service Principal Client ID                                                                                    |
 | `STORAGEACCOUNTNAME`       | Storage Account for storing terraform state                                                                         |
 | `TFSTATE_RG`               | Resource group where Storage Account is located for storing terraform state                                         |
-| `CONTAINERNAME_ENTERPRISE` | COntainer in the Storage Account for storing terraform state                                                        |
+| `CONTAINERNAME_ENTERPRISE` | Container in the Storage Account for storing terraform state                                                        |
 | `SPRINGAPPS_SPN_OBJECT_ID` | Object name for the Spring Apps built in service principle, see below for how to retreive the value for your tenate |
 
 
@@ -147,12 +147,12 @@ YAML is very sensitive to indentation.
 
 ## [!TIP]
 
-* If you do not want to provision the firewall or destroy the E2E infra once the pipeline run in complete, make sure to set those values to false in the deploy.yaml
+* If you do not want to provision the firewall or destroy the E2E infra once the pipeline run in complete, make sure to set those values to false in the deploy_enterprise.yml or in GitHub Actions repository variables. 
 * If a particular step errors out you can run only that step from the pipeline directly.Most errors should be transient errors.
 
 ## Running the workflow
 
-Now that we've defined our workflow and prepared everything, we can run it to deploy our landing zone and the petclinic application to Azure Spring Apps.
+Now that we've defined our workflow and prepared everything, we can run it to deploy our landing zone and the ACME Fitness Store application to Azure Spring Apps.
 Commit and push your changes to your repository, and go to the `Actions` tab of your repository to see the workflow running.
 It should take a few minutes to complete.
 A successful run using github actions should look like below:
@@ -165,7 +165,7 @@ Once your workflow is completed, let's make a quick test on our deployed apps.
 First we need to get the ingress URL by running the following command:
 
 ```bash
-    az spring gateway show -g rg-springent-APPS -s spring-springent-dev-z3rw --query "properties.url" --output tsv    
+    az spring gateway show -g rg-springent-APPS -s spring-springent-dev-xxxx --query "properties.url" --output tsv    
 ```
 
 Then we can use `curl` to test our applications using the above endpoint. This assumes that there's no Application Gateway and you would access your spring app using the spring apps ingress url for the Spring Cloud Gateway. Since the applications are deployed in an internal only environment you would need to do the curl from a jumpbox or bastion host.

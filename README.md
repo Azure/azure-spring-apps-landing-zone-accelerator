@@ -65,10 +65,12 @@ Pick the below scenario to get started on a reference implementation.
 :arrow_forward: [Azure Spring Apps Secure Baseline](/Scenarios/ASA-Secure-Baseline/README.md)
 
 Deployment Details:
-| Deployment Methodology | GitHub Actions                                                                         |
-| ---------------------- | -------------------------------------------------------------------------------------- |
-| Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-standard.md) |
-| Bicep                  | Power shell available, GitHub Actions Coming soon                                      |
+| Azure Spring Apps SKU | Deployment Methodology | GitHub Actions                                                                                       |
+| --------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| Standard              | Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-standard.md)               |
+|                       | Bicep                  | [Power shell available](./Scenarios/ASA-Secure-Baseline/Bicep/README.md), GitHub Actions Coming soon |
+| Enterprise            | Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-enterprise.md)             |
+|                       | Bicep                  | Power shell available, GitHub Actions Coming soon                                                    |
 
 ## Got a feedback
 Please leverage issues if you have any feedback or request on how we can improve on this repository.
