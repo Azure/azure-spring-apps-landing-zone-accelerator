@@ -96,8 +96,10 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 8. [Cleanup](./08-cleanup.md)
 
 9. [E2E Deployment using GitHub Action for Azure Spring Apps Standard](./09-e2e-githubaction-standard.md)
+    
+10. [E2E Deployment using Azure DevOps for Azure Spring Apps Standard](./10-e2e-azuredevops-standard.md).
 
-10. [E2E Deployment using GitHub Action for Azure Spring Apps Enterprise](./09-e2e-githubaction-enterprise.md)
+11. [E2E Deployment using GitHub Action for Azure Spring Apps Enterprise](./09-e2e-githubaction-enterprise.md)
 
 ## Known Issues
   - Please take the following actions before attempting to destroy this deployment.
