@@ -20,7 +20,7 @@ By doing so, you can get working software into the hands of users faster.
 
 ## Setting Up Azure DevOps for deployment
 
-To set up your Azure Pipeline for deployment, you'll first need an Azure DevOps project to handle hold the vairable group, pipeline and GitHub repository integration. We then need to setup an Azure Service Connection for deployment of resources, a variable group and integrate the Azure DevOps pipeline that we've created for you. 
+To set up your Azure Pipeline for deployment, you'll first need an Azure DevOps project to handle hold the variable group, pipeline and GitHub repository integration. We then need to setup an Azure Service Connection for deployment of resources, a variable group and integrate the Azure DevOps pipeline that we've created for you. 
 
 ## Setup secrets and variables
 
@@ -50,7 +50,7 @@ To create your variable group, go to the Library tab of your project under the P
 | `terraformStateRg`           | The Azure Resource Group where your State Storage Account lives                                    | Required |
 
 The variable group should look like the following:
-![Variable Group Configuration]
+![Variable Group Configuration](../../../images/asa_ado_variable_group_standard.png)
 
 ## Find the Object ID for Spring Apps Service Principal
 * Retrieve the `SPRINGAPPS_SPN_OBJECT_ID` with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
@@ -92,7 +92,7 @@ Commit and push your changes to your repository, and go to the `Actions` tab of 
 It should take a few minutes to complete.
 A successful run using github actions should look like below:
 
-![successful e2e run](../../../images/github_asa_successful_run.png)
+![successful e2e run](../../../images/asa_ado_standard_successful.png)
 
 ## Testing the deployed application
 
