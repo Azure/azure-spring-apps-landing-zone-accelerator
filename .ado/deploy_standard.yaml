@@ -12,8 +12,16 @@ resources:
     ref: azure
 
 variables:
-  - group: "Standard Deployment Configuration"
-  - group: "Applications"
+  - name: adminServer
+    value: admin-server
+  - name: apiGateway
+    value: api-gateway
+  - name: customerService
+    value: customers-service
+  - name: vetsService
+    value: vets-service
+  - name: visitsService
+    value: visits-service
   - name: apiGatewayJar
     value: "spring-petclinic-api-gateway/target/spring-petclinic-api-gateway-3.0.1.jar"
   - name: adminServerJar
@@ -24,6 +32,21 @@ variables:
     value: "spring-petclinic-vets-service/target/spring-petclinic-vets-service-3.0.1.jar" 
   - name: visitsServiceJar
     value: "spring-petclinic-visits-service/target/spring-petclinic-visits-service-3.0.1.jar" 
+  - name: deployFirewallStandard
+    value: "false"
+  - name: destroyStandard
+    value: "false"
+  - name: region
+    value: "eastus"
+  - name: namePrefix
+    value: "springlza"
+  - name: environment
+    value: "dev"
+  - name: jumpBoxUsername
+    value: "ltzadmin"
+  - name: mySQLAdminUsername
+    value: "mySqlAdmin"
+  - group: "Standard Deployment Configuration"
 
 jobs:
   - job: deploy_hub_network
