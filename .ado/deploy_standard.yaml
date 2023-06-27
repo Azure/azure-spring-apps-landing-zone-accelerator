@@ -39,12 +39,12 @@ variables:
   - name: mySQLAdminUsername
     value: "mySqlAdmin"
   - group: "Standard Deployment Configuration"
-  
+
 resources:
   repositories:
   - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
     type: github
-    endpoint: $(githubServiceConnection)
+    endpoint: ibersanoMS
     name: Azure-Samples/spring-petclinic-microservices
     ref: azure
 
