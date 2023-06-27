@@ -48,7 +48,6 @@ To create your variable group, go to the Library tab of your project under the P
 | `subscriptionId`             | Your Azure subscription ID                                                                         | Required, Lock |
 | `tenantId`                   | Your Active Directory Tenant ID                                                                    | Required, Lock |
 | `terraformStateRg`           | The Azure Resource Group where your State Storage Account lives                                    | Required |
-| `githubServiceConnection`    | Name of the [GitHub Service Connection](https://learn.microsoft.com/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection) to your ADO Project                                          | Required |
 
 For the variables that say *Lock*, click the lock next to the variable value to save it as a secret.
 The variable group should look like the following:
@@ -62,8 +61,8 @@ You use the command below to obtain the value of the variable:
       az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
 
 
-## Where to find the workflow `deploy_standard.yml`
-The workflow file can be found in your repository with the path [`.ado/workflows/deploy_standard.yml`](../../../.ado/deploy_standard.yml) :
+## Where to find the pipeline `deploy_standard.yml`
+The workflow file can be found in your repository with the path [`.ado/deploy_standard.yml`](../../../.ado/deploy_standard.yml) :
 
 This workflow will be triggered every time a commit is pushed to the `main` branch.
 It will then run a job with the following steps:
@@ -79,13 +78,14 @@ After the above steps are successful, you will have a functioning landing zone a
 
 * Build and Deploy Pet Clinic Microservices
 
-Make sure to keep the correct indentation for the steps if you make changes to the deploy.yaml file directly.
-YAML is very sensitive to indentation.
+### Update your GitHub Service Connection in the pipeline
+
+This deployment relies on an application and microservices hosted in another GitHub repository. To access it, we have to add it as a resource for the Azure Pipeline to clone the repository and add a [Service Connection](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection) to GitHub in our ADO Project. The step has already been added to the pipeline, but you will need to update it with the name of your GitHub Service Connection endpoint. Locate the line that says *<Add your GitHub service connection name here>* and replace that with the name of your connection before committing the file to your repository. 
 
 ## [!TIP]
 
 * If you do not want to provision the firewall or destroy the E2E infra once the pipeline run in complete, make sure to set those values to false in the variable group
-* If a particular step errors out you can run only that step from the pipeline directly.Most errors should be transient errors.
+* If a particular step errors out you can run only that step from the pipeline directly. Most errors should be transient errors.
 
 ## Running the pipeline
 
