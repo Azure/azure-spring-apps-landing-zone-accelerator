@@ -54,7 +54,6 @@ jobs:
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network"
-    condition: eq(variables['destroyStandard'], 'true')
     pool: 
       vmImage: 'ubuntu-latest'
 
