@@ -3,14 +3,6 @@ name: Azure Springs Apps LZA Deployment
 
 trigger: none
 
-resources:
-  repositories:
-  - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
-    type: github
-    endpoint: $(githubServiceConnection)
-    name: Azure-Samples/spring-petclinic-microservices
-    ref: azure
-
 variables:
   - name: adminServer
     value: admin-server
@@ -47,6 +39,14 @@ variables:
   - name: mySQLAdminUsername
     value: "mySqlAdmin"
   - group: "Standard Deployment Configuration"
+  
+resources:
+  repositories:
+  - repository: pet-clinic-microservices # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: $(githubServiceConnection)
+    name: Azure-Samples/spring-petclinic-microservices
+    ref: azure
 
 jobs:
   - job: deploy_hub_network
