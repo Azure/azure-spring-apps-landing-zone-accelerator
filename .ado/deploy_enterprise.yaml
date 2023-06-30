@@ -22,7 +22,7 @@ resources:
   repositories:
   - repository: acme-fitness-store # The name used to reference this repository in the checkout step
     type: github
-    endpoint: <Add your GitHub service connection name here>
+    endpoint: ibersanoMS
     name: Azure-Samples/acme-fitness-store
     ref: azure
 
