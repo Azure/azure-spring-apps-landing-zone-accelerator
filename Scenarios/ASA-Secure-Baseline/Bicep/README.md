@@ -59,7 +59,7 @@ You can deploy the current LZA directly in your azure subscription using Azure D
   - namePrefix
   - subscription
   - jumpHostPassword This value will be stored within Key Vault for secure access at a later time. (note the password must be between 8-123 and satisy 3 complex requirements like to have contain an uppercase character, a lowercase character, a numeric digit, a speacial character)
-  - principalId, Yu can retrieve this by running the command <<az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv>>
+  - principalId, You can retrieve this by running the command <<az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv>>
 - Finally, use the command azd down to clean up resources deployed.
 
 ## Bringing your own Hub or Firewall
