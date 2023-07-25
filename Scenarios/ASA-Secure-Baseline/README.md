@@ -24,7 +24,7 @@ for applications deployed to Azure Spring Apps.
 
 ## Core architecture components
 
-* Azure Spring Apps Standard/Enterprise with VNet Injection
+* Azure Spring Apps Enterprise/Standard with VNet Injection
 * Azure Virtual Networks (hub-spoke)
 * Azure Bastion
 * Azure Firewall
