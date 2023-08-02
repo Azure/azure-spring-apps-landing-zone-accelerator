@@ -1,7 +1,7 @@
 $location = $Args[0]
 $namePrefix = $Args[1]
 $timeStamp = Get-Date -Format "yyyyMMddHHmm"
-$tier = "Standard"
+$tier = "Enterprise"
 
 if ($null -eq $location -or $null -eq $namePrefix) {
 
@@ -20,4 +20,4 @@ else {
 
 $principalId = (az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv)
 
-az deployment sub create --name "$($timeStamp)-$(Split-Path -Path $PWD -Leaf)-Standard" --location $location --template-file "../main.bicep" --parameters "../main.parameters.json" location=$location namePrefix=$namePrefix principalId=$principalId tier=$tier
+az deployment sub create --name "$($timeStamp)-$(Split-Path -Path $PWD -Leaf)-Enterprise" --location $location --template-file "../main.bicep" --parameters "../main.parameters.json" location=$location namePrefix=$namePrefix principalId=$principalId tier=$tier

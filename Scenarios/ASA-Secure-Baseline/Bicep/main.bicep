@@ -3,6 +3,11 @@ targetScope = 'subscription'
 /******************************/
 /*         PARAMETERS         */
 /******************************/
+@allowed([
+  'Standard'
+  'Enterprise'
+])
+param tier string
 
 //Resource Names - Override these in the parameters.json file to match your organization's naming conventions
 @description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
@@ -278,8 +283,50 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
   ]
 }
 
-module springApps '06-LZ-SpringApps-Standard/main.bicep' = {
-  name: '${timeStamp}-spring-apps'
+module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = if(tier == 'Standard') {
+  name: '${timeStamp}-spring-apps-standard'
+  params: {
+    appGwSubnetPrefix: appGwSubnetPrefix
+    appInsightsName: appInsightsName
+    appNetworkResourceGroup: appNetworkResourceGroup
+    appRgName: appRgName
+    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : azureFirewallIp
+    defaultAppsRouteName: defaultAppsRouteName
+    defaultHubRouteName: defaultHubRouteName
+    defaultRuntimeRouteName: defaultRuntimeRouteName
+    defaultSharedRouteName: defaultSharedRouteName
+    hubVnetRgName: hubVnetRgName
+    location: location
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    principalId: principalId
+    privateZonesRgName: privateZonesRgName
+    serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
+    sharedRgName: sharedRgName
+    sharedSubnetPrefix: sharedSubnetPrefix
+    snetAppGwNsg: snetAppGwNsg
+    snetAppNsg: snetAppNsg
+    snetRuntimeNsg: snetRuntimeNsg
+    snetSharedNsg: snetSharedNsg
+    snetSupportNsg: snetSupportNsg
+    spokeRgName: spokeRgName
+    spokeVnetAddressPrefix: spokeVnetAddressPrefix
+    spokeVnetName: spokeVnetName
+    springAppsName: springAppsName
+    springAppsRuntimeCidr: springAppsRuntimeCidr
+    springAppsRuntimeSubnetPrefix: springAppsRuntimeSubnetPrefix
+    springAppsSubnetPrefix: springAppsSubnetPrefix
+    supportSubnetPrefix: supportSubnetPrefix
+    tags: tags
+    timeStamp: timeStamp
+  }
+  dependsOn: [
+    sharedResources
+    firewall
+  ]
+}
+
+module springAppsEnterprise '06-LZ-SpringApps-Enterprise/main.bicep' = if(tier == 'Enterprise') {
+  name: '${timeStamp}-spring-apps-enterprise'
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
     appInsightsName: appInsightsName

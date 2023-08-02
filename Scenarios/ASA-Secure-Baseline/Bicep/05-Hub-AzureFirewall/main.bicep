@@ -499,11 +499,7 @@ module azfw '../Modules/azfw.bicep' = if (deployFirewall) {
                 springAppsRuntimeSubnetPrefix
               ]
               targetFqdns: [
-                'services.gradle.org'
-                'downloads.gradle-dn.com'
-                'plugins.gradle.org'
-                'plugins-artifacts.gradle.org'
-                'repo.gradle.org'
+                '*.gradle.org'
               ]
               protocols: [
                 {
@@ -520,6 +516,22 @@ module azfw '../Modules/azfw.bicep' = if (deployFirewall) {
               ]
               targetFqdns: [
                 'repo.maven.apache.org'
+              ]
+              protocols: [
+                {
+                  port: 443
+                  protocolType: 'Https'
+                }
+              ]
+            }
+            {
+              name: 'jfrog-jcenter'
+              sourceAddresses: [
+                springAppsSubnetPrefix
+                springAppsRuntimeSubnetPrefix
+              ]
+              targetFqdns: [
+                'jcenter.bintray.com'
               ]
               protocols: [
                 {

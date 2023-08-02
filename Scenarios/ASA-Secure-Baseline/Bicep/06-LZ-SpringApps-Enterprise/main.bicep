@@ -309,17 +309,18 @@ module springApps '../Modules/springApps.bicep' = {
   name: '${timeStamp}-spring-apps'
   scope: resourceGroup(appRgName)
   params: {
+    appInsightsInstrumentationKey: appInsights.outputs.key
     appNetworkResourceGroup: appNetworkResourceGroup
     appSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeRgName}/providers/Microsoft.Network/virtualNetworks/${spokeVnetName}/subnets/snet-app'
-    enterprise: false
+    enterprise: true
     location: location
     name: springAppsName
     serviceCidr: springAppsRuntimeCidr
     serviceRuntimeSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeRgName}/providers/Microsoft.Network/virtualNetworks/${spokeVnetName}/subnets/snet-runtime'
     serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
     sku: {
-      name: 'S0'
-      tier: 'Standard'
+      name: 'E0'
+      tier: 'Enterprise'
     }
     tags: tags
     workspaceId: logAnalyticsWorkspace.outputs.id
@@ -329,6 +330,7 @@ module springApps '../Modules/springApps.bicep' = {
     defaultAppsRoute
     defaultRuntimeRoute
     spokeVnet
+    appInsights
   ]
 }
 
