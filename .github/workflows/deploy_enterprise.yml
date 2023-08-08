@@ -75,12 +75,12 @@ jobs:
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
-      CONTAINERNAME: ${{ vars.CONTAINERNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
       NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
       ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
       REGION: ${{ needs.conditions.outputs.REGION }}
       SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
-      JUMP_BOX_USERNAME: ${{needs.conditions.outputs.JUMP_BOX_USERNAME}}
+      JUMP_BOX_USERNAME: ${{needs.conditions.outputs.jumpbox_username}}
       DEPLOY_FIREWALL: ${{ needs.conditions.outputs.DEPLOY_FIREWALL}}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
