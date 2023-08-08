@@ -82,6 +82,9 @@ jobs:
       SPRINGAPPS_SPN_OBJECT_ID: ${{ needs.conditions.outputs.SPRINGAPPS_SPN_OBJECT_ID}}
       JUMP_BOX_USERNAME: ${{needs.conditions.outputs.JUMP_BOX_USERNAME}}
       DEPLOY_FIREWALL: ${{ needs.conditions.outputs.DEPLOY_FIREWALL}}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
     secrets: inherit
   deploy_lz_enterprise:
     needs:

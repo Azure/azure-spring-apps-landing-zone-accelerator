@@ -29,6 +29,15 @@ on:
         DEPLOY_FIREWALL:
           required: true
           type: string
+        AZURE_CLIENT_ID:
+          required: true
+          type: string
+        AZURE_SUBSCRIPTION_ID:
+          required: true
+          type: string
+        AZURE_TENANT_ID:
+          required: true
+          type: string
       secrets:
         JUMP_BOX_PASSWORD:
           required: true
@@ -53,10 +62,11 @@ env:
     DEPLOY_FIREWALL: ${{ inputs.DEPLOY_FIREWALL}}
     
     # ==== Terraform Azure Login ===:
-    ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }} 
+    ARM_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }} 
     ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-    ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-    ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+    ARM_SUBSCRIPTION_ID: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+    ARM_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
+
 jobs:
     deploy_hub_network:
         name: Deploy 02 Hub Network
