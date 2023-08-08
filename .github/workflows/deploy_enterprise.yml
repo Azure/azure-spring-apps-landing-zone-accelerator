@@ -73,13 +73,13 @@ jobs:
     needs: [conditions]
     uses: ./.github/workflows/infrastructure.yaml
     with:
-      TFSTATE_RG: ${{needs.conditions.outputs.TFSTATE_RG}}
-      STORAGEACCOUNTNAME: ${{needs.conditions.outputs.STORAGEACCOUNTNAME}}
-      CONTAINERNAME: ${{ needs.conditions.outputs.CONTAINERNAME}}
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME}}
       NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
       ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
       REGION: ${{ needs.conditions.outputs.REGION }}
-      SPRINGAPPS_SPN_OBJECT_ID: ${{ needs.conditions.outputs.SPRINGAPPS_SPN_OBJECT_ID}}
+      SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
       JUMP_BOX_USERNAME: ${{needs.conditions.outputs.JUMP_BOX_USERNAME}}
       DEPLOY_FIREWALL: ${{ needs.conditions.outputs.DEPLOY_FIREWALL}}
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
