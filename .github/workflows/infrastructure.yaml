@@ -30,7 +30,7 @@ on:
           required: true
           type: string
       secrets:
-        JUMPBOX_PASSWORD:
+        JUMP_BOX_PASSWORD:
           required: true
       outputs:
         private_dns_rg:
