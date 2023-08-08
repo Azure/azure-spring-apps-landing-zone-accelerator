@@ -41,6 +41,8 @@ on:
       secrets:
         JUMP_BOX_PASSWORD:
           required: true
+        AZURE_CLIENT_SECRET:
+          required: true
       outputs:
         private_dns_rg:
           value: ${{ jobs.deploy_lz_network.outputs.private_dns_rg}}
