@@ -51,6 +51,12 @@ env:
     SPRINGAPPS_SPN_OBJECT_ID: ${{ inputs.SPRINGAPPS_SPN_OBJECT_ID}}
     JUMP_BOX_USERNAME: ${{inputs.JUMP_BOX_USERNAME}}
     DEPLOY_FIREWALL: ${{ inputs.DEPLOY_FIREWALL}}
+    
+    # ==== Terraform Azure Login ===:
+    ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }} 
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
 jobs:
     deploy_hub_network:
         name: Deploy 02 Hub Network
