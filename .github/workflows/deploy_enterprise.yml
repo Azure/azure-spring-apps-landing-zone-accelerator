@@ -71,7 +71,7 @@ jobs:
   deploy_infrastructure_baseline:
     name: Deploy ASA Secure Baseline
     needs: [conditions]
-    uses: ./.github/workflows/infrastructure.yaml
+    uses: ./.github/workflows/templates/infrastructure.yaml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
@@ -89,49 +89,21 @@ jobs:
   deploy_lz_enterprise:
     needs:
       [deploy_infrastructure_baseline, conditions]
-    name: Deploy 06 LZ Spring Apps Enterprise
-    runs-on: ubuntu-latest
-    env:
-      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
-      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
-      REGION: ${{ needs.conditions.outputs.region}}
-    outputs:
-      spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
-      spring_apps_rg: ${{ steps.output-apps-rg.outputs.spring_apps_rg }}
-    defaults:
-      run:
-        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
-    steps:
-      - name: Checkout this repository
-        uses: actions/checkout@v3
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
-        with:
-          terraform_wrapper: false
-      - name: Terraform Init
-        run: |
-          terraform init \
-          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
-          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
-          -backend-config="container_name=${{ env.CONTAINERNAME }}"
-      - name: Terraform Plan
-        run: |
-          terraform plan -out my.plan \
-          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
-          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
-          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
-          -var="location=${{ env.REGION }}" \
-          -var="name_prefix=${{ env.NAME_PREFIX }}" \
-          -var="environment=${{ env.ENVIRONMENT }}" \
-          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
-      - name: Terraform Apply
-        run: terraform apply my.plan
-      - name: Terraform Output
-        id: output
-        run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
-      - name: Terraform Output
-        id: output-apps-rg
-        run: echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT
+    name: Deploy Spring Apps Enterprise
+    uses: ./.github/workflows/templates/asa_enterprise.yml
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+    secrets: inherit
+    
   deploy_acme_fitness_infra:
     name: Deploy ACME Fitness Store Infrastructure
     needs: [deploy_lz_enterprise, deploy_infrastructure_baseline, conditions]
