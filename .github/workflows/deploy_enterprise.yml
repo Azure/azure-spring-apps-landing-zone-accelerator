@@ -142,7 +142,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy apps/acme-payment
-        uses: azure/spring-apps-deploy@v1
+        uses: azure/spring-apps-deploy@v1.5.1
         if: needs.conditions.outputs.destroy == 'false'
         with:
           azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
