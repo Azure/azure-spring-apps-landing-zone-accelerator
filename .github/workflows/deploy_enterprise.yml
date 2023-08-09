@@ -105,7 +105,7 @@ jobs:
     secrets: inherit
   deploy_acme_fitness_infra:
     needs:  [deploy_infrastructure_baseline,deploy_lz_enterprise , conditions]
-    name: Deploy Spring Apps Enterprise
+    name: Deploy Acme Fitness Store
     uses: ./.github/workflows/acme_fitness_infrastructure.yml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
