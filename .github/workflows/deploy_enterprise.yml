@@ -71,7 +71,7 @@ jobs:
   deploy_infrastructure_baseline:
     name: Deploy ASA Secure Baseline
     needs: [conditions]
-    uses: ./.github/workflows/templates/infrastructure.yaml
+    uses: ./.github/workflows/infrastructure.yaml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
@@ -90,7 +90,7 @@ jobs:
     needs:
       [deploy_infrastructure_baseline, conditions]
     name: Deploy Spring Apps Enterprise
-    uses: ./.github/workflows/templates/asa_enterprise.yml
+    uses: ./.github/workflows/asa_enterprise.yml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
