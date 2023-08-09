@@ -71,7 +71,7 @@ jobs:
   deploy_infrastructure_baseline:
     name: Deploy ASA Secure Baseline
     needs: [conditions]
-    uses: ./.github/workflows/infrastructure.yaml
+    uses: ./.github/workflows/asa_baseline_infrastructure.yml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
@@ -103,44 +103,26 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
     secrets: inherit
-    
   deploy_acme_fitness_infra:
-    name: Deploy ACME Fitness Store Infrastructure
-    needs: [deploy_lz_enterprise, deploy_infrastructure_baseline, conditions]
-    runs-on: ubuntu-latest
-    env:
-      NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
-      ENVIRONMENT: ${{needs.conditions.outputs.environment}}
-      REGION: ${{ needs.conditions.outputs.region}}
-    defaults:
-      run:
-        working-directory: Scenarios/sample-apps/fitness-store/terraform
-    steps:
-      - name: Checkout this repository
-        uses: actions/checkout@v3
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
-        with:
-          terraform_wrapper: false
-      - name: Terraform Init
-        run: |
-          terraform init \
-          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
-          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
-          -backend-config="container_name=${{ env.CONTAINERNAME }}"
-      - name: Terraform Plan
-        run: |
-          terraform plan -out my.plan \
-          -var="spring_cloud_service=${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}" \
-          -var="subscription_id=${{ env.SUBSCRIPTION_ID}}" \
-          -var="name_prefix=${{ env.NAME_PREFIX }}" \
-          -var="private_zones_resource_group_name=${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg }}" \
-          -var="resource_group=${{ needs.deploy_infrastructure_baseline.outputs.spoke_rg }}" \
-          -var="spring_cloud_resource_group_name=${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}" \
-          -var="shared_rg=${{ needs.deploy_infrastructure_baseline.outputs.shared_rg }}"
-
-      - name: Terraform Apply
-        run: terraform apply my.plan
+    needs:  [deploy_infrastructure_baseline,deploy_lz_enterprise , conditions]
+    name: Deploy Spring Apps Enterprise
+    uses: ./.github/workflows/acme_fitness_infrastructure.yml
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+      SPRING_APPS_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}}
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}
+      SPOKE_RG: ${{ needs.deploy_infrastructure_baseline.outputs.spoke_rg}}
+      SHARED_RG: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
+      PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
+    secrets: inherit
   build:
     name: Build and Deploy ACME Fitness Microservices
     needs: [deploy_acme_fitness_infra, deploy_lz_enterprise, conditions]
