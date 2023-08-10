@@ -1,5 +1,15 @@
 
 
+resource "random_string" "random_postgres" {
+  length  = 4
+  upper   = false
+  special = false
+}
+
+locals {
+  postgres_server_name = "${var.project_name}-db-server-${random_string.random_postgres.result}"
+}
+
 # Generate Admin User for Postgresql Server
 resource "random_password" "admin" {
   length  = 16
@@ -58,7 +68,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 
 # Postgresql Flexible Server
 resource "azurerm_postgresql_flexible_server" "postgresql_server" {
-  name                   = "${var.project_name}-db-server"
+  name                   = local.postgres_server_name
   resource_group_name    = data.azurerm_resource_group.springapps_rg.name
   location               = data.azurerm_resource_group.springapps_rg.location
   version                = "13"

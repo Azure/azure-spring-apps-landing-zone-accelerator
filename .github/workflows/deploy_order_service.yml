@@ -1,0 +1,39 @@
+name: Deploy order service
+on:
+    workflow_call:
+        inputs:
+            SUBSCRIPTION_ID:
+                required: true
+                type: string
+            ASA_SERVICE_NAME:
+                required: true
+                type: string
+            ASA_RG:
+                required: true
+                type: string
+        secrets:
+            AZURE_CREDENTIALS:
+                required: true
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+          with:
+            repository: Azure-Samples/acme-fitness-store.git
+            path: fitness-store
+            ref: Azure
+        - name: Set up Azure
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+        - name: Set up Azure Spring Extension
+          run: az extension add --name spring
+        - name: Deploy Order service
+          run: |
+            az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
+            az spring app deploy \
+                --name "order-service" \
+                --resource-group ${{ inputs.ASA_RG}} \
+                --service "${{inputs.ASA_SERVICE_NAME}}" \
+                --source-path "${{ github.workspace }}/fitness-store/apps/acme-order"

@@ -123,129 +123,61 @@ jobs:
       SHARED_RG: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
       PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
     secrets: inherit
-  build_payments:
-    needs: [deploy_acme_fitness_infra, deploy_lz_enterprise, conditions]
-    runs-on: ubuntu-latest
-    # defaults:
-    #   run:
-    #     working-directory: /fitness-store/apps/acme-payment
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: Azure-Samples/acme-fitness-store.git
-          path: fitness-store
-          ref: Azure
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-      # - name: Validate Gradle wrapper
-      #   uses: gradle/wrapper-validation-action@v1
-      # - name: Build with Gradle
-      #   uses: gradle/gradle-build-action@v2
-      #   with:
-      #     arguments: build
-      #     build-root-directory: /fitness-store/apps/acme-payment
-      - name: Set up Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Set up Azure Spring Extension
-        run: az extension add --name spring
-      - name: Deploy Payment
-        run: |
-          az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }}
-          az spring app deploy \
-            --name "payment-service" \
-            --resource-group ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}} \
-            --service "${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}" \
-            --config-file-pattern payment \
-            --build-env BP_JVM_VERSION=17 \
-            --source-path "${{ github.workspace }}/fitness-store/apps/acme-payment"
-  build:
-    name: Build and Deploy ACME Fitness Microservices
-    needs: [deploy_acme_fitness_infra, deploy_lz_enterprise, conditions]
-    runs-on: ubuntu-latest
-    env:
-      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-      SPRING_APPS_RESOURCE_GROUP: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
-    steps:
-      - name: Checkout ACME Fitness sample
-        uses: actions/checkout@v3
-        with:
-          repository: Azure-Samples/acme-fitness-store.git
-          path: fitness-store
-          ref: Azure
-      - name: Azure CLI Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      # - name: Deploy apps/acme-payment
-      #   uses: azure/spring-apps-deploy@v1.5.1
-      #   if: needs.conditions.outputs.destroy == 'false'
-      #   with:
-      #     azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-      #     action: deploy
-      #     service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-      #     app-name: payment-service
-      #     use-staging-deployment: false
-      #     package: ${{ github.workspace }}/fitness-store/apps/acme-payment
-      #     jvm-options: -Xms2048m -Xmx2048m
-      #     runtime-version: Java_17
-      #     build-env: "-BP_JVM_VERSION 17"
-      #     config-file-patterns: payment
+  deploy_payments_service:
+      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
+      name: Deploy apps/acme-payment
+      uses: ./.github/workflows/deploy_payment_service.yml
+      with:
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+      secrets: inherit
+  deploy_catalog_service:
+      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
+      name: Deploy apps/acme-catalog
+      uses: ./.github/workflows/deploy_catalog_service.yml
+      with:
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+      secrets: inherit
+  deploy_order_service:
+      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
+      name: Deploy apps/acme-order
+      uses: ./.github/workflows/deploy_order_service.yml
+      with:
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+      secrets: inherit
+  deploy_cart_service:
+      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
+      name: Deploy apps/acme-order
+      uses: ./.github/workflows/deploy_cart_service.yml
+      with:
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+      secrets: inherit
+  deploy_frontend:
+      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
+      name: Deploy apps/acme-order
+      uses: ./.github/workflows/deploy_frontend_service.yml
+      with:
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+      secrets: inherit
 
-      - name: Deploy catalog service
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: catalog-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-catalog
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          build-env: "-BP_JVM_VERSION 17"
-          config-file-patterns: catalog
-
-      - name: Deploy apps/acme-order
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: order-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-order
-
-      - name: Deploy apps/acme-cart 
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: cart-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-cart 
-          environment-variables: -CART_PORT 8080
-
-      - name: Deploy apps/acme-shopping
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: frontend
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-shopping
   prepare_destroy:
-    needs: [conditions, build, deploy_lz_enterprise, deploy_infrastructure_baseline]
+    needs: [conditions,
+      deploy_frontend,
+      deploy_cart_service,
+      deploy_order_service,
+      deploy_catalog_service,
+      deploy_payments_service,
+      deploy_lz_enterprise,
+      deploy_infrastructure_baseline]
     name: Prepare Spring Enterprise for Destroy
     runs-on: ubuntu-latest
     if: needs.conditions.outputs.destroy == 'true'
