@@ -140,8 +140,8 @@ param supportSubnetPrefix string
 @description('User name for admin account on the jump host')
 param adminUserName string
 
-@description('Private IP address of the existing firewll. If this script is not configured to deploy a firewall, this value must be set')
-param azureFirewallIp string = ''
+@description('Private IP address of the existing firewll.  Leave blank if you are deploying a new firewall specific to this landing zone.')
+param firewallIp string = ''
 
 @description('Boolean indicating whether or not to deploy the hub module. Set to false and override the hub module parameters if you already have one in place.')
 param deployHub bool = true
@@ -192,9 +192,9 @@ module hub '02-Hub-Network/main.bicep' = if (deployHub) {
   params: {
     azureBastionSubnetPrefix: bastionSubnetPrefix
     azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
+    createFirewallSubnet: deployFirewall && firewallIp == '' ? true : false
     bastionName: bastionName
     bastionNsgName: bastionNsgName
-    deployFirewall: deployFirewall
     hubVnetAddressPrefix: hubVnetAddressPrefix
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
@@ -268,7 +268,7 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
   params: {
     azureFirewallName: azureFirewallName
     azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
-    deployFirewall: deployFirewall
+    createFirewall: deployFirewall && firewallIp == ''
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
     location: location
@@ -290,7 +290,7 @@ module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = if(tier == 'S
     appInsightsName: appInsightsName
     appNetworkResourceGroup: appNetworkResourceGroup
     appRgName: appRgName
-    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : azureFirewallIp
+    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : firewallIp
     defaultAppsRouteName: defaultAppsRouteName
     defaultHubRouteName: defaultHubRouteName
     defaultRuntimeRouteName: defaultRuntimeRouteName
@@ -332,11 +332,11 @@ module springAppsEnterprise '06-LZ-SpringApps-Enterprise/main.bicep' = if(tier =
     appInsightsName: appInsightsName
     appNetworkResourceGroup: appNetworkResourceGroup
     appRgName: appRgName
-    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : azureFirewallIp
     defaultAppsRouteName: defaultAppsRouteName
     defaultHubRouteName: defaultHubRouteName
     defaultRuntimeRouteName: defaultRuntimeRouteName
     defaultSharedRouteName: defaultSharedRouteName
+    firewallIp: deployFirewall && firewallIp == '' ? firewall.outputs.privateIp : firewallIp
     hubVnetRgName: hubVnetRgName
     location: location
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName

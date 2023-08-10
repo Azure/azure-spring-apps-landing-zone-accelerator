@@ -11,7 +11,7 @@ param azureFirewallName string
 param azureFirewallSubnetPrefix string
 
 @description('Boolean value indicating whether or not to deploy the Azure Firewall.')
-param deployFirewall bool
+param createFirewall bool
 
 @description('Name of the hub VNET. Specify this value in the parameters.json file to override this default.')
 param hubVnetName string
@@ -39,7 +39,7 @@ param timeStamp string
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
-module azfwSubnet '../Modules/subnet.bicep' = if(deployFirewall) {
+module azfwSubnet '../Modules/subnet.bicep' = if(createFirewall) {
   name: '${timeStamp}-azfwSubnet'
   scope: resourceGroup(hubVnetRgName)
   params: {
@@ -49,7 +49,7 @@ module azfwSubnet '../Modules/subnet.bicep' = if(deployFirewall) {
   }
 }
 
-module azfw '../Modules/azfw.bicep' = if (deployFirewall) {
+module azfw '../Modules/azfw.bicep' = if (createFirewall) {
   name: '${timeStamp}-azfw'
   scope: resourceGroup(hubVnetRgName)
   params: {
@@ -548,4 +548,4 @@ module azfw '../Modules/azfw.bicep' = if (deployFirewall) {
   }
 }
 
-output privateIp string = deployFirewall ? azfw.outputs.privateIp : ''
+output privateIp string = createFirewall ? azfw.outputs.privateIp : ''
