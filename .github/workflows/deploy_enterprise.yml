@@ -126,9 +126,9 @@ jobs:
   build_payments:
     needs: [deploy_acme_fitness_infra, deploy_lz_enterprise, conditions]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: /fitness-store/apps/acme-payment
+    # defaults:
+    #   run:
+    #     working-directory: /fitness-store/apps/acme-payment
     steps:
       - uses: actions/checkout@v3
         with:
@@ -140,13 +140,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
-          build-root-directory: /fitness-store/apps/acme-payment
+      # - name: Validate Gradle wrapper
+      #   uses: gradle/wrapper-validation-action@v1
+      # - name: Build with Gradle
+      #   uses: gradle/gradle-build-action@v2
+      #   with:
+      #     arguments: build
+      #     build-root-directory: /fitness-store/apps/acme-payment
       - name: Set up Azure
         uses: azure/login@v1
         with:
@@ -160,7 +160,7 @@ jobs:
             --resource-group ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}} \
             --service "${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}}" \
             --config-file-pattern payment \
-            --source-path ./
+            --source-path "${{ github.workspace }}/fitness-store/apps/acme-payment"
   build:
     name: Build and Deploy ACME Fitness Microservices
     needs: [deploy_acme_fitness_infra, deploy_lz_enterprise, conditions]
@@ -179,20 +179,20 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Deploy apps/acme-payment
-        uses: azure/spring-apps-deploy@v1.5.1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: payment-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-payment
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          build-env: "-BP_JVM_VERSION 17"
-          config-file-patterns: payment
+      # - name: Deploy apps/acme-payment
+      #   uses: azure/spring-apps-deploy@v1.5.1
+      #   if: needs.conditions.outputs.destroy == 'false'
+      #   with:
+      #     azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
+      #     action: deploy
+      #     service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
+      #     app-name: payment-service
+      #     use-staging-deployment: false
+      #     package: ${{ github.workspace }}/fitness-store/apps/acme-payment
+      #     jvm-options: -Xms2048m -Xmx2048m
+      #     runtime-version: Java_17
+      #     build-env: "-BP_JVM_VERSION 17"
+      #     config-file-patterns: payment
 
       - name: Deploy catalog service
         uses: azure/spring-apps-deploy@v1
