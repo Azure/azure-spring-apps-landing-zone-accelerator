@@ -159,7 +159,7 @@ jobs:
           az spring app deploy \
             --name "payment-service" \
             --resource-group ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}} \
-            --service "${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}}" \
+            --service "${{needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}" \
             --config-file-pattern payment \
             --source-path "${{ github.workspace }}/fitness-store/apps/acme-payment"
   build:
