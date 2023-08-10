@@ -155,7 +155,7 @@ jobs:
         run: az extension add --name spring
       - name: Deploy Payment
         run: |
-          az account set --subscription="${{vars.AZURE_SUBSCRIPTION_ID }}
+          az account set --subscription="${{vars.AZURE_SUBSCRIPTION_ID }}""
           az spring app deploy \
             --name "payment-service" \
             --resource-group ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}} \
