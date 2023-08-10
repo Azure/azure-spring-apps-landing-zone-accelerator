@@ -71,7 +71,7 @@ jobs:
   deploy_infrastructure_baseline:
     name: Deploy ASA Secure Baseline
     needs: [conditions]
-    uses: ./.github/workflows/asa_baseline_infrastructure.yml
+    uses: ./.github/workflows/template_asa_baseline_infrastructure.yml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
@@ -90,7 +90,7 @@ jobs:
     needs:
       [deploy_infrastructure_baseline, conditions]
     name: Deploy Spring Apps Enterprise
-    uses: ./.github/workflows/asa_enterprise.yml
+    uses: ./.github/workflows/template_asa_enterprise.yml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
@@ -106,7 +106,7 @@ jobs:
   deploy_acme_fitness_infra:
     needs:  [deploy_infrastructure_baseline,deploy_lz_enterprise , conditions]
     name: Deploy Acme Fitness Store
-    uses: ./.github/workflows/acme_fitness_infrastructure.yml
+    uses: ./.github/workflows/fitness_infrastructure.yml
     with:
       TFSTATE_RG: ${{ vars.TFSTATE_RG }}
       STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
@@ -126,7 +126,7 @@ jobs:
   deploy_payments_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-payment
-      uses: ./.github/workflows/deploy_payment_service.yml
+      uses: ./.github/workflows/fitness_deploy_payment_service.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
@@ -135,7 +135,7 @@ jobs:
   deploy_catalog_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-catalog
-      uses: ./.github/workflows/deploy_catalog_service.yml
+      uses: ./.github/workflows/fitness_deploy_catalog_service.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
@@ -144,7 +144,7 @@ jobs:
   deploy_order_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-order
-      uses: ./.github/workflows/deploy_order_service.yml
+      uses: ./.github/workflows/fitness_deploy_order_service.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
@@ -152,8 +152,8 @@ jobs:
       secrets: inherit
   deploy_cart_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-order
-      uses: ./.github/workflows/deploy_cart_service.yml
+      name: Deploy apps/acme-cart
+      uses: ./.github/workflows/fitness_deploy_cart_service.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
@@ -161,8 +161,8 @@ jobs:
       secrets: inherit
   deploy_frontend:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-order
-      uses: ./.github/workflows/deploy_frontend_service.yml
+      name: Deploy apps/acme-frontend
+      uses: ./.github/workflows/fitness_deploy_frontend_service.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
