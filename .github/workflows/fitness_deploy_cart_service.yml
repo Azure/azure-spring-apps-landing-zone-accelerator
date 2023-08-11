@@ -36,4 +36,5 @@ jobs:
                 --name "cart-service" \
                 --resource-group ${{ inputs.ASA_RG}} \
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
+                --env "CART_PORT=8080" \
                 --source-path "${{ github.workspace }}/fitness-store/apps/acme-cart"
