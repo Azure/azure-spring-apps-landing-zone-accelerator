@@ -65,17 +65,17 @@ You can deploy the current LZA directly in your azure subscription using Azure D
 ## Bringing your own Hub
 If you have an existing corporate network hub you can override the details of the hub in the `main.parameters.json` file and this script will use your existing resource.  You will need the contributor role to the the existing hub and/or resource group where the existing hub is deployed.  You may also need to modify the subnet prefixes in `main.parameters.json` to avoid IP address space collisions with existing subnets.  Add the following values to the bottom of the `main.parameters.json` file to specify an existing hub VNET:
 
-    ```json
-    "deployHub": {
-      "value": false
-    },
-    "hubVnetName": {
-      "value": "{name-of-your-hub-vnet}"
-    },
-    "hubVnetRgName": {
-      "value": "{name-of-resource-group-containing-your-hub-vnet}"
-    }
-    ```
+```json
+"deployHub": {
+  "value": false
+},
+"hubVnetName": {
+  "value": "{name-of-your-hub-vnet}"
+},
+"hubVnetRgName": {
+  "value": "{name-of-resource-group-containing-your-hub-vnet}"
+}
+```
 
 ## Bringing your own Firewall/Deploying without an egress Firewall
 If you have an existing firewall, or you do not have a requirement for egress traffic to route through a firewall, you can override the details of the firewall in the `main.parameters.json` file and this script will use your existing resource or not deploy firewall settings at all.  Add the following values to the bottom of the `main.parameters.json` file:
@@ -83,18 +83,18 @@ If you have an existing firewall, or you do not have a requirement for egress tr
   **Option 1:** Deploy an Azure Firewall to the LZA
     No changes to `main.parameters.json` required
 
-  **Option 2:** Use an existing firewall
+  **Option 2:** Use an existing firewall.  *NOTE*: If you use an existing firewall, that firewall needs to implement specific rules to allow Azure Spring Apps to provision and boot strap.  See the [Azure Spring Apps FQDN requirements/application rules](https://learn.microsoft.com/en-us/azure/spring-apps/vnet-customer-responsibilities#azure-spring-apps-fqdn-requirementsapplication-rules) for details.
 
-    ```json
-    "firewallIp": {
-      "value": "{internal-ip-of-your-existing-firewall}"
-    }
-    ```
+```json
+"firewallIp": {
+  "value": "{internal-ip-of-your-existing-firewall}"
+}
+```
 
   **Option 3:** Do not configure any firewall
-  
-    ```json
-    "deployFirewall": {
-      "value": false
-    }
-    ```
+
+```json
+"deployFirewall": {
+  "value": false
+}
+```
