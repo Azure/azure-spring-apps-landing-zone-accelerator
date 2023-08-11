@@ -180,7 +180,7 @@ jobs:
       deploy_infrastructure_baseline]
     name: Prepare Spring Enterprise for Destroy
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
       SPRING_APPS_RESOURCE_GROUP: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
