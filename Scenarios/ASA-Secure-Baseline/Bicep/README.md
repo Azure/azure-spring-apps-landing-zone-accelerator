@@ -84,6 +84,7 @@ If you have an existing firewall, or you do not have a requirement for egress tr
     No changes to `main.parameters.json` required
 
   **Option 2:** Use an existing firewall
+
     ```json
     "firewallIp": {
       "value": "{internal-ip-of-your-existing-firewall}"
@@ -91,6 +92,7 @@ If you have an existing firewall, or you do not have a requirement for egress tr
     ```
 
   **Option 3:** Do not configure any firewall
+  
     ```json
     "deployFirewall": {
       "value": false
