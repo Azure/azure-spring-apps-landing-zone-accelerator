@@ -28,4 +28,4 @@ jobs:
             service-name: spring-apps-app
             app-name: frontend
             use-staging-deployment: false
-            package: --source-path "${{ github.workspace }}/fitness-store/apps/acme-shopping"
+            package: "${{ github.workspace }}/fitness-store/apps/acme-shopping"
