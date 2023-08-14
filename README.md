@@ -51,12 +51,11 @@ logs and metrics.
 for applications deployed to Azure Spring Apps
 * Instance of Azure Bastion for connection to the Windows Server 2022 virtual machine running in the hub virtual network.
 
-For Azure Spring Apps Standard SKU:
-* Instance of Azure Database for MySQL flexible server deployed with VNET Integration.  This can be used to deploy the PetClinic sample app described in this document.
-
-For Azure Spring Apps Enterprise SKU:
+For Azure Spring Apps Enterprise SKU: Unlock Spring's full potential with ASA- Enterprise SKU that provides faster path to production and you have entitlements for VMware Spring Runtime Support for your app code.
 * Instance of Azure Database for PostgreSQL flexible server deployed with VNET Integration and Azure Cache for Redis with Private endpoint.  
 
+For Azure Spring Apps Standard SKU:
+* Instance of Azure Database for MySQL flexible server deployed with VNET Integration.  This can be used to deploy the PetClinic sample app described in this document.
 
 ## Next Steps to implement Azure Spring Apps Landing Zone Accelerator
 
@@ -65,12 +64,12 @@ Pick the below scenario to get started on a reference implementation.
 :arrow_forward: [Azure Spring Apps Secure Baseline](/Scenarios/ASA-Secure-Baseline/README.md)
 
 Deployment Details:
-| Azure Spring Apps SKU | Deployment Methodology | GitHub Actions                                                                                       |
+| Azure Spring Apps SKU | IaC | GitHub Actions                                                                                       |
 | --------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------- |
-| Standard              | Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-standard.md)               |
-|                       | Bicep                  | [Power shell available](./Scenarios/ASA-Secure-Baseline/Bicep/README.md), GitHub Actions Coming soon |
 | Enterprise            | Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-enterprise.md)             |
 |                       | Bicep                  | Power shell available, GitHub Actions Coming soon                                                    |
+| Standard              | Terraform              | [Published](./Scenarios/ASA-Secure-Baseline/Terraform/09-e2e-githubaction-standard.md)               |
+|                       | Bicep                  | [Power shell available](./Scenarios/ASA-Secure-Baseline/Bicep/README.md), GitHub Actions Coming soon |
 
 ## Got a feedback
 Please leverage issues if you have any feedback or request on how we can improve on this repository.
