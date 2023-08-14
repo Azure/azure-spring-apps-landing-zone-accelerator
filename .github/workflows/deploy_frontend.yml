@@ -25,7 +25,7 @@ jobs:
           with:
             azure-subscription: ${{ vars.AZURE_SUBSCRIPTION_ID }}
             action: deploy
-            service-name: spring-apps-app
+            service-name: spring-entspring-dev-j0uz
             app-name: frontend
             use-staging-deployment: false
             package: "${{ github.workspace }}/fitness-store/apps/acme-shopping"
