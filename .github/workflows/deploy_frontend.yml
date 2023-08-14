@@ -1,0 +1,31 @@
+name: Deploy frontend service
+on: workflow_dispatch
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+          with:
+            repository: Azure-Samples/acme-fitness-store.git
+            path: fitness-store
+            ref: Azure
+        - name: Set up Azure
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+        - name: Set up Azure Spring Extension
+          run: az extension add --name spring
+        - name: deploy to production step with source code
+          uses: azure/spring-apps-deploy@v1
+          with:
+            azure-subscription: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            action: deploy
+            service-name: spring-apps-app
+            app-name: frontend
+            use-staging-deployment: false
+            package: --source-path "${{ github.workspace }}/fitness-store/apps/acme-shopping"
