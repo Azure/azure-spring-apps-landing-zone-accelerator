@@ -18,8 +18,6 @@ jobs:
           uses: azure/login@v1
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
-        - name: Set up Azure Spring Extension
-          run: az extension add --name spring
         - name: deploy to production step with source code
           uses: azure/spring-apps-deploy@v1
           with:
