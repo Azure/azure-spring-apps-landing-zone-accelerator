@@ -39,7 +39,7 @@ param timeStamp string
 /******************************/
 /*     RESOURCES & MODULES    */
 /******************************/
-module azfwSubnet '../Modules/subnet.bicep' = if(createFirewall) {
+module azfwSubnet '../Modules/subnet.bicep' = if (createFirewall) {
   name: '${timeStamp}-azfwSubnet'
   scope: resourceGroup(hubVnetRgName)
   params: {
@@ -160,7 +160,6 @@ module azfw '../Modules/azfw.bicep' = if (createFirewall) {
                 'UDP'
               ]
             }
-
             {
               name: 'AzureContainerRegistery'
               sourceAddresses: [
