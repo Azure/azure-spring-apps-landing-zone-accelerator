@@ -170,7 +170,7 @@ resource "azurerm_spring_cloud_active_deployment" "asa_app_deployment_activation
 
 
 # Create ASA Apps Deployment
-resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment" {
+resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment_staging" {
   name = "staging"
   spring_cloud_app_id = concat(azurerm_spring_cloud_app.asa_app_service,
   azurerm_spring_cloud_app.asa_app_service_bind)[count.index].id
