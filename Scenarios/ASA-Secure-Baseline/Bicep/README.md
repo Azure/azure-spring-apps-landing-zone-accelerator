@@ -10,25 +10,26 @@ The repo contains a single parameters.json file in the Deployment folder. Resour
 
 ## Prerequisites
 
+### Local Tools
+
 1. This deployment scenario requires the following tools installed locally if you intend to execute the deployment from your local machine:
     1. PowerShell. [Click here](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.3) for instructions on installing PowerShell.
     1. Azure PowerShell Az Module. [Click here](https://learn.microsoft.com/en-us/powershell/azure/install-azure-powershell?view=azps-10.2.0) for instructions on installing the Azure PowerShell Az Module.
     1. Azure CLI. [Click here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) for instructions on installing Azure CLI.
     1. Azure Bicep. [Click here](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) for instructions on installing Azure Bicep.
         1. If Bicep is already installed, ensure you have the latest version by running `az bicep upgrade`
-1. Clone this repo:
 
-### To clone this repo
+### Clone the Repo
 
 ```bash
 git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git`
 ```
 
-### To authenticate Azure CLI
+### Authenticate Azure CLI
 
 _az login_ (Azure CLI) or _Connect-AzAccount_ ([PowerShell](https://learn.microsoft.com/en-us/powershell/module/az.accounts/connect-azaccount?view=azps-10.2.0))
 
-### To set a specific subscription
+### Set a specific subscription
 
 _az account list --output table_
 _az account set --subscription {name-of-subscription}_ (Azure CLI) or _Set-AzContext -Subscription {id-of-subscription}_ ([PowerShell](https://docs.microsoft.com/en-us/powershell/module/az.accounts/set-azcontext?view=azps-10.2.0))
