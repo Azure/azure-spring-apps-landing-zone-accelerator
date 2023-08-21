@@ -168,6 +168,21 @@ resource "azurerm_spring_cloud_active_deployment" "asa_app_deployment_activation
   count = sum([length(var.asa_apps), length(var.asa_apps_bind)])
 }
 
+
+# Create ASA Apps Deployment
+resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment" {
+  name = "staging"
+  spring_cloud_app_id = concat(azurerm_spring_cloud_app.asa_app_service,
+  azurerm_spring_cloud_app.asa_app_service_bind)[count.index].id
+  build_result_id = "<default>"
+
+  quota {
+    cpu    = "1"
+    memory = "1Gi"
+  }
+  count = sum([length(var.asa_apps), length(var.asa_apps_bind)])
+}
+
 # Postgres Flexible Server Connector for Order Service
 resource "azurerm_spring_cloud_connection" "asa_app_order_connection" {
   name               = "order_service_db"
