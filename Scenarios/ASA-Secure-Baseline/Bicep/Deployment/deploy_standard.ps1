@@ -1,5 +1,3 @@
-$location = $Args[0]
-$namePrefix = $Args[1]
 $timeStamp = Get-Date -Format "yyyyMMddHHmm"
 $tier = "Standard"
 
