@@ -407,9 +407,9 @@ jobs:
       - name: workingDirectory
         value:  "Scenarios/sample-apps/fitness-store/terraform"
       - name: spring_apps_service_name 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
+        value: $[ dependencies.deploy_enterprise_sa.outputs['terraformOutput.spring_apps_service_name'] ]
       - name: spring_apps_rg 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_rg'] ]
+        value: $[ dependencies.deploy_enterprise_sa.outputs['terraformOutput.spring_apps_rg'] ]
       - name: spoke_rg 
         value: $[ dependencies.deploy_spoke_network.outputs['terraformOutput.spoke_rg'] ]
       - name: spoke_vnet_name 
@@ -477,9 +477,9 @@ jobs:
       vmImage: 'ubuntu-latest'
     variables:
       - name: spring_apps_service_name 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
+        value: $[ dependencies.deploy_enterprise_sa.outputs['terraformOutput.spring_apps_service_name'] ]
       - name: spring_apps_rg 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_rg'] ]
+        value: $[ dependencies.deploy_enterprise_sa.outputs['terraformOutput.spring_apps_rg'] ]
     steps:
       - checkout: acme-fitness-store
         path: fitness-store
@@ -589,9 +589,9 @@ jobs:
       - name: workingDirectory
         value:  "Scenarios/sample-apps/fitness-store/terraform"
       - name: spring_apps_service_name 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_service_name'] ]
+        value: $[ dependencies.deploy_enterprise_sa.outputs['terraformOutput.spring_apps_service_name'] ]
       - name: spring_apps_rg 
-        value: $[ dependencies.deploy_standard_sa.outputs['terraformOutput.spring_apps_rg'] ]
+        value: $[ dependencies.deploy_enterprise_sa.outputs['terraformOutput.spring_apps_rg'] ]
       - name: spoke_rg 
         value: $[ dependencies.deploy_spoke_network.outputs['terraformOutput.spoke_rg'] ]
       - name: spoke_vnet_name 
@@ -637,7 +637,7 @@ jobs:
           provider: 'azurerm'
           command: 'plan'
           workingDirectory: $(workingDirectory) 
-          commandOptions: '-destroy -out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var subscription_id=$(subscriptionId) -var mysql_server_admin_password=$(mySQLAdminPassword) -var mysql_server_admin_username=$(mySQLAdminUsername) -var resource_group=$(spoke_rg) -var vnet_spoke_name=$(spoke_vnet_name) -var private_zones_resource_group_name=$(private_dns_rg) -var key_vault_rg=$(shared_rg)'
+          commandOptions: '-destroy -out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var subscription_id=$(subscriptionId) -var resource_group=$(spoke_rg) -var private_zones_resource_group_name=$(private_dns_rg) -var shared_rg=$(shared_rg)'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
