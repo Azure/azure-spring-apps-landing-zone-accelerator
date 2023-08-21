@@ -20,21 +20,23 @@ The repo contains a single parameters.json file in the Deployment folder. Resour
 
 ### To clone this repo
 
-    `git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git`
+```bash
+git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git`
+```
 
 ### To authenticate Azure CLI
 
-    `az login` (Azure CLI) or `Connect-AzAccount` ([PowerShell](https://learn.microsoft.com/en-us/powershell/module/az.accounts/connect-azaccount?view=azps-10.2.0))
+_az login_ (Azure CLI) or _Connect-AzAccount_ ([PowerShell](https://learn.microsoft.com/en-us/powershell/module/az.accounts/connect-azaccount?view=azps-10.2.0))
 
-    ### To set a specific subscription
-    `az account list --output table`<br>
-    `az account set --subscription <name-of-subscription>` (Azure CLI) or `Set-AzContext -Subscription <id-of-subscription>` ([PowerShell](https://docs.microsoft.com/en-us/powershell/module/az.accounts/set-azcontext?view=azps-10.2.0))
+### To set a specific subscription
+
+_az account list --output table_
+_az account set --subscription {name-of-subscription}_ (Azure CLI) or _Set-AzContext -Subscription {id-of-subscription}_ ([PowerShell](https://docs.microsoft.com/en-us/powershell/module/az.accounts/set-azcontext?view=azps-10.2.0))
 
 1. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
-
-    `az provider register --namespace 'Microsoft.AppPlatform'`
-    `az provider register --namespace 'Microsoft.ContainerService'`
-    `az provider register --namespace 'Microsoft.ServiceLinker'`
+    1. _az provider register --namespace 'Microsoft.AppPlatform'_
+    1. _az provider register --namespace 'Microsoft.ContainerService'_
+    1. _az provider register --namespace 'Microsoft.ServiceLinker'_
 
 1. Modify the variables within the parameters.json files as needed
 
