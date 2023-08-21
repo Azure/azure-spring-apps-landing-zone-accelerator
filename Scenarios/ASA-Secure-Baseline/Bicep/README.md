@@ -22,7 +22,7 @@ The repo contains a single parameters.json file in the Deployment folder. Resour
 ### Clone the Repo
 
 ```bash
-git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git`
+git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git
 ```
 
 ### Authenticate Azure CLI
