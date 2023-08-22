@@ -4,7 +4,7 @@ param adminUserName string
 @description('Base64 encocded string to be run at VM startup')
 param initScriptBase64 string = ''
 @description('location for all resources')
-param location string = resourceGroup().location
+param location string
 param networkResourceGroupName string
 param subnetName string
 param tags object

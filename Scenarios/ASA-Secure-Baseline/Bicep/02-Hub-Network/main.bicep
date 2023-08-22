@@ -15,8 +15,8 @@ param bastionName string
 @description('Network Security Group name for the Bastion subnet. Specify this value in the parameters.json file to override this default.')
 param bastionNsgName string
 
-@description('Boolean value indicating whether or not to deploy the Azure Firewall.')
-param deployFirewall bool
+@description('Boolean value indicating whether or not to create a subnet for Azure Firewall.')
+param createFirewallSubnet bool
 
 @description('IP CIDR Block for the Hub VNET')
 param hubVnetAddressPrefix string
@@ -36,7 +36,7 @@ param tags object
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string
 
-var subnets = deployFirewall ? [
+var subnets = createFirewallSubnet ? [
   {
     name: 'AzureBastionSubnet' //Note: this name must remain this value and cannot be customized for Azure Bastion to deploy correctly
     properties: {
@@ -63,7 +63,6 @@ var subnets = deployFirewall ? [
     }
   }
 ]
-
 
 /******************************/
 /*     RESOURCES & MODULES    */

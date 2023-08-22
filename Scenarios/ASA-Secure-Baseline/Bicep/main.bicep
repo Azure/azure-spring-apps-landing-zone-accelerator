@@ -3,6 +3,11 @@ targetScope = 'subscription'
 /******************************/
 /*         PARAMETERS         */
 /******************************/
+@allowed([
+  'Standard'
+  'Enterprise'
+])
+param tier string
 
 //Resource Names - Override these in the parameters.json file to match your organization's naming conventions
 @description('Name of the Azure Firewall. Specify this value in the parameters.json file to override this default.')
@@ -135,8 +140,8 @@ param supportSubnetPrefix string
 @description('User name for admin account on the jump host')
 param adminUserName string
 
-@description('Private IP address of the existing firewll. If this script is not configured to deploy a firewall, this value must be set')
-param azureFirewallIp string = ''
+@description('Private IP address of the existing firewll.  Leave blank if you are deploying a new firewall specific to this landing zone.')
+param firewallIp string = ''
 
 @description('Boolean indicating whether or not to deploy the hub module. Set to false and override the hub module parameters if you already have one in place.')
 param deployHub bool = true
@@ -187,9 +192,9 @@ module hub '02-Hub-Network/main.bicep' = if (deployHub) {
   params: {
     azureBastionSubnetPrefix: bastionSubnetPrefix
     azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
+    createFirewallSubnet: deployFirewall && firewallIp == '' ? true : false
     bastionName: bastionName
     bastionNsgName: bastionNsgName
-    deployFirewall: deployFirewall
     hubVnetAddressPrefix: hubVnetAddressPrefix
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
@@ -263,7 +268,7 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
   params: {
     azureFirewallName: azureFirewallName
     azureFirewallSubnetPrefix: azureFirewallSubnetPrefix
-    deployFirewall: deployFirewall
+    createFirewall: deployFirewall && firewallIp == ''
     hubVnetName: hubVnetName
     hubVnetRgName: hubVnetRgName
     location: location
@@ -278,18 +283,60 @@ module firewall '05-Hub-AzureFirewall/main.bicep' = {
   ]
 }
 
-module springApps '06-LZ-SpringApps-Standard/main.bicep' = {
-  name: '${timeStamp}-spring-apps'
+module springAppsStandard '06-LZ-SpringApps-Standard/main.bicep' = if(tier == 'Standard') {
+  name: '${timeStamp}-spring-apps-standard'
   params: {
     appGwSubnetPrefix: appGwSubnetPrefix
     appInsightsName: appInsightsName
     appNetworkResourceGroup: appNetworkResourceGroup
     appRgName: appRgName
-    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : azureFirewallIp
+    azureFirewallIp: deployFirewall ? firewall.outputs.privateIp : firewallIp
     defaultAppsRouteName: defaultAppsRouteName
     defaultHubRouteName: defaultHubRouteName
     defaultRuntimeRouteName: defaultRuntimeRouteName
     defaultSharedRouteName: defaultSharedRouteName
+    hubVnetRgName: hubVnetRgName
+    location: location
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    principalId: principalId
+    privateZonesRgName: privateZonesRgName
+    serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
+    sharedRgName: sharedRgName
+    sharedSubnetPrefix: sharedSubnetPrefix
+    snetAppGwNsg: snetAppGwNsg
+    snetAppNsg: snetAppNsg
+    snetRuntimeNsg: snetRuntimeNsg
+    snetSharedNsg: snetSharedNsg
+    snetSupportNsg: snetSupportNsg
+    spokeRgName: spokeRgName
+    spokeVnetAddressPrefix: spokeVnetAddressPrefix
+    spokeVnetName: spokeVnetName
+    springAppsName: springAppsName
+    springAppsRuntimeCidr: springAppsRuntimeCidr
+    springAppsRuntimeSubnetPrefix: springAppsRuntimeSubnetPrefix
+    springAppsSubnetPrefix: springAppsSubnetPrefix
+    supportSubnetPrefix: supportSubnetPrefix
+    tags: tags
+    timeStamp: timeStamp
+  }
+  dependsOn: [
+    sharedResources
+    firewall
+  ]
+}
+
+module springAppsEnterprise '06-LZ-SpringApps-Enterprise/main.bicep' = if(tier == 'Enterprise') {
+  name: '${timeStamp}-spring-apps-enterprise'
+  params: {
+    appGwSubnetPrefix: appGwSubnetPrefix
+    appInsightsName: appInsightsName
+    appNetworkResourceGroup: appNetworkResourceGroup
+    appRgName: appRgName
+    defaultAppsRouteName: defaultAppsRouteName
+    defaultHubRouteName: defaultHubRouteName
+    defaultRuntimeRouteName: defaultRuntimeRouteName
+    defaultSharedRouteName: defaultSharedRouteName
+    firewallIp: deployFirewall && firewallIp == '' ? firewall.outputs.privateIp : firewallIp
     hubVnetRgName: hubVnetRgName
     location: location
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
