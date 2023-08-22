@@ -483,19 +483,18 @@ jobs:
     steps:
       - checkout: acme-fitness-store
         path: fitness-store
-      - task: Maven@4
+      - task: Gradle@3
         inputs:
-          mavenPomFile: 'pom.xml'
-          mavenOptions: '-Xmx3072m'
+          gradleWrapperFile: 'fitness-store/apps/acme-payment/gradlew' 
+          tasks: 'build'
+          testResultsFiles: '**/TEST-*.xml' 
           javaHomeOption: 'JDKVersion'
-          jdkVersionOption: '1.17'
-          jdkArchitectureOption: 'x64'
-          mavenVersionOption: Default
-          publishJUnitResults: true
-          testResultsFiles: '**/TEST-*.xml'
-          goals: 'package'
-      
-      - bash: mvn clean package -DskipTests
+      - task: Gradle@3
+        inputs:
+          gradleWrapperFile: 'fitness-store/apps/acme-catalog/gradlew' 
+          tasks: 'build'
+          testResultsFiles: '**/TEST-*.xml' 
+          javaHomeOption: 'JDKVersion'
       - task: AzureCLI@2
         displayName: Install Azure CLI Spring Extension
         inputs:
@@ -548,8 +547,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name order-service \
-              --artifact-path fitness-store/apps/acme-order \
-              --jvm-options='-Xms2048m -Xmx2048m' \
+              --source-path fitness-store/apps/acme-order
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy cart-service
@@ -562,9 +560,8 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name  cart-service \
-              --artifact-path fitness-store/apps/acme-order/acme-cart  \
-              --jvm-options='-Xms2048m -Xmx2048m' \
-              --env CART_PORT=8080
+              --source-path fitness-store/apps/acme-order/acme-cart \
+              --env "CART_PORT=8080"
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy frontend
@@ -577,8 +574,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name frontend \
-              --artifact-path fitness-store/apps/acme-shopping \
-              --jvm-options='-Xms2048m -Xmx2048m' 
+              --source-path fitness-store/apps/acme-shopping
           addSpnToEnvironment: true 
 
   - job: destroy_acme_fitness_infra
