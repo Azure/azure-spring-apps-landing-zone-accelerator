@@ -59,10 +59,10 @@ terraform init -backend-config="resource_group_name=$TFSTATE_RG" -backend-config
 
 ```bash
 # If using PowerShell
-$ENV:TF_VAR_JUMP_HOST_PASSWORD="xxxxx"
+$ENV:TF_VAR_jump_host_password="xxxxx"
 
 # If using Bash
-export TF_VAR_JUMP_HOST_PASSWORD="xxxxx"
+export TF_VAR_jump_host_password="xxxxx"
 
 # Then proceed to the plan step
 terraform plan -out my.plan --var-file ../parameters.tfvars
