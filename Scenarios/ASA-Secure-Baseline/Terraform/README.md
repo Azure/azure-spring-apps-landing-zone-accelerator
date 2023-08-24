@@ -38,9 +38,9 @@ In this example, there is a common variable defintions file [parameters.tfvars](
 2. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
 
     ```bash
-    az provider register --namespace 'Microsoft.AppPlatform
-    az provider register --namespace 'Microsoft.ContainerService
-    az provider register --namespace 'Microsoft.ServiceLinker
+    az provider register --namespace 'Microsoft.AppPlatform'
+    az provider register --namespace 'Microsoft.ContainerService'
+    az provider register --namespace 'Microsoft.ServiceLinker'
     ```
 
 3. Obtain the ObjectID of the service principal for Azure Spring Apps. This ID is unique per Azure AD Tenant. In Step 4, set the value of variable SRINGAPPS_SPN_OBJECT_ID to the result from this command.
