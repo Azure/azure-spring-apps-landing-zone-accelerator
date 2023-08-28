@@ -32,7 +32,7 @@ jobs:
         - name: Deploy Frontend service
           run: |
             az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
-            STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name")
+            STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name" --output tsv)
             echo $STAGING_APP
             az spring app deploy \
                 --name "frontend" \
