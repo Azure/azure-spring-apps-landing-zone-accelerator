@@ -40,3 +40,8 @@ jobs:
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
                 --deployment $STAGING_APP \
                 --source-path "${{ github.workspace }}/fitness-store/apps/acme-shopping"
+            az spring app set-deployment \
+                --name "frontend" \
+                --resource-group ${{ inputs.ASA_RG}} \
+                --service "${{inputs.ASA_SERVICE_NAME}}" \
+                --deployment $STAGING_APP 
