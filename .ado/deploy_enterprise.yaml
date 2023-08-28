@@ -495,7 +495,7 @@ jobs:
             az spring list -o table
             az spring build-service builder create \
             --resource-group $(spring_apps_rg) \
-            --name quickstart-builder \
+            --name build-springappslza \
             --service $(spring_apps_service_name) \
             --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
           addSpnToEnvironment: true 
@@ -541,7 +541,7 @@ jobs:
               --service $(spring_apps_service_name) \
               --name order-service \
               --source-path apps/acme-order \
-              --builder quickstart-builder
+              --builder build-springappslza
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy cart-service
@@ -555,7 +555,7 @@ jobs:
               --service $(spring_apps_service_name) \
               --name  cart-service \
               --source-path fitness-store/apps/acme-order/acme-cart \
-              --builder quickstart-builder \
+              --builder build-springappslza \
               --env "CART_PORT=8080"
           addSpnToEnvironment: true 
       - task: AzureCLI@2
