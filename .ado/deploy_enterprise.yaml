@@ -483,18 +483,6 @@ jobs:
     steps:
       - checkout: acme-fitness-store
         path: fitness-store
-      - task: Gradle@3
-        inputs:
-          gradleWrapperFile: 'apps/acme-payment/gradlew' 
-          tasks: 'build'
-          testResultsFiles: '**/TEST-*.xml' 
-          javaHomeOption: 'JDKVersion'
-      - task: Gradle@3
-        inputs:
-          gradleWrapperFile: 'apps/acme-catalog/gradlew' 
-          tasks: 'build'
-          testResultsFiles: '**/TEST-*.xml' 
-          javaHomeOption: 'JDKVersion'
       - task: AzureCLI@2
         displayName: Install Azure CLI Spring Extension
         inputs:
@@ -505,6 +493,11 @@ jobs:
             set -eu
             az extension add --name spring -y
             az spring list -o table
+            az spring build-service builder create \
+            --resource-group $(spring_apps_rg) \
+            --name quickstart-builder \
+            --service $(spring_apps_service_name) \
+            --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName: Deploy acme-payment
@@ -517,8 +510,8 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name payment-service \
-              --artifact-path apps/acme-payment \
-              --jvm-options='-Xms2048m -Xmx2048m' \
+              --source-path apps/acme-payment \
+              --build-env BP_JVM_VERSION-17 \
               --config-file-patterns payment 
           addSpnToEnvironment: true 
       - task: AzureCLI@2
@@ -532,8 +525,8 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name catalog-service \
-              --artifact-path apps/acme-catalog \
-              --jvm-options='-Xms2048m -Xmx2048m' \
+              --source-path apps/acme-catalog \
+              --build-env BP_JVM_VERSION-17 \
               --config-file-patterns catalog
           addSpnToEnvironment: true 
       - task: AzureCLI@2
@@ -547,7 +540,8 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name order-service \
-              --source-path apps/acme-order
+              --source-path apps/acme-order \
+              --builder quickstart-builder
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy cart-service
@@ -561,6 +555,7 @@ jobs:
               --service $(spring_apps_service_name) \
               --name  cart-service \
               --source-path fitness-store/apps/acme-order/acme-cart \
+              --builder quickstart-builder \
               --env "CART_PORT=8080"
           addSpnToEnvironment: true 
       - task: AzureCLI@2
