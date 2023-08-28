@@ -485,13 +485,13 @@ jobs:
         path: fitness-store
       - task: Gradle@3
         inputs:
-          gradleWrapperFile: 'fitness-store/apps/acme-payment/gradlew' 
+          gradleWrapperFile: 'apps/acme-payment/gradlew' 
           tasks: 'build'
           testResultsFiles: '**/TEST-*.xml' 
           javaHomeOption: 'JDKVersion'
       - task: Gradle@3
         inputs:
-          gradleWrapperFile: 'fitness-store/apps/acme-catalog/gradlew' 
+          gradleWrapperFile: 'apps/acme-catalog/gradlew' 
           tasks: 'build'
           testResultsFiles: '**/TEST-*.xml' 
           javaHomeOption: 'JDKVersion'
@@ -517,7 +517,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name payment-service \
-              --artifact-path fitness-store/apps/acme-payment \
+              --artifact-path apps/acme-payment \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --config-file-patterns payment 
           addSpnToEnvironment: true 
@@ -532,7 +532,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name catalog-service \
-              --artifact-path fitness-store/apps/acme-catalog \
+              --artifact-path apps/acme-catalog \
               --jvm-options='-Xms2048m -Xmx2048m' \
               --config-file-patterns catalog
           addSpnToEnvironment: true 
@@ -547,7 +547,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name order-service \
-              --source-path fitness-store/apps/acme-order
+              --source-path apps/acme-order
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName:  Deploy cart-service
