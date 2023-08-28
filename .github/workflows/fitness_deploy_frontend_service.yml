@@ -33,9 +33,10 @@ jobs:
           run: |
             az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
             STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name")
+            echo $STAGING_APP
             az spring app deploy \
                 --name "frontend" \
                 --resource-group ${{ inputs.ASA_RG}} \
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
-                --deployment $STAGING_APP
+                --deployment $STAGING_APP \
                 --source-path "${{ github.workspace }}/fitness-store/apps/acme-shopping"
