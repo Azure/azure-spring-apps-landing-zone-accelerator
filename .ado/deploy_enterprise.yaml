@@ -549,7 +549,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name  cart-service \
-              --source-path fitness-store/apps/acme-cart \
+              --source-path apps/acme-cart \
               --builder build-springappslza \
               --env "CART_PORT=8080"
           addSpnToEnvironment: true 
@@ -564,7 +564,7 @@ jobs:
               --resource-group $(spring_apps_rg) \
               --service $(spring_apps_service_name) \
               --name frontend \
-              --source-path fitness-store/apps/acme-shopping
+              --source-path apps/acme-shopping
           addSpnToEnvironment: true 
 
   - job: destroy_acme_fitness_infra
