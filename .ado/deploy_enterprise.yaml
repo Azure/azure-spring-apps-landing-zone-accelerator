@@ -526,7 +526,7 @@ jobs:
               --service $(spring_apps_service_name) \
               --name catalog-service \
               --source-path apps/acme-catalog \
-              --build-env BP_JVM_VERSION-17 \
+              --build-env BP_JVM_VERSION=17 \
               --config-file-patterns catalog
           addSpnToEnvironment: true 
       - task: AzureCLI@2
