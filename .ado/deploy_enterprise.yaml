@@ -511,7 +511,7 @@ jobs:
               --service $(spring_apps_service_name) \
               --name payment-service \
               --source-path apps/acme-payment \
-              --build-env BP_JVM_VERSION-17 \
+              --build-env BP_JVM_VERSION=17 \
               --config-file-patterns payment 
           addSpnToEnvironment: true 
       - task: AzureCLI@2
