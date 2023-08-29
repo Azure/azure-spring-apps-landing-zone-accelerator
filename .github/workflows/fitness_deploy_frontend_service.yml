@@ -28,9 +28,10 @@ jobs:
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
         - name: Set up Azure Spring Extension
-          run: az extension add --name spring
-               az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
-               az configure --defaults group=${{ inputs.ASA_RG}} spring=${{inputs.ASA_SERVICE_NAME}} 
+          run: |
+            az extension add --name spring 
+            az account set --subscription ${{ inputs.SUBSCRIPTION_ID }} 
+            az configure --defaults group=${{ inputs.ASA_RG}} spring=${{inputs.ASA_SERVICE_NAME}} 
         - name: Find Staging Deployment Name
           run: |
             STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name" --output tsv)
