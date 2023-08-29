@@ -32,12 +32,10 @@ jobs:
             az extension add --name spring 
             az account set --subscription ${{ inputs.SUBSCRIPTION_ID }} 
             az configure --defaults group=${{ inputs.ASA_RG}} spring=${{inputs.ASA_SERVICE_NAME}} 
-        - name: Find Staging Deployment Name
-          run: |
-            STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name" --output tsv)
-            echo $STAGING_APP
         - name: Deploy Frontend to Staging
           run: |
+            STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name" --output tsv)
+            echo "Current staging deployment : " $STAGING_APP
             az spring app deploy \
                 --name "frontend" \
                 --deployment $STAGING_APP \
