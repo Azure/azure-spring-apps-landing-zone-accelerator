@@ -493,11 +493,6 @@ jobs:
             set -eu
             az extension add --name spring -y
             az spring list -o table
-            az spring build-service builder create \
-            --resource-group $(spring_apps_rg) \
-            --name build-springappslza \
-            --service $(spring_apps_service_name) \
-            --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName: Deploy acme-payment
@@ -621,6 +616,16 @@ jobs:
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'lz-acme-fitness'
 
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-out main.tfplan -var spring_cloud_service=$(spring_apps_service_name) -var spring_cloud_resource_group_name=$(spring_apps_rg) -var name_prefix=$(namePrefix) -var subscription_id=$(subscriptionId) -var resource_group=$(spoke_rg) -var private_zones_resource_group_name=$(private_dns_rg) -var shared_rg=$(shared_rg)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -628,8 +633,9 @@ jobs:
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
-          command: 'destroy'
+          command: 'apply'
           workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
   - job: destroy_spring_apps_enterprise
@@ -669,6 +675,16 @@ jobs:
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'lz-springapps-standard'
 
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -676,8 +692,9 @@ jobs:
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
-          command: 'destroy'
+          command: 'apply'
           workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
   
   - job: destroy_hub_firewall
@@ -717,6 +734,16 @@ jobs:
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'hub-azurefirewall'
 
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -724,8 +751,9 @@ jobs:
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
-          command: 'destroy'
+          command: 'apply'
           workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
   - job: destroy_shared_resources
@@ -765,6 +793,16 @@ jobs:
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'lz-sharedresources'
 
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName) -var jump_host_admin_username=$(jumpBoxUsername) -var jump_host_password=$(jumpBoxPassword) '
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -772,8 +810,9 @@ jobs:
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
-          command: 'destroy'
+          command: 'apply'
           workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
   - job: destroy_spoke_network
@@ -813,6 +852,16 @@ jobs:
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'lz-network'
 
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName) -var jump_host_admin_username=$(jumpBoxUsername) -var jump_host_password=$(jumpBoxPassword) '
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -820,7 +869,7 @@ jobs:
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
-          command: 'destroy'
+          command: 'apply'
           workingDirectory: $(workingDirectory)
           commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
@@ -863,6 +912,16 @@ jobs:
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'hub-network'
 
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var=location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
@@ -870,6 +929,7 @@ jobs:
         condition: eq(variables['terraformPlan.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
-          command: 'destroy'
+          command: 'apply'
           workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
           environmentServiceNameAzureRM: $(azureServiceConnection)
