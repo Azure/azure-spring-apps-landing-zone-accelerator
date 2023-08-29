@@ -29,19 +29,28 @@ jobs:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
         - name: Set up Azure Spring Extension
           run: az extension add --name spring
-        - name: Deploy Frontend service
+               az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
+               az configure --defaults group=${{ inputs.ASA_RG}} spring=${{inputs.ASA_SERVICE_NAME}} 
+        - name: Find Staging Deployment Name
           run: |
-            az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
             STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name" --output tsv)
             echo $STAGING_APP
+        - name: Deploy Frontend to Staging
+          run: |
             az spring app deploy \
                 --name "frontend" \
-                --resource-group ${{ inputs.ASA_RG}} \
-                --service "${{inputs.ASA_SERVICE_NAME}}" \
                 --deployment $STAGING_APP \
                 --source-path "${{ github.workspace }}/fitness-store/apps/acme-shopping"
             az spring app set-deployment \
                 --name "frontend" \
                 --resource-group ${{ inputs.ASA_RG}} \
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
+                --deployment $STAGING_APP
+        - name: Test Staging Deployment
+          run: |
+            echo "Testing Staging Endpoint"
+        - name: Active Staging Deployment
+          run: |
+            az spring app set-deployment \
+                --name "frontend" \
                 --deployment $STAGING_APP 
