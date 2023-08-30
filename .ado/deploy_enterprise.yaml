@@ -180,7 +180,7 @@ jobs:
   - job: deploy_shared_resources
     displayName: Deploy 04 LZ Shared Resources
     dependsOn: [deploy_spoke_network]
-    condition: and(eq(dependencies.deploy_spoke_network.result, 'Succeeded'))
+    condition: eq(dependencies.deploy_spoke_network.result, 'Succeeded')
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources"
