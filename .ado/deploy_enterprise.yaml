@@ -493,6 +493,14 @@ jobs:
             set -eu
             az extension add --name spring -y
             az spring list -o table
+            EXISTS=$(az spring build-service builder show --name build-springappslza --resource-group $(spring_apps_rg)  --service $(spring_apps_service_name) --query 'name' -o tsv)
+            if [ $EXISTS != 'build-springappslza' ]; then
+              az spring build-service builder create \
+                        --resource-group $(spring_apps_rg) \
+                        --name build-springappslza \
+                        --service $(spring_apps_service_name) \
+                        --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
+            fi 
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName: Deploy acme-payment
