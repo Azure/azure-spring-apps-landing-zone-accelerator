@@ -499,7 +499,7 @@ jobs:
             set -eu
             az extension add --name spring -y
             az spring list -o table
-            EXISTS=$(az spring build-service builder show --name build-springappslza --resource-group $(spring_apps_rg)  --service $(spring_apps_service_name) --query 'name' -o tsv)
+            EXISTS=$(az spring build-service builder show --name build-springappslza --resource-group $(spring_apps_rg)  --service $(spring_apps_service_name) --query 'name' -o tsv 2>&1)
             if [ $EXISTS != 'build-springappslza' ]; then
               az spring build-service builder create \
                         --resource-group $(spring_apps_rg) \
