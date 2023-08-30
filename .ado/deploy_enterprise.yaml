@@ -688,7 +688,7 @@ jobs:
           backendAzureRmResourceGroupName: $(terraformStateRg)
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
           backendAzureRmContainerName: $(stateStorageContainerName)
-          backendAzureRmKey: 'lz-springapps-standard'
+          backendAzureRmKey: 'lz-springapps-enterprise'
 
       - task: TerraformTaskV3@3
         name: terraformPlan
