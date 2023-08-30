@@ -105,6 +105,7 @@ jobs:
   - job: deploy_spoke_network
     displayName: Deploy 03 LZ Network
     dependsOn: [deploy_hub_network]
+    condition: and(eq(dependencies.deploy_hub_network.result, 'Succeeded'))
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network"
@@ -179,6 +180,7 @@ jobs:
   - job: deploy_shared_resources
     displayName: Deploy 04 LZ Shared Resources
     dependsOn: [deploy_spoke_network]
+    condition: and(eq(dependencies.deploy_spoke_network.result, 'Succeeded'))
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources"
@@ -254,6 +256,7 @@ jobs:
   - job: deploy_hub_firewall
     displayName: Deploy 05 Hub Firewall
     dependsOn: [deploy_shared_resources, deploy_hub_network]
+    condition: and(eq(dependencies.deploy_shared_resources.result, 'Succeeded'), eq(dependencies.deploy_hub_network.result, 'Succeeded'))
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall"
@@ -328,6 +331,7 @@ jobs:
   - job: deploy_enterprise_sa
     displayName: Deploy 06 LZ Spring Apps Enterprise
     dependsOn: [deploy_hub_network, deploy_shared_resources, deploy_hub_firewall]
+    condition: and(eq(dependencies.deploy_shared_resources.result, 'Succeeded'), eq(dependencies.deploy_hub_network.result, 'Succeeded'))
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise"
@@ -403,6 +407,7 @@ jobs:
   - job: deploy_acme_fitness_infra
     displayName: Deploy Acme Fitness Infrastructure
     dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_enterprise_sa]
+    condition: and(eq(dependencies.deploy_shared_resources.result, 'Succeeded'), eq(dependencies.deploy_enterprise_sa.result, 'Succeeded'), eq(dependencies.deploy_spoke_network.result, 'Succeeded'))
     variables: 
       - name: workingDirectory
         value:  "Scenarios/sample-apps/fitness-store/terraform"
@@ -473,6 +478,7 @@ jobs:
   - job: build_and_deploy_acme_fitness_ms
     displayName: Build and Deploy Acme Fitness Microservices
     dependsOn: [deploy_acme_fitness_infra, deploy_enterprise_sa ]
+    condition: and(eq(dependencies.deploy_enterprise_sa.result, 'Succeeded'), eq(dependencies.deploy_acme_fitness_infra.result, 'Succeeded'))
     pool: 
       vmImage: 'ubuntu-latest'
     variables:
@@ -578,7 +584,8 @@ jobs:
   - job: destroy_acme_fitness_infra
     displayName: Destroy Acme Fitness Infrastructure
     dependsOn: [deploy_spoke_network, deploy_shared_resources, deploy_enterprise_sa, deploy_acme_fitness_infra, build_and_deploy_acme_fitness_ms]
-    condition: eq(variables['destroyEnterprise'], 'true')
+    condition: and(eq(variables['destroyEnterprise'], 'true'), eq(dependencies.deploy_enterprise_sa.result, 'Succeeded'), eq(dependencies.deploy_spoke_network.result, 'Succeeded'), eq(dependencies.deploy_shared_resources.result, 'Succeeded'))
+    
     variables: 
       - name: workingDirectory
         value:  "Scenarios/sample-apps/fitness-store/terraform"
