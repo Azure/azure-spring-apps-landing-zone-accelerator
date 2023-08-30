@@ -105,7 +105,7 @@ jobs:
   - job: deploy_spoke_network
     displayName: Deploy 03 LZ Network
     dependsOn: [deploy_hub_network]
-    condition: and(eq(dependencies.deploy_hub_network.result, 'Succeeded'))
+    condition: eq(dependencies.deploy_hub_network.result, 'Succeeded')
     variables: 
       - name: workingDirectory
         value:  "Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network"
