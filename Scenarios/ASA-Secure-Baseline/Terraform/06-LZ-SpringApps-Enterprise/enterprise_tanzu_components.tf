@@ -44,7 +44,7 @@ resource "azurerm_spring_cloud_api_portal" "apiportal" {
   spring_cloud_service_id       = azurerm_spring_cloud_service.sc_enterprise.id
   gateway_ids                   = [azurerm_spring_cloud_gateway.scgateway.id]
   https_only_enabled            = false
-  public_network_access_enabled = true
+  public_network_access_enabled = false
   instance_count                = 1
 
   # Set this to false and apply before DESTROY
