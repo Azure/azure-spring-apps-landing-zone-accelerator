@@ -503,11 +503,7 @@ jobs:
                 echo "Builder exists. Continuing with microservices deployment."
             }
             catch{
-              az spring build-service builder create \
-                        --resource-group $(spring_apps_rg) \
-                        --name build-springappslza \
-                        --service $(spring_apps_service_name) \
-                        --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
+              az spring build-service builder create --resource-group $(spring_apps_rg) --name build-springappslza --service $(spring_apps_service_name) --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
             } 
           addSpnToEnvironment: true 
       - task: AzureCLI@2
