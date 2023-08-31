@@ -37,6 +37,7 @@ resource "azurerm_resource_group" "hub_rg" {
     name                        = local.hub_rg
     location                    = var.location
 
+    tags = var.tags
 }
 
 # Hub-Spoke VNET 

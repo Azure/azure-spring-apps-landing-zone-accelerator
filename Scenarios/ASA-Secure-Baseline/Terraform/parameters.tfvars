@@ -13,8 +13,7 @@ environment = "dev"
 # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
 # Use this command to obtain:
 #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
-
-SRINGAPPS_SPN_OBJECT_ID = "<change this>"
+SPRINGAPPS_SPN_OBJECT_ID = "<change this>"
 
 # tags = { 
 #    project = "ASA-Accelerator"
