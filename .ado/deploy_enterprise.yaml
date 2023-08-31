@@ -495,12 +495,12 @@ jobs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
           scriptType: pscore
+          failOnStandardError: false
           inlineScript: |
             az extension add --name spring -y
             az spring list -o table
             try{
                 az spring build-service builder show --name build-springappslza --resource-group $(spring_apps_rg)  --service $(spring_apps_service_name) --query 'name' -o tsv
-                echo "Builder exists. Continuing with microservices deployment."
             }
             catch{
               az spring build-service builder create --resource-group $(spring_apps_rg) --name build-springappslza --service $(spring_apps_service_name) --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
