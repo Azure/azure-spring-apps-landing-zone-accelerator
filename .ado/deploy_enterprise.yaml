@@ -499,12 +499,11 @@ jobs:
           inlineScript: |
             az extension add --name spring -y
             az spring list -o table
-            try{
-                az spring build-service builder show --name build-springappslza --resource-group $(spring_apps_rg)  --service $(spring_apps_service_name) --query 'name' -o tsv
-            }
-            catch{
+            $result = az spring build-service builder show --name build-springappslza --resource-group $(spring_apps_rg)  --service $(spring_apps_service_name) --query 'name'| ConvertFrom-Json
+            $exists = $result -eq "build-springappslza"
+            if (!$exists){
               az spring build-service builder create --resource-group $(spring_apps_rg) --name build-springappslza --service $(spring_apps_service_name) --builder-file azure-spring-apps-enterprise/resources/json/tbs/builder.json
-            } 
+            }
           addSpnToEnvironment: true 
       - task: AzureCLI@2
         displayName: Deploy acme-payment
