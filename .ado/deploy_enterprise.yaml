@@ -494,9 +494,8 @@ jobs:
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptLocation: inlineScript
-          scriptType: bash
+          scriptType: ps
           inlineScript: |
-            set -eu
             az extension add --name spring -y
             az spring list -o table
             try{
