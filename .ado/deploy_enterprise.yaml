@@ -694,7 +694,26 @@ jobs:
           provider: 'azurerm'
           command: 'plan'
           workingDirectory: $(workingDirectory) 
-          commandOptions: '-destroy -out main.tfplan -var location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          commandOptions: '-out main.tfplan -var public_network_access_enabled=false -var location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        displayName: Apply Terraform Plan
+        name: terraformApply
+        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: $(workingDirectory)
+          commandOptions: 'main.tfplan'
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+      - task: TerraformTaskV3@3
+        name: terraformPlan
+        displayName: Create Terraform Plan
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: $(workingDirectory) 
+          commandOptions: '-destroy -out main.tfplan -var public_network_access_enabled=false -var location=$(region) -var name_prefix=$(namePrefix) -var environment=$(environment) -var SPRINGAPPS_SPN_OBJECT_ID=$(springAppsSpnObjectId) -var state_sa_rg=$(terraformStateRg) -var state_sa_name=$(stateStorageAccountName) -var state_sa_container_name=$(stateStorageContainerName)'
           environmentServiceNameAzureRM: $(azureServiceConnection)
 
       # Only runs if the 'terraformPlan' task has detected changes the in state. 
