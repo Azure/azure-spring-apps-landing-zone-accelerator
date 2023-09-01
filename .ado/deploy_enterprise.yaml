@@ -830,7 +830,8 @@ jobs:
           command: 'custom'
           workingDirectory: $(workingDirectory)
           environmentServiceNameAzureRM: $(azureServiceConnection)
-          customCommand: 'state rm azurerm_virtual_machine_extension.Installdependencies'
+          customCommand: 'state'
+          commandOptions: 'rm azurerm_virtual_machine_extension.Installdependencies'
       - task: TerraformTaskV3@3
         name: terraformPlan
         displayName: Create Terraform Plan
