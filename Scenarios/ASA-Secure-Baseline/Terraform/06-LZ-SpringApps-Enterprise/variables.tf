@@ -319,6 +319,12 @@ variable "spring_apps_zone_redundant" {
   default     = false
 }
 
+variable "public_network_access_enabled" {
+  type = bool
+  description = "Public network access for Spring Apps API Portal"
+  default = true
+}
+
 
 ##################################################
 ### 07-LZ-AppGateway plan variables
