@@ -34,7 +34,7 @@ resource "azurerm_spring_cloud_gateway" "scgateway" {
 
   instance_count                           = 2
   application_performance_monitoring_types = ["ApplicationInsights"]
-  public_network_access_enabled            = true
+  public_network_access_enabled            = var.public_network_access_enabled
   environment_variables                    = { APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.sc_app_insights.connection_string }
 
 }
