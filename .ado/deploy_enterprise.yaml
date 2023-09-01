@@ -823,15 +823,14 @@ jobs:
           backendAzureRmStorageAccountName: $(stateStorageAccountName)
           backendAzureRmContainerName: $(stateStorageContainerName)
           backendAzureRmKey: 'lz-sharedresources'
-      - task: AzureCLI@2
-        displayName: Terraform credentials
+      - task: TerraformTaskV3@3
+        displayName: Initialize Terraform
         inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptLocation: inlineScript
-          scriptType: bash
-          inlineScript: |
-            terraform state rm azurerm_virtual_machine_extension.Installdependencies
-          addSpnToEnvironment: true
+          provider: 'azurerm'
+          command: 'custom'
+          workingDirectory: $(workingDirectory)
+          environmentServiceNameAzureRM: $(azureServiceConnection)
+          customCommand: 'state rm azurerm_virtual_machine_extension.Installdependencies'
       - task: TerraformTaskV3@3
         name: terraformPlan
         displayName: Create Terraform Plan
