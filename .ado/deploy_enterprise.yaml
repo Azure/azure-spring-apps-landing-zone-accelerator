@@ -688,7 +688,7 @@ jobs:
           backendAzureRmKey: 'lz-springapps-enterprise'
 
       - task: TerraformTaskV3@3
-        name: terraformPlan
+        name: terraformPlanChangeNetwork
         displayName: Create Terraform Plan
         inputs:
           provider: 'azurerm'
@@ -698,8 +698,8 @@ jobs:
           environmentServiceNameAzureRM: $(azureServiceConnection)
       - task: TerraformTaskV3@3
         displayName: Apply Terraform Plan
-        name: terraformApply
-        condition: eq(variables['terraformPlan.changesPresent'], 'true')
+        name: terraformApplyChangeNetwork
+        condition: eq(variables['terraformPlanChangeNetwork.changesPresent'], 'true')
         inputs:
           provider: 'azurerm'
           command: 'apply'
