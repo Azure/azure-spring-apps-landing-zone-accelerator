@@ -51,7 +51,7 @@ To create your variable group, go to the Library tab of your project under the P
 
 For the variables that say *Lock*, click the lock next to the variable value to save it as a secret.
 The variable group should look like the following:
-![Variable Group Configuration](../../../images/asa_ado_variable_group_standard.png)
+![Variable Group Configuration](../../../images/asa_ado_variable_group_enterprise.png)
 
 ## Find the Object ID for Spring Apps Service Principal
 * Retrieve the `SPRINGAPPS_SPN_OBJECT_ID` with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
@@ -97,7 +97,7 @@ It should take a few minutes to complete.
 
 A successful run using Azure DevOps should look like below:
 
-![successful e2e run](../../../images/asa_ado_standard_successful.png)
+![successful e2e run](../../../images/asa_ado_enterprise_successful.png)
 
 ## Testing the deployed application
 
@@ -105,7 +105,7 @@ Once your workflow is completed, let's make a quick test on our deployed apps.
 First we need to get the ingress URL by running the following command:
 
 ```bash
-    az spring app show -g rg-springlza-APPS -s spring-springlza-dev-o7o6 \
+    az spring app show -g rg-springent-APPS -s spring-springent-dev-o7o6 \
     --name api-gateway --query "properties.url" --output tsv    
 ```
 
