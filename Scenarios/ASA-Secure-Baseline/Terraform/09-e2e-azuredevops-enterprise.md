@@ -27,7 +27,7 @@ To set up your Azure Pipeline for deployment, you'll first need an Azure DevOps 
 Secrets and variables in Azure DevOps are stored in variable groups. Both are referenced the same way in the pipeline, $(variableName). You have the option of integrating secrets from an Azure KeyVault into your variable group, but for the purposes of this deployment, we will be using the secret capability in the variable group.  
 
 In Azure DevOps, secrets and variables are defined at the project level. 
-To create your variable group, go to the Library tab of your project under the Pipelines section, and select + Variable Group, in the top menu. The variable group must have the name, Standard Deployment Configuration, or you will need to edit the workflow with the name you used so it correctly picks up your variables. 
+To create your variable group, go to the Library tab of your project under the Pipelines section, and select + Variable Group, in the top menu. The variable group must have the name, Enterprise Deployment Configuration, or you will need to edit the workflow with the name you used so it correctly picks up your variables. 
 
 ## Create variables and secrets for this workflow
 
