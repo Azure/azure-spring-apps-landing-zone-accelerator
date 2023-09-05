@@ -28,7 +28,13 @@ jobs:
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
         - name: Set up Azure Spring Extension
-          run: az extension add --name spring
+          run: |
+            az extension add --name spring 
+            az account set --subscription ${{ inputs.SUBSCRIPTION_ID }} 
+            az configure --defaults group=${{ inputs.ASA_RG}} spring=${{inputs.ASA_SERVICE_NAME}} 
+        - name: Lookup Staging Deployment Name
+          run: |
+            echo "STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app frontend --query "[?properties.active==\`false\`].name" --output tsv)" >> $GITHUB_ENV
         - name: Deploy Catalog service
           run: |
             az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
@@ -36,6 +42,12 @@ jobs:
                 --name "catalog-service" \
                 --resource-group ${{ inputs.ASA_RG}} \
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
+                --deployment $STAGING_APP \
                 --config-file-pattern catalog \
                 --build-env BP_JVM_VERSION=17 \
                 --source-path "${{ github.workspace }}/fitness-store/apps/acme-catalog"
+        - name: Active Staging Deployment
+          run: |
+            az spring app set-deployment \
+                --name "catalog-service" \
+                --deployment $STAGING_APP 
