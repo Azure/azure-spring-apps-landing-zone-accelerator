@@ -169,7 +169,14 @@ jobs:
           ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
       secrets: inherit
   destroy_acme_fitness_infra:
-    needs:  [deploy_infrastructure_baseline,deploy_lz_enterprise , conditions]
+    needs:  [deploy_infrastructure_baseline,
+            deploy_lz_enterprise, 
+            conditions,
+            deploy_frontend,
+            deploy_cart_service,
+            deploy_order_service,
+            deploy_catalog_service,
+            deploy_payments_service]
     name: Deploy Acme Fitness Store
     uses: ./.github/workflows/fitness_infrastructure_tear_down.yml
     if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
@@ -210,7 +217,7 @@ jobs:
     secrets: inherit
   destroy_infrastructure_baseline:
     name: Tear Down ASA Secure Baseline
-    needs: [conditions]
+    needs: [conditions,destroy_lz_enterprise]
     uses: ./.github/workflows/template_asa_baseline_infrastructure_tear_down.yml
     if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     with:
