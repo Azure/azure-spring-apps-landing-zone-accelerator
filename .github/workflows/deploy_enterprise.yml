@@ -197,7 +197,7 @@ jobs:
       PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
     secrets: inherit
   destroy_lz_enterprise:
-    needs: [conditions, destroy_acme_fitness_infra,deploy_lz_enterprise]
+    needs: [conditions, destroy_acme_fitness_infra,deploy_lz_enterprise, deploy_infrastructure_baseline]
     name: Destroy 06 LZ Spring Apps Enterprise
     uses: ./.github/workflows/template_asa_enterprise_tear_down.yml
     if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
@@ -214,6 +214,8 @@ jobs:
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
       SPRING_APPS_RESOURCE_GROUP: ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}}
       SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}
+      SHARED_RESOURCE_GROUP: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
+      JUMP_HOST_NAME: ${{ needs.deploy_infrastructure_baseline.outputs.jump_host_name }}
     secrets: inherit
   destroy_infrastructure_baseline:
     name: Tear Down ASA Secure Baseline

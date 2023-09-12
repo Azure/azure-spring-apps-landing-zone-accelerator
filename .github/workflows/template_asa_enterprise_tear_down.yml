@@ -38,6 +38,12 @@ on:
         SPRING_APPS_SERVICE_NAME:
           required: true
           type: string
+        SHARED_RESOURCE_GROUP:
+          required: true
+          type: string
+        JUMP_HOST_NAME:
+          required: true
+          type: string
       secrets:
         AZURE_CLIENT_SECRET:
           required: true
@@ -51,6 +57,10 @@ env:
     SPRINGAPPS_SPN_OBJECT_ID: ${{ inputs.SPRINGAPPS_SPN_OBJECT_ID }}
     SPRING_APPS_RESOURCE_GROUP: ${{ inputs.SPRING_APPS_RESOURCE_GROUP }}
     SPRING_APPS_SERVICE_NAME: ${{ inputs.SPRING_APPS_SERVICE_NAME}}
+    JUMP_HOST_NAME: ${{inputs.JUMP_HOST_NAME}}
+    SHARED_RESOURCE_GROUP: ${{inputs.SHARED_RESOURCE_GROUP}}
+
+
     # ==== Terraform Azure Login ===:
     ARM_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }} 
     ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
