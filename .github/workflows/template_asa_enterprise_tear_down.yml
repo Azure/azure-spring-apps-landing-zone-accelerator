@@ -1,0 +1,111 @@
+name: Tear Down ASA Enterprise Service
+on:
+    workflow_call:        
+      inputs:
+        NAME_PREFIX: 
+            required: true
+            type: string
+        ENVIRONMENT: 
+            required: true
+            type: string
+        REGION:
+            required: true
+            type: string
+        TFSTATE_RG:
+            required: true
+            type: string
+        STORAGEACCOUNTNAME:
+            required: true
+            type: string
+        CONTAINERNAME:
+            required: true
+            type: string
+        AZURE_CLIENT_ID:
+          required: true
+          type: string
+        AZURE_SUBSCRIPTION_ID:
+          required: true
+          type: string
+        AZURE_TENANT_ID:
+          required: true
+          type: string
+        SPRINGAPPS_SPN_OBJECT_ID:
+          required: true
+          type: string
+        SPRING_APPS_RESOURCE_GROUP:
+          required: true
+          type: string
+        SPRING_APPS_SERVICE_NAME:
+          required: true
+          type: string
+      secrets:
+        AZURE_CLIENT_SECRET:
+          required: true
+env:
+    TFSTATE_RG: ${{inputs.TFSTATE_RG}}
+    STORAGEACCOUNTNAME: ${{inputs.STORAGEACCOUNTNAME}}
+    CONTAINERNAME: ${{ inputs.CONTAINERNAME}}
+    NAME_PREFIX: ${{inputs.NAME_PREFIX}}
+    ENVIRONMENT: ${{inputs.ENVIRONMENT}}
+    REGION: ${{ inputs.REGION }}
+    SPRINGAPPS_SPN_OBJECT_ID: ${{ inputs.SPRINGAPPS_SPN_OBJECT_ID }}
+    SPRING_APPS_RESOURCE_GROUP: ${{ inputs.SPRING_APPS_RESOURCE_GROUP }}
+    SPRING_APPS_SERVICE_NAME: ${{ inputs.SPRING_APPS_SERVICE_NAME}}
+    # ==== Terraform Azure Login ===:
+    ARM_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }} 
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    ARM_SUBSCRIPTION_ID: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+    ARM_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
+
+jobs:
+  prepare_destroy:
+    name: Prepare Spring Enterprise for Destroy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Set Defaults
+        run: |
+          az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }} 
+          az configure --defaults group=${{env.SPRING_APPS_RESOURCE_GROUP}} spring=${{ env.SPRING_APPS_SERVICE_NAME }} location=${{ env.REGION }}
+          az extension add --name spring
+      - name: Remove Ip from API
+        run: az spring api-portal update -g ${{env.SPRING_APPS_RESOURCE_GROUP}} -s ${{env.SPRING_APPS_SERVICE_NAME}} --assign-endpoint false
+      - name: Remove Ip from gateway
+        run: az spring gateway update -g ${{ env.SPRING_APPS_RESOURCE_GROUP}} -s ${{ env.SPRING_APPS_SERVICE_NAME}} --assign-endpoint false
+      - name: Delete Route Configs
+        run: |
+          az vm start -g ${{ env.SHARED_RESOURCE_GROUP}} -n ${{env.JUMP_HOST_NAME}}
+  destroy_lz_enterprise:
+    name: Destroy 06 LZ Spring Apps Enterprise
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -destroy -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
