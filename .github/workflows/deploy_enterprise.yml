@@ -177,7 +177,7 @@ jobs:
             deploy_order_service,
             deploy_catalog_service,
             deploy_payments_service]
-    name: Deploy Acme Fitness Store
+    name: Tear Down Acme Fitness Store
     uses: ./.github/workflows/fitness_infrastructure_tear_down.yml
     if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     with:
@@ -198,7 +198,7 @@ jobs:
     secrets: inherit
   destroy_lz_enterprise:
     needs: [conditions, destroy_acme_fitness_infra,deploy_lz_enterprise, deploy_infrastructure_baseline]
-    name: Destroy 06 LZ Spring Apps Enterprise
+    name: Tear Down 06 LZ Spring Apps Enterprise
     uses: ./.github/workflows/template_asa_enterprise_tear_down.yml
     if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     with:
