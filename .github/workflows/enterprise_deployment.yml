@@ -160,7 +160,7 @@ jobs:
           ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
           ASA_APP_NAME: cart-service
           REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
-          SOURCE_PATH: /fitness-store/apps/acme-cart
+          SOURCE_PATH: apps/acme-cart
           DEPLOYMENT_ENVIRONMENT_SETTINGS: "CART_PORT=8080"
       secrets: inherit
   deploy_frontend:

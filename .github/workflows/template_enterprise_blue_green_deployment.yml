@@ -55,8 +55,8 @@ jobs:
                 --resource-group ${{ inputs.ASA_RG}} \
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
                 --deployment $STAGING_APP \
-                --env ${{inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}} \
-                --source-path "${{ github.workspace }}${{inputs.SOURCE_PATH}}"
+                --env "${{inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}}" \
+                --source-path "${{ github.workspace }}/to-deploy-folder/${{inputs.SOURCE_PATH}}"
         - name: Test Staging Deployment
           run: |
             echo "Testing Staging Endpoint"
