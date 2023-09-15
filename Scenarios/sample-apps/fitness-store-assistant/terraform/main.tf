@@ -15,12 +15,16 @@ terraform {
     # resource_group_name  = ""   # Partial configuration, provided during "terraform init"
     # storage_account_name = ""   # Partial configuration, provided during "terraform init"
     # container_name       = ""   # Partial configuration, provided during "terraform init"
-    key = "lz-acme-fitness-assitant"
+    key = "lz-acme-fitness-assistant"
   }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    cognitive_account {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }
 
 locals {
