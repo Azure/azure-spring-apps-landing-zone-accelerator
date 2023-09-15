@@ -1,4 +1,4 @@
-name: Deploy Azure Spring Apps Enterprise with ACME Fitness
+name: 01 Azure Spring Apps Enterprise with ACME Fitness
 on: workflow_dispatch
 
 permissions:
