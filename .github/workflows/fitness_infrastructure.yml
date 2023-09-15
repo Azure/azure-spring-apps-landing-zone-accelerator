@@ -1,4 +1,4 @@
-name: Deploy Acme Fitness Infrastructure
+name: Template Acme Fitness Infrastructure Deploy
 on:
     workflow_call:        
       inputs:

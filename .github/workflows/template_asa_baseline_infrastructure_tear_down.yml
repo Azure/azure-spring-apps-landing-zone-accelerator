@@ -1,4 +1,4 @@
-name: Tear Down ASA Baseline Infrastructure
+name: Template Tear Down ASA Baseline Infrastructure
 on:
     workflow_call:        
       inputs:

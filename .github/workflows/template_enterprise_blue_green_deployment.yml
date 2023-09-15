@@ -1,4 +1,4 @@
-name: Blue Green Deployment Enterprise
+name: Template Blue Green Deployment for Enterprise
 on:
     workflow_call:
         inputs:

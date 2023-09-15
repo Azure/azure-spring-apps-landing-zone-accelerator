@@ -1,4 +1,4 @@
-name: Deploy ASA Enterprise Service
+name: Template ASA Enterprise Service Deployment
 on:
     workflow_call:        
       inputs:

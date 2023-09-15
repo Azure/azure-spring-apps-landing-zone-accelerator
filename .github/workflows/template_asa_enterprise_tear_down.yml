@@ -1,4 +1,4 @@
-name: Tear Down ASA Enterprise Service
+name: Template Tear Down ASA Enterprise Service
 on:
     workflow_call:        
       inputs:
