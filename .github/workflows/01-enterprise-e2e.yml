@@ -153,7 +153,7 @@ jobs:
   deploy_cart_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-cart
-      uses: ./Scenarios/sample-apps/fitness-store/workflows/fitness_deploy_cart_service.yml
+      uses: ./.github/workflows/fitness_deploy_cart_service.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
