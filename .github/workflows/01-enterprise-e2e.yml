@@ -1,4 +1,4 @@
-name: 01 E2E Azure Spring Apps Enterprise with ACME Fitness
+name: E2E Enterprise Azure Spring Apps with ACME Fitness
 on: workflow_dispatch
 
 permissions:
@@ -153,11 +153,15 @@ jobs:
   deploy_cart_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-cart
-      uses: ./.github/workflows/fitness_deploy_cart_service.yml
+      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
           ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+          ASA_APP_NAME: cart-service
+          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+          SOURCE_PATH: /fitness-store/apps/acme-cart
+          DEPLOYMENT_ENVIRONMENT_SETTINGS: "CART_PORT=8080"
       secrets: inherit
   deploy_frontend:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
