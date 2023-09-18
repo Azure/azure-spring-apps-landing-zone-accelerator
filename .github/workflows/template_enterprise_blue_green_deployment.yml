@@ -69,8 +69,8 @@ jobs:
                 --service "${{inputs.ASA_SERVICE_NAME}}" \
                 --deployment $STAGING_APP \
                 ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS != '' && env.ENVITONMENT_VARS_COMMAND || ''}} \
-                ${{inputs.BUILD_ENV != '' && env.BUILD_ENV_COMMAND || ''}}" \
-                ${{ inputs.CONFIG_FILE_PATTERN != '' &&  env.CONFIG_FILE_PATTERN || ''}}" \
+                ${{inputs.BUILD_ENV != '' && env.BUILD_ENV_COMMAND || ''}} \
+                ${{ inputs.CONFIG_FILE_PATTERN != '' &&  env.CONFIG_FILE_PATTERN || ''}} \
                 --source-path "${{ github.workspace }}/to-deploy-folder/${{inputs.SOURCE_PATH}}"
         - name: Test Staging Deployment
           run: |
