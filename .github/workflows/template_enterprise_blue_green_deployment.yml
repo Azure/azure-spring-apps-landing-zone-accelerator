@@ -63,7 +63,7 @@ jobs:
                 --deployment $STAGING_APP \
                 --env "${{inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}}" \
                 --build-env "$${{inputs.BUILD_ENV}}" \
-                --config-file-pattern "${{ inputs.CONFIG_FILE_PATTERN}}"
+                --config-file-pattern "${{ inputs.CONFIG_FILE_PATTERN}}" \
                 --source-path "${{ github.workspace }}/to-deploy-folder/${{inputs.SOURCE_PATH}}"
         - name: Test Staging Deployment
           run: |
