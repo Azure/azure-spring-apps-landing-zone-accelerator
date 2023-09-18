@@ -63,5 +63,5 @@ jobs:
         - name: Active Staging Deployment
           run: |
             az spring app set-deployment \
-                --name ${{inputs.ASA_SERVICE_NAME}} \
+                --name ${{inputs.ASA_APP_NAME}} \
                 --deployment $STAGING_APP 
