@@ -1,0 +1,78 @@
+name: Deploy cart service
+on:
+    workflow_call:
+        inputs:
+            SUBSCRIPTION_ID:
+                required: true
+                type: string
+            ASA_SERVICE_NAME:
+                required: true
+                type: string
+            ASA_RG:
+                required: true
+                type: string
+        secrets:
+            AZURE_CREDENTIALS:
+                required: true
+jobs:
+  deploy_payments_service:
+        name: Deploy apps/acme-payment
+        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        with:
+            SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
+            ASA_RG: ${{ inputs.ASA_RG }}
+            ASA_APP_NAME: payment-service
+            REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+            SOURCE_PATH: apps/acme-payment
+            BUILD_ENV: BP_JVM_VERSION=17
+            CONFIG_FILE_PATTERN: payment
+        secrets: inherit
+  deploy_catalog_service:
+        name: Deploy apps/acme-catalog
+        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        with:
+            SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
+            ASA_RG: ${{ inputs.ASA_RG }}
+            ASA_APP_NAME: catalog-service
+            REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+            SOURCE_PATH: apps/acme-catalog
+            BUILD_ENV: BP_JVM_VERSION=17
+            CONFIG_FILE_PATTERN: catalog
+        secrets: inherit
+  deploy_order_service:
+        name: Deploy apps/acme-order
+        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        with:
+            SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
+            ASA_RG: ${{ inputs.ASA_RG }}
+            ASA_APP_NAME: order-service
+            REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+            SOURCE_PATH: apps/acme-order
+        secrets: inherit
+  deploy_cart_service:
+        name: Deploy apps/acme-cart
+        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        with:
+            SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
+            ASA_RG: ${{ inputs.ASA_RG }}
+            ASA_APP_NAME: cart-service
+            REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+            SOURCE_PATH: apps/acme-cart
+            DEPLOYMENT_ENVIRONMENT_SETTINGS: "CART_PORT=8080"
+        secrets: inherit
+  deploy_frontend:
+        name: Deploy apps/acme-frontend
+        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        with:
+            SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
+            ASA_RG: ${{ inputs.ASA_RG }}
+            ASA_APP_NAME: frontend
+            REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+            SOURCE_PATH: apps/acme-shopping
+        secrets: inherit  
+    

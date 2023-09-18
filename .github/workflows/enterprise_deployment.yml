@@ -123,80 +123,20 @@ jobs:
       SHARED_RG: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
       PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
     secrets: inherit
-  deploy_payments_service:
-      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-payment
-      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
-      with:
-          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
-          ASA_APP_NAME: payment-service
-          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
-          SOURCE_PATH: apps/acme-payment
-          BUILD_ENV: BP_JVM_VERSION=17
-          CONFIG_FILE_PATTERN: payment
-      secrets: inherit
-  deploy_catalog_service:
-      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-catalog
-      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
-      with:
-          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
-          ASA_APP_NAME: catalog-service
-          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
-          SOURCE_PATH: apps/acme-catalog
-          BUILD_ENV: BP_JVM_VERSION=17
-          CONFIG_FILE_PATTERN: catalog
-      secrets: inherit
-  deploy_order_service:
-      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-order
-      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
-      with:
-          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
-          ASA_APP_NAME: order-service
-          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
-          SOURCE_PATH: apps/acme-order
-      secrets: inherit
-  deploy_cart_service:
-      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-cart
-      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
-      with:
-          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
-          ASA_APP_NAME: cart-service
-          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
-          SOURCE_PATH: apps/acme-cart
-          DEPLOYMENT_ENVIRONMENT_SETTINGS: "CART_PORT=8080"
-      secrets: inherit
-  deploy_frontend:
-      needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
-      name: Deploy apps/acme-frontend
-      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
-      with:
-          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
-          ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
-          ASA_APP_NAME: frontend
-          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
-          SOURCE_PATH: apps/acme-shopping
-      secrets: inherit
+  deploy_fitness_apps:
+        needs:  [deploy_acme_fitness_infra,deploy_lz_enterprise , conditions]
+        name: Deploy apps for ACME Fitness Store
+        uses: ./.github/workflows/fitness_deploy_apps.yml
+        with:
+            SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+            ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+        secrets: inherit 
   destroy_acme_fitness_infra:
     needs:  [deploy_infrastructure_baseline,
             deploy_lz_enterprise, 
             conditions,
-            deploy_frontend,
-            deploy_cart_service,
-            deploy_order_service,
-            deploy_catalog_service,
-            deploy_payments_service]
+            deploy_fitness_apps]
     name: Tear Down Acme Fitness Store
     uses: ./.github/workflows/fitness_infrastructure_tear_down.yml
     if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
