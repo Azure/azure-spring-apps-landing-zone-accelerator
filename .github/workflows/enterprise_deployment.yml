@@ -126,11 +126,16 @@ jobs:
   deploy_payments_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-payment
-      uses: ./.github/workflows/fitness_deploy_payment_service.yml
+      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
           ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+          ASA_APP_NAME: payment-service
+          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+          SOURCE_PATH: apps/acme-payment
+          BUILD_ENV: BP_JVM_VERSION=17
+          CONFIG_FILE_PATTERN: payment
       secrets: inherit
   deploy_catalog_service:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
@@ -174,11 +179,14 @@ jobs:
   deploy_frontend:
       needs:  [deploy_lz_enterprise,deploy_acme_fitness_infra ]
       name: Deploy apps/acme-frontend
-      uses: ./.github/workflows/fitness_deploy_frontend_service.yml
+      uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
       with:
           SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
           ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+          ASA_APP_NAME: frontend
+          REPOSITORY_PATH: Azure-Samples/acme-fitness-store.git
+          SOURCE_PATH: apps/acme-shopping
       secrets: inherit
   destroy_acme_fitness_infra:
     needs:  [deploy_infrastructure_baseline,
