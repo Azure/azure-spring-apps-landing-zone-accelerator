@@ -44,7 +44,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "openai" {
 
 
 resource "azurerm_cognitive_account" "open_ai_account" {
-  name                = "example-ca"
+  name                = "$ca-{var.name_prefix}-openai"
   location            = data.azurerm_resource_group.springapps_rg.location
   resource_group_name = data.azurerm_resource_group.springapps_rg.name
   kind                = "OpenAI"
@@ -85,15 +85,15 @@ resource "azurerm_cognitive_deployment" "gpt-35-turbo-16k" {
 }
 
 
-resource "azurerm_private_endpoint" "example-pe01" {
-  name                = "pe-openai-we"
+resource "azurerm_private_endpoint" "openai-pe01" {
+  name                = "pe-${var.name_prefix}-openai"
   location            = data.azurerm_resource_group.spoke_rg.location
   resource_group_name = data.azurerm_resource_group.spoke_rg.name
   subnet_id           = azurerm_subnet.openai.id
 
 
   private_service_connection {
-    name                           = "pe-openai-we"
+    name                           = "pe-${var.name_prefix}-openai"
     private_connection_resource_id = azurerm_cognitive_account.open_ai_account.id
     subresource_names              = ["account"]
     is_manual_connection           = false

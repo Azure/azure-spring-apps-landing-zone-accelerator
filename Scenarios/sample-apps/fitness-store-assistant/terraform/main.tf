@@ -21,35 +21,28 @@ terraform {
 
 provider "azurerm" {
   features {
-    cognitive_account {
-      purge_soft_delete_on_destroy = true
-    }
   }
 }
 
 locals {
-  vnet_spoke_name       = "vnet-${var.name_prefix}-${data.azurerm_resource_group.spoke_rg.location}-SPOKE"
-  spoke_rg_name         = "rg-${var.name_prefix}-${var.spoke_resource_group_suffix}"
-  spring_cloud_rg_name  = "rg-${var.name_prefix}-${var.spring_cloud_resource_group_name_suffix}"
-  private_zones_rg_name = "rg-${var.name_prefix}-${var.private_zones_resource_group_name_suffix}"
-  shared_rg_name        = "rg-${var.name_prefix}-${var.shared_rg_name_suffix}"
+  vnet_spoke_name = "vnet-${var.name_prefix}-${data.azurerm_resource_group.spoke_rg.location}-SPOKE"
 }
 
 data "azurerm_resource_group" "spoke_rg" {
-  name = local.spoke_rg_name
+  name = var.spoke_resource_group_name
 }
 
 data "azurerm_resource_group" "private_zones_rg" {
-  name = local.private_zones_rg_name
+  name = var.private_zones_resource_group_name
 }
 
 data "azurerm_resource_group" "springapps_rg" {
-  name = local.spring_cloud_rg_name
+  name = var.spring_cloud_resource_group_name
 }
 
 data "azurerm_spring_cloud_service" "sc_enterprise" {
   name                = var.spring_cloud_service
-  resource_group_name = local.spring_cloud_rg_name
+  resource_group_name = var.spring_cloud_resource_group_name
 }
 
 data "azurerm_virtual_network" "spoke_vnet" {
