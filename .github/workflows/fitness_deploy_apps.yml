@@ -18,9 +18,8 @@ on:
                 required: false
                 type: string
             DEPLOY_ASSISTANT:
-                required: false
-                type: boolean
-                default: false
+                required: true
+                type: string
         secrets:
             AZURE_CREDENTIALS:
                 required: true
