@@ -44,7 +44,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "openai" {
 
 
 resource "azurerm_cognitive_account" "open_ai_account" {
-  name                = "$ca-{var.name_prefix}-openai"
+  name                = "ca-${var.name_prefix}-openai"
   location            = data.azurerm_resource_group.springapps_rg.location
   resource_group_name = data.azurerm_resource_group.springapps_rg.name
   kind                = "OpenAI"
