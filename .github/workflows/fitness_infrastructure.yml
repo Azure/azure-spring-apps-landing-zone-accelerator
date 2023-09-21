@@ -46,7 +46,7 @@ on:
           type: string
         DEPLOY_ASSISTANT:
           required: true
-          type: boolean
+          type: string
       secrets:
         AZURE_CLIENT_SECRET:
             required: true
