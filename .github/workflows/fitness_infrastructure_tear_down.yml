@@ -47,6 +47,7 @@ on:
       secrets:
         AZURE_CLIENT_SECRET:
             required: true
+        
       
 env:
     SPRING_APPS_SERVICE_NAME: ${{ inputs.SPRING_APPS_SERVICE_NAME}}
@@ -96,5 +97,36 @@ jobs:
             -var="subscription_id=${{ env.ARM_SUBSCRIPTION_ID}}" \
             -var="spring_cloud_resource_group_name=${{ env.SPRING_APPS_RG }}" \
             -var="shared_rg=${{ env.SHARED_RG }}"
+        - name: Terraform Apply
+          run: terraform apply my.plan
+    destroy_acme_fitness_assistant_infra:
+        name: Destroy ACME Fitness Store Assistant Infrastructure
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: Scenarios/sample-apps/fitness-store-assistant/terraform
+        steps:
+        - name: Checkout this repository
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2.0.3
+          with:
+            terraform_wrapper: false
+        - name: Terraform Init
+          run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+            -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -backend-config="container_name=${{ env.CONTAINERNAME }}"
+        - name: Terraform Plan
+          run: |
+            terraform plan -destroy -out my.plan \
+            -var="spring_cloud_service=${{ env.SPRING_APPS_SERVICE_NAME}}" \
+            -var="name_prefix=${{ env.NAME_PREFIX }}" \
+            -var="private_zones_resource_group_name=${{ env.PRIVATE_DNS_RG }}" \
+            -var="spoke_resource_group_name=${{ env.SPOKE_RG }}" \
+            -var="subscription_id=${{ env.ARM_SUBSCRIPTION_ID}}" \
+            -var="spring_cloud_resource_group_name=${{ env.SPRING_APPS_RG }}" \
+            -var="shared_rg_name=${{ env.SHARED_RG }}"
         - name: Terraform Apply
           run: terraform apply my.plan

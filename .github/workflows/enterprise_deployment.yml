@@ -12,6 +12,8 @@ env:
   # === Destroy All ==
   DESTROY_ENTERPRISE: false
 
+  # === Deploy Open AI Assistant ===
+  DEPLOY_ASSISTANT: true
 
   # === Baseline Parameters ====:
   REGION: eastus
@@ -49,6 +51,7 @@ jobs:
       environment: ${{ env.ENVIRONMENT}}
       region: ${{env.REGION}}
       jumpbox_username: ${{ env.JUMP_BOX_USERNAME}}
+      deploy_assistant: ${{ env.DEPLOY_ASSISTANT}}
     steps:
       - name: Deploy Firewall Override
         if: ${{vars.DEPLOY_FIREWALL_ENTERPRISE != 0 }} 
@@ -122,6 +125,7 @@ jobs:
       SPOKE_RG: ${{ needs.deploy_infrastructure_baseline.outputs.spoke_rg}}
       SHARED_RG: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
       PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
+      DEPLOY_ASSISTANT: ${{ needs.conditions.outputs.deploy_assistant}}
     secrets: inherit
   deploy_fitness_apps:
         needs:  [deploy_acme_fitness_infra,deploy_lz_enterprise , conditions]
@@ -131,6 +135,9 @@ jobs:
             SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
             ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+            OPENAI_ENDPOINT: ${{needs.deploy_acme_fitness_infra.outputs.openai_endpoint}}
+            OPENAI_KEY: ${{needs.deploy_acme_fitness_infra.outputs.openai_key}}
+            DEPLOY_ASSISTANT: ${{ needs.conditions.outputs.deploy_assistant }}
         secrets: inherit 
   destroy_acme_fitness_infra:
     needs:  [deploy_infrastructure_baseline,

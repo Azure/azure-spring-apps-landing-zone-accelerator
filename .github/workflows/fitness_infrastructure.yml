@@ -51,6 +51,11 @@ on:
       secrets:
         AZURE_CLIENT_SECRET:
             required: true
+      outputs:
+        openai_endpoint:
+          value: ${{jobs.deploy_acme_fitness_assistant_infra.outputs.openai_endpoint}}
+        openai_key:
+          value: ${{jobs.deploy_acme_fitness_assistant_infra.outputs.openai_key}}
       
 env:
     SPRING_APPS_SERVICE_NAME: ${{ inputs.SPRING_APPS_SERVICE_NAME}}
@@ -106,6 +111,9 @@ jobs:
         name: Deploy ACME Fitness Store Assistant Infrastructure
         runs-on: ubuntu-latest
         if: inputs.DEPLOY_ASSISTANT
+        outputs:
+          openai_endpoint: ${{steps.output.outputs.openai_endpoint}}
+          openai_key: ${{ steps.output.outputs.openai_key}}
         defaults:
             run:
                 working-directory: Scenarios/sample-apps/fitness-store-assistant/terraform
@@ -134,3 +142,8 @@ jobs:
             -var="shared_rg_name=${{ env.SHARED_RG }}"
         - name: Terraform Apply
           run: terraform apply my.plan
+        - name: Terraform Output
+          id: output
+          run: |
+            echo openai_endpoint=$(terraform output -raw openai_endpoint) >> $GITHUB_OUTPUT
+            echo openai_key=$(terraform output -raw openai_key) >> $GITHUB_OUTPUT
