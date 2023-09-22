@@ -75,6 +75,7 @@ jobs:
           run: |
             echo "Testing Staging Endpoint"
         - name: Update Spring Gateway Routes
+          if: ${{inputs.ASA_APP_NAME != 'payment-service'}}
           run: |
             az spring gateway route-config update \
               --name ${{inputs.ASA_APP_NAME}} \
