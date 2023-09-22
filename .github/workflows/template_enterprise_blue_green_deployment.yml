@@ -36,7 +36,7 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         env:
-          ENVITONMENT_VARS_COMMAND: --env "${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}}"
+          ENVITONMENT_VARS_COMMAND: --env ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}}
           BUILD_ENV_COMMAND: --build-env "${{inputs.BUILD_ENV}}"
           CONFIG_FILE_PATTERN: --config-file-pattern "${{ inputs.CONFIG_FILE_PATTERN}}"
         steps:
