@@ -189,7 +189,7 @@ jobs:
     deploy_hub_firewall:
       name: 05-Hub-AzureFirewall
       needs: [deploy_hub_network, deploy_lz_shared]
-      if:  inputs.DEPLOY_FIREWALL
+      if:  ${{ inputs.DEPLOY_FIREWALL == 'true'}}
       runs-on: ubuntu-latest
       defaults:
         run:
