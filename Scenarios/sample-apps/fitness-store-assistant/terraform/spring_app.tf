@@ -30,6 +30,19 @@ resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment" {
   }
 }
 
+
+# Create ASA Apps Deployment
+resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment" {
+  name                = "green"
+  spring_cloud_app_id = azurerm_spring_cloud_app.asa_app_service.id
+  build_result_id     = "<default>"
+
+  quota {
+    cpu    = "1"
+    memory = "1Gi"
+  }
+}
+
 # Activate ASA Apps Deployment
 resource "azurerm_spring_cloud_active_deployment" "asa_app_deployment_activation" {
   spring_cloud_app_id = azurerm_spring_cloud_app.asa_app_service.id
