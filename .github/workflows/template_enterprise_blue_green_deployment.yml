@@ -34,6 +34,7 @@ on:
                 required: true
 jobs:
     deploy:
+        name: Blue Green Deployment
         runs-on: ubuntu-latest
         env:
           ENVITONMENT_VARS_COMMAND: --env ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}}
@@ -57,7 +58,7 @@ jobs:
         - name: Lookup Staging Deployment Name
           run: |
             echo "STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app ${{inputs.ASA_APP_NAME}} --query "[?properties.active==\`false\`].name" --output tsv)" >> $GITHUB_ENV
-        - name: Deploy Cart service
+        - name: Deploy App
           run: |
             echo ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS != ''}}
             echo ${{inputs.BUILD_ENV != ''}}

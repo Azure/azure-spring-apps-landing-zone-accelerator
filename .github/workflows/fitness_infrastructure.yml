@@ -76,7 +76,7 @@ env:
     ARM_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
 jobs:
     deploy_acme_fitness_infra:
-        name: Deploy ACME Fitness Store Infrastructure
+        name: ACME Fitness Store Infrastructure
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -107,7 +107,7 @@ jobs:
         - name: Terraform Apply
           run: terraform apply my.plan
     deploy_acme_fitness_assistant_infra:
-        name: Deploy ACME Fitness Store Assistant Infrastructure
+        name: ACME Fitness Store Assistant Infrastructure
         runs-on: ubuntu-latest
         needs: deploy_acme_fitness_infra
         if: inputs.DEPLOY_ASSISTANT

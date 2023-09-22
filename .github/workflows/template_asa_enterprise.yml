@@ -57,7 +57,7 @@ env:
 
 jobs:
   deploy_lz_enterprise:
-    name: Deploy 06 LZ Spring Apps Enterprise
+    name: 06-LZ-SpringApps-Enterprise
     runs-on: ubuntu-latest
     outputs:
       spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
