@@ -445,7 +445,7 @@ jobs:
         build,
       ]
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -485,7 +485,7 @@ jobs:
     needs: [conditions, deploy_lz_standard, destroy_pet_clinic_infra]
     name: Destroy 06 LZ Spring Apps Standard
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -523,7 +523,7 @@ jobs:
     needs: [destroy_lz_standard, conditions]
     name: Destroy 05 Hub Firewall
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -561,7 +561,7 @@ jobs:
     needs: [destroy_hub_firewall, conditions]
     name: Destroy 04 LZ Shared Resources
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -601,7 +601,7 @@ jobs:
     needs: [destroy_lz_shared, conditions]
     name: Destroy 03 LZ Network
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -638,7 +638,7 @@ jobs:
     name: Destroy 02 Hub Network
     needs: [destroy_lz_network, conditions]
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
