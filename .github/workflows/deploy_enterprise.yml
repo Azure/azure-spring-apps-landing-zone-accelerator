@@ -349,6 +349,7 @@ jobs:
         run: |
             az spring app deploy \
                 --name catalog-service \
+                --build-env "BP_JVM_VERSION=17" \
                 --jvm-options='-XX:MaxMetaspaceSize=148644K' \
                 --source-path ${{ github.workspace }}/fitness-store/apps/acme-catalog \
                 --config-file-pattern catalog
@@ -356,6 +357,7 @@ jobs:
         run: |
             az spring app deploy \
                 --name payment-service \
+                --build-env "BP_JVM_VERSION=17" \
                 --jvm-options='-XX:MaxMetaspaceSize=148644K' \
                 --source-path ${{ github.workspace }}/fitness-store/apps/acme-payment \
                 --env "SPRING_DATASOURCE_AZURE_PASSWORDLESSENABLED=true" \
