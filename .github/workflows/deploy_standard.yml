@@ -387,7 +387,8 @@ jobs:
         run: |
           az extension add --name spring -y
           az spring list -o table
-
+          az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }} 
+          az configure --defaults group=${{ needs.deploy_lz_standard.outputs.spring_apps_rg }} spring=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
       - name: Deploy api-gateway
         run: |          
           az spring app deploy \
