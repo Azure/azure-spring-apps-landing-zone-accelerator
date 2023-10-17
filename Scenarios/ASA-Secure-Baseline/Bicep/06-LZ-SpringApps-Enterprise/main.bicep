@@ -12,8 +12,8 @@ param appGwSubnetPrefix string
 @description('Name of the resource group that Spring Apps creates for its app space. Specify this value in the parameters.json file to override this default.')
 param appNetworkResourceGroup string
 
-@description('Private IP address of the existing firewll. If this script is not configured to deploy a firewall, this value must be set')
-param azureFirewallIp string
+@description('IP address of the firewll. If this value is empty, it will be assumed the LZA will not use a firewall for egress traffic.')
+param firewallIp string
 
 @description('Name of the default apps route table. Specify this value in the parameters.json file to override this default.')
 param defaultAppsRouteName string
@@ -96,7 +96,7 @@ param tags object
 @description('Timestamp value used to group and uniquely identify a given deployment')
 param timeStamp string
 
-module defaultHubRoute '../Modules/udr.bicep' = {
+module defaultHubRoute '../Modules/udr.bicep' = if (firewallIp != '') {
   name: '${timeStamp}-default-hub-route'
   scope: resourceGroup(hubVnetRgName)
   params: {
@@ -108,14 +108,14 @@ module defaultHubRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azureFirewallIp
+          nextHopIpAddress: firewallIp
         }
       }
     ]
   }
 }
 
-module defaultAppsRoute '../Modules/udr.bicep' = {
+module defaultAppsRoute '../Modules/udr.bicep' = if (firewallIp != '') {
   name: '${timeStamp}-default-apps-route'
   scope: resourceGroup(spokeRgName)
   params: {
@@ -129,14 +129,14 @@ module defaultAppsRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azureFirewallIp
+          nextHopIpAddress: firewallIp
         }
       }
     ]
   }
 }
 
-module defaultRuntimeRoute '../Modules/udr.bicep' = {
+module defaultRuntimeRoute '../Modules/udr.bicep' = if (firewallIp != '') {
   name: '${timeStamp}-defaultRuntimeRoute'
   scope: resourceGroup(spokeRgName)
   params: {
@@ -150,14 +150,14 @@ module defaultRuntimeRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azureFirewallIp
+          nextHopIpAddress: firewallIp
         }
       }
     ]
   }
 }
 
-module defaultSharedRoute '../Modules/udr.bicep' = {
+module defaultSharedRoute '../Modules/udr.bicep' = if (firewallIp != '') {
   name: '${timeStamp}-defaultSharedRoute'
   scope: resourceGroup(spokeRgName)
   params: {
@@ -169,15 +169,13 @@ module defaultSharedRoute '../Modules/udr.bicep' = {
         properties: {
           addressPrefix: '0.0.0.0/0'
           nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azureFirewallIp
+          nextHopIpAddress: firewallIp
         }
       }
     ]
   }
 }
 
-// Currently in Bicep you cannot associate a route table with an existing subnet, so this workaround
-// effectively redeploys the network so that the UDRs defined above can be associated.
 resource runtimeNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = {
   name: snetRuntimeNsg
   scope: resourceGroup(spokeRgName)
@@ -203,7 +201,10 @@ resource agwNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' existing = 
   scope: resourceGroup(spokeRgName)
 }
 
-module spokeVnet '../Modules/vnet.bicep' = {
+// Currently in Bicep you cannot associate a route table with an existing subnet, so this workaround
+// effectively redeploys the network so that the UDRs defined above can be associated.
+// This is only required if a firewall will be used with the LZA.
+module spokeVnet '../Modules/vnet.bicep' = if (firewallIp != '') {
   name: '${timeStamp}-${spokeVnetName}'
   scope: resourceGroup(spokeRgName)
   params: {
@@ -222,9 +223,9 @@ module spokeVnet '../Modules/vnet.bicep' = {
           networkSecurityGroup: {
             id: runtimeNsg.id
           }
-          routeTable: {
+          routeTable: firewallIp != '' ? {
             id: defaultRuntimeRoute.outputs.id
-          }
+          } : {}
         }
       }
       {
@@ -234,9 +235,9 @@ module spokeVnet '../Modules/vnet.bicep' = {
           networkSecurityGroup: {
             id: appNsg.id
           }
-          routeTable: {
+          routeTable: firewallIp != '' ? {
             id: defaultAppsRoute.outputs.id
-          }
+          } : {}
         }
       }
       {
@@ -255,9 +256,9 @@ module spokeVnet '../Modules/vnet.bicep' = {
           networkSecurityGroup: {
             id: sharedNsg.id
           }
-          routeTable: {
+          routeTable: firewallIp != '' ? {
             id: defaultSharedRoute.outputs.id
-          }
+          } : {}
         }
       }
       {
@@ -309,17 +310,18 @@ module springApps '../Modules/springApps.bicep' = {
   name: '${timeStamp}-spring-apps'
   scope: resourceGroup(appRgName)
   params: {
+    appInsightsInstrumentationKey: appInsights.outputs.key
     appNetworkResourceGroup: appNetworkResourceGroup
     appSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeRgName}/providers/Microsoft.Network/virtualNetworks/${spokeVnetName}/subnets/snet-app'
-    enterprise: false
+    enterprise: true
     location: location
     name: springAppsName
     serviceCidr: springAppsRuntimeCidr
     serviceRuntimeSubnetId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${spokeRgName}/providers/Microsoft.Network/virtualNetworks/${spokeVnetName}/subnets/snet-runtime'
     serviceRuntimeNetworkResourceGroup: serviceRuntimeNetworkResourceGroup
     sku: {
-      name: 'S0'
-      tier: 'Standard'
+      name: 'E0'
+      tier: 'Enterprise'
     }
     tags: tags
     workspaceId: logAnalyticsWorkspace.outputs.id
@@ -329,6 +331,7 @@ module springApps '../Modules/springApps.bicep' = {
     defaultAppsRoute
     defaultRuntimeRoute
     spokeVnet
+    appInsights
   ]
 }
 

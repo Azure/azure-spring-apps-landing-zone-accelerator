@@ -26,6 +26,36 @@ It's a great way to automate your CI/CD pipelines, and it's free for public repo
 To set up GitHub Actions for deployment, we'll need to use the new workflow file in our repository.
 This file will contain the instructions for our CI/CD pipeline.
 
+## Creating an Azure Service Principal
+
+In order to deploy our Landing Zone and application to Azure Spring Apps, we'll need to create an Azure Service Principal.
+This is an identity that can be used to authenticate to Azure, and that can be granted access to specific resources.
+
+To create a new Service Principal, run the following commands:
+
+```bash
+    SUBSCRIPTION_ID=$(
+      az account show \
+        --query id \
+        --output tsv \
+        --only-show-errors
+    )
+
+    # Modify --name to your liking - must be unique in the directory
+    AZURE_CREDENTIALS=$(
+      MSYS_NO_PATHCONV=1 az ad sp create-for-rbac \
+        --name="sp-${PROJECT}-${UNIQUE_IDENTIFIER}" \
+        --role="Owner" \
+        --scopes="/subscriptions/$SUBSCRIPTION_ID" \
+        --sdk-auth \
+        --only-show-errors
+    )
+
+    echo $AZURE_CREDENTIALS
+    echo $SUBSCRIPTION_ID     
+```
+In the next step we'll setup secrets in Github Actions to store $AZURE_CREDENTIALS securely for use by the workflow.
+
 ## Setup secrets and variables
 
 Secrets in GitHub are encrypted and allow you to store sensitive information such as passwords or API keys, and use them in your workflows using the ${{ secrets.MY_SECRET }} syntax.
