@@ -105,9 +105,10 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v3
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -150,6 +151,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -193,9 +195,10 @@ jobs:
       - name: Checkout this repository
         uses: actions/checkout@v3
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2.0.3
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -239,6 +242,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -281,6 +285,7 @@ jobs:
               uses: hashicorp/setup-terraform@v2.0.3
               with:
                 terraform_wrapper: false
+                terraform_version: 1.5.7
             - name: Terraform Init
               run: |
                 terraform init \
@@ -323,6 +328,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -381,7 +387,8 @@ jobs:
         run: |
           az extension add --name spring -y
           az spring list -o table
-
+          az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }} 
+          az configure --defaults group=${{ needs.deploy_lz_standard.outputs.spring_apps_rg }} spring=${{ needs.deploy_lz_standard.outputs.spring_apps_service_name }}
       - name: Deploy api-gateway
         run: |          
           az spring app deploy \
@@ -445,7 +452,7 @@ jobs:
         build,
       ]
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -461,6 +468,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -485,7 +493,7 @@ jobs:
     needs: [conditions, deploy_lz_standard, destroy_pet_clinic_infra]
     name: Destroy 06 LZ Spring Apps Standard
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -501,6 +509,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -523,7 +532,7 @@ jobs:
     needs: [destroy_lz_standard, conditions]
     name: Destroy 05 Hub Firewall
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -539,6 +548,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -561,7 +571,7 @@ jobs:
     needs: [destroy_hub_firewall, conditions]
     name: Destroy 04 LZ Shared Resources
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -577,6 +587,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -601,7 +612,7 @@ jobs:
     needs: [destroy_lz_shared, conditions]
     name: Destroy 03 LZ Network
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -616,6 +627,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -638,7 +650,7 @@ jobs:
     name: Destroy 02 Hub Network
     needs: [destroy_lz_network, conditions]
     runs-on: ubuntu-latest
-    if: needs.conditions.outputs.destroy == 'true'
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
     env:
       NAME_PREFIX: ${{needs.conditions.outputs.name_prefix}}
       ENVIRONMENT: ${{needs.conditions.outputs.environment}}
@@ -653,6 +665,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \

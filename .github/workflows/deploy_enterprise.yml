@@ -87,6 +87,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -129,6 +130,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -175,6 +177,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -218,6 +221,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -259,6 +263,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -301,6 +306,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -338,69 +344,44 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Set up Azure Spring Extension
+        run: |
+            az extension add --name spring 
+            az account set --subscription ${{ env.ARM_SUBSCRIPTION_ID }} 
+            az configure --defaults group=${{ env.SPRING_APPS_RESOURCE_GROUP }} spring=${{env.SPRING_APPS_SERVICE_NAME}} 
+      - name: Deploy apps/acme-catalog
+        run: |
+            az spring app deploy \
+                --name catalog-service \
+                --build-env "BP_JVM_VERSION=17" \
+                --jvm-options='-XX:MaxMetaspaceSize=148644K' \
+                --source-path ${{ github.workspace }}/fitness-store/apps/acme-catalog \
+                --config-file-pattern catalog
       - name: Deploy apps/acme-payment
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: payment-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-payment
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          build-env: "-BP_JVM_VERSION 17"
-          config-file-patterns: payment
-
-      - name: Deploy catalog service
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: catalog-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-catalog
-          jvm-options: -Xms2048m -Xmx2048m
-          runtime-version: Java_17
-          build-env: "-BP_JVM_VERSION 17"
-          config-file-patterns: catalog
-
+        run: |
+            az spring app deploy \
+                --name payment-service \
+                --build-env "BP_JVM_VERSION=17" \
+                --jvm-options='-XX:MaxMetaspaceSize=148644K' \
+                --source-path ${{ github.workspace }}/fitness-store/apps/acme-payment \
+                --env "SPRING_DATASOURCE_AZURE_PASSWORDLESSENABLED=true" \
+                --config-file-pattern payment
       - name: Deploy apps/acme-order
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: order-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-order
-
+        run: |
+            az spring app deploy \
+                --name order-service \
+                --source-path ${{ github.workspace }}/fitness-store/apps/acme-order 
       - name: Deploy apps/acme-cart 
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: cart-service
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-cart 
-          environment-variables: -CART_PORT 8080
-
+        run: |
+            az spring app deploy \
+                --name cart-service \
+                --env "CART_PORT=8080" \
+                --source-path ${{ github.workspace }}/fitness-store/apps/acme-cart                 
       - name: Deploy apps/acme-shopping
-        uses: azure/spring-apps-deploy@v1
-        if: needs.conditions.outputs.destroy == 'false'
-        with:
-          azure-subscription: ${{ env.ARM_SUBSCRIPTION_ID }}
-          action: deploy
-          service-name: ${{ env.SPRING_APPS_SERVICE_NAME }}
-          app-name: frontend
-          use-staging-deployment: false
-          package: ${{ github.workspace }}/fitness-store/apps/acme-shopping
+        run: |
+            az spring app deploy \
+                --name frontend \
+                --source-path ${{ github.workspace }}/fitness-store/apps/acme-shopping
   prepare_destroy:
     needs: [conditions, build, deploy_lz_enterprise, deploy_lz_shared]
     name: Prepare Spring Enterprise for Destroy
@@ -460,6 +441,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -497,6 +479,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -534,6 +517,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -572,6 +556,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -611,6 +596,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
@@ -648,6 +634,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_wrapper: false
+          terraform_version: 1.5.7
       - name: Terraform Init
         run: |
           terraform init \
