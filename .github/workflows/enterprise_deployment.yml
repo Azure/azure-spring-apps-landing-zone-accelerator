@@ -1,5 +1,5 @@
 name: E2E Enterprise Azure Spring Apps with ACME Fitness
-on: push
+on: workflow_dispatch
 
 permissions:
   id-token: write
