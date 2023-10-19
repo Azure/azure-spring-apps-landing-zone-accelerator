@@ -13,7 +13,7 @@ env:
   DESTROY_ENTERPRISE: false
 
   # === Deploy Open AI Assistant ===
-  DEPLOY_ASSISTANT: true
+  DEPLOY_ASSISTANT: false
 
   # === Baseline Parameters ====:
   REGION: eastus
@@ -71,6 +71,9 @@ jobs:
       - name: Override Jump Box Username
         if: ${{vars.JUMP_BOX_USERNAME != 0 }} 
         run: echo "JUMP_BOX_USERNAME=${{ vars.JUMP_BOX_USERNAME }}" >> $GITHUB_ENV
+      - name: Deploy Fitness Store Assistant
+        if: ${{vars.DEPLOY_ASSISTANT != 0 }}
+        run: echo "DEPLOY_ASSISTANT=${{vars.DEPLOY_ASSISTANT }}" >> GITHUB_ENV
   deploy_infrastructure_baseline:
     name: Deploy ASA Secure Baseline
     needs: [conditions]
