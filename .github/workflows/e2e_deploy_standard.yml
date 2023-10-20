@@ -1,4 +1,4 @@
-name: Deploy to Azure Spring Apps Standard with Petclinic
+name: E2E Standard Azure Spring Apps with Petclinic
 on: workflow_dispatch
 
 permissions:

@@ -26,7 +26,7 @@ on:
 jobs:
   deploy_payments_service:
         name: Deploy apps/acme-payment
-        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
@@ -39,7 +39,7 @@ jobs:
         secrets: inherit
   deploy_catalog_service:
         name: Deploy apps/acme-catalog
-        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
@@ -52,7 +52,7 @@ jobs:
         secrets: inherit
   deploy_order_service:
         name: Deploy apps/acme-order
-        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
@@ -63,7 +63,7 @@ jobs:
         secrets: inherit
   deploy_cart_service:
         name: Deploy apps/acme-cart
-        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
@@ -75,7 +75,7 @@ jobs:
         secrets: inherit
   deploy_frontend:
         name: Deploy apps/acme-frontend
-        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
@@ -87,7 +87,7 @@ jobs:
   deploy_assistant:
         name: Deploy apps/acme-assitant
         if: inputs.DEPLOY_ASSISTANT
-        uses: ./.github/workflows/template_enterprise_blue_green_deployment.yml
+        uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
