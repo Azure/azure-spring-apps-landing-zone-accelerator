@@ -116,6 +116,17 @@ Optionally you may set the following variables to control the behavoir of the wo
 | `DESTROY_ENTERPRISE`         | Optionally destroy the resources : true or false                                   | false         |
 
 
+## Optional Fit Assitant with Azure OpenAI 
+
+Optionally you may include the Fit Assistant powered by Azure OpenAI.
+
+To deploy the Fit Assistant add the following variable to you Action variables and set it to `true`:
+| Variable Name      | Value                                                                          | Default Value |
+| ------------------ | ------------------------------------------------------------------------------ | ------------- |
+| `DEPLOY_ASSISTANT` | Will create resources for Fit Assistant(Azure OpenAI account with Deployments) | false         |
+## [Prerequisite]
+ * You must have access to Azure OpenAI and the ability to create Azure OpenAI Services
+
 
 ## Find the Object ID for Spring Apps Service Principal
 * Retrieve the `SPRINGAPPS_SPN_OBJECT_ID` with the value of the the Object ID for the "Azure Spring Apps Resource Provider" service principal in your Azure AD Tenant.
