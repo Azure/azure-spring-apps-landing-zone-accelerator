@@ -25,7 +25,7 @@ In this example, there is a common variable defintions file [parameters.tfvars](
     ### Authentication and Authorization to Azure
 
     This deployment template creates new resource groups and resources, and applies needed RBAC permissions to those resources.
-    <br>The following RBAC permissions are required for successful completion:
+    <br>The following RBAC permissions are required to the Subscription for successful completion:
     - Owner
         <br/> --or--
     - Contributor   +   User Access Administrator
@@ -46,7 +46,7 @@ In this example, there is a common variable defintions file [parameters.tfvars](
       # With a certificate credential
         az login --service-principal -u <appid> -p ~/mycertfile.pem
       # With a secret credential
-         az login --service-principal -u <appid> -p VerySecret
+        az login --service-principal -u <appid> -p VerySecret
         
 
     
