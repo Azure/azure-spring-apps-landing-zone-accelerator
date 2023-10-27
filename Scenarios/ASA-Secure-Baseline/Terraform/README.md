@@ -22,11 +22,36 @@ In this example, there is a common variable defintions file [parameters.tfvars](
     git clone https://github.com/Azure/azure-spring-apps-reference-architecture.git
     ```
     
-    ### To authenticate Azure CLI
+    ### Authentication and Authorization to Azure
+
+    This deployment template creates new resource groups and resources, and applies needed RBAC permissions to those resources.
+    <br>The following RBAC permissions are required for successful completion:
+    - Owner
+        <br/> --or--
+    - Contributor   +   User Access Administrator
+   
+   A managed identity, service principal or user account can be used to authenticate Azure CLI.
 
     ```bash
-    az login
+    # To authenticate a user account interactively
+      az login
+
+    # To authenticate using a Managed Identity
+      # System Assigned MI
+        az login --identity
+      # User Assigned MI
+        az login --identity -u /subscriptions/<subscriptionId>/resourcegroups/myRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myID
+
+    # To authenticate using a Service Principal
+      # With a certificate credential
+        az login --service-principal -u <appid> -p ~/mycertfile.pem
+      # With a secret credential
+         az login --service-principal -u <appid> -p VerySecret
+        
+
+    
     ```
+
 
     ### To set a specific subscription
 
@@ -35,7 +60,7 @@ In this example, there is a common variable defintions file [parameters.tfvars](
     az account set --subscription <name-of-subscription>
     ```
 
-2. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
+1. If not already registered in the subscription, use the following Azure CLI commands to register the required resource providers for Azure Spring Apps:
 
     ```bash
     az provider register --namespace 'Microsoft.AppPlatform'
@@ -43,13 +68,13 @@ In this example, there is a common variable defintions file [parameters.tfvars](
     az provider register --namespace 'Microsoft.ServiceLinker'
     ```
 
-3. Obtain the ObjectID of the service principal for Azure Spring Apps. This ID is unique per Azure AD Tenant. In Step 4, set the value of variable SRINGAPPS_SPN_OBJECT_ID to the result from this command.
+2. Obtain the ObjectID of the service principal for Azure Spring Apps. This ID is unique per Azure AD Tenant. In Step 4, set the value of variable SRINGAPPS_SPN_OBJECT_ID to the result from this command.
 
     `az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv`
 
 
 
-4. Modify the variables within the Global section of the variable definitons file paramaters.tfvars as needed
+3. Modify the variables within the Global section of the variable definitons file paramaters.tfvars as needed
 
     ```bash
     # EXAMPLE
