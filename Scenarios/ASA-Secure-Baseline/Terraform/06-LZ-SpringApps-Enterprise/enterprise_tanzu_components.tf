@@ -34,7 +34,7 @@ resource "azurerm_spring_cloud_gateway" "scgateway" {
 
   instance_count                           = 2
   application_performance_monitoring_types = ["ApplicationInsights"]
-  public_network_access_enabled            = true
+  public_network_access_enabled            = var.public_network_access_enabled
   environment_variables                    = { APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.sc_app_insights.connection_string }
 
 }
@@ -44,7 +44,7 @@ resource "azurerm_spring_cloud_api_portal" "apiportal" {
   spring_cloud_service_id       = azurerm_spring_cloud_service.sc_enterprise.id
   gateway_ids                   = [azurerm_spring_cloud_gateway.scgateway.id]
   https_only_enabled            = false
-  public_network_access_enabled = true
+  public_network_access_enabled = var.public_network_access_enabled
   instance_count                = 1
 
   # Set this to false and apply before DESTROY
