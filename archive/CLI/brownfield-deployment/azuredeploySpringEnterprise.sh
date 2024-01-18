@@ -69,7 +69,6 @@ az spring create \
     --enable-gateway \
     --enable-api-portal \
     --api-portal-instance-count 2 \
-    --enable-java-agent true \
     --app-insights ${azurespring_service} \
     --app-subnet ${azurespring_app_subnet_name} \
     --service-runtime-subnet ${azurespring_service_subnet_name} \
