@@ -8,7 +8,7 @@ echo "Enter Azure region for resource deployment: "
 read region
 location=$region
 
-echo "Enter Azure Spring  Resource Group Name: "
+echo "Enter Azure Spring Resource Group Name: "
 read azurespringrg
 azurespring_resource_group_name=$azurespringrg
 
@@ -32,7 +32,7 @@ echo "Enter Azure Log Analytics Workspace Resource Group Name: "
 read loganalyticsrg
 loganalyticsrg=$loganalyticsrg
 
-echo "Enter Log Analytics Workspace Resource ID: "
+echo "Enter Log Analytics Workspace Resource Name: "
 read workspace
 workspaceID='/subscriptions/'$subscription'/resourcegroups/'$loganalyticsrg'/providers/microsoft.operationalinsights/workspaces/'$workspace
 
