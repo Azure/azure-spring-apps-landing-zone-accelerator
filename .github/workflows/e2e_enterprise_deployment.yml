@@ -4,7 +4,7 @@ on: [push, workflow_dispatch]
 permissions:
   id-token: write
   contents: read
-
+ 
 env:
   # === Deploy Firewall ===:
   DEPLOY_FIREWALL_ENTERPRISE: false
