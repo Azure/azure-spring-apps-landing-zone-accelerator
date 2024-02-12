@@ -136,6 +136,8 @@ jobs:
         uses: ./.github/workflows/fitness_deploy_apps.yml
         with:
             SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
             ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
             OPENAI_ENDPOINT: ${{needs.deploy_acme_fitness_infra.outputs.openai_endpoint}}

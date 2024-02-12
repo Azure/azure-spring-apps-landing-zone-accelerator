@@ -29,6 +29,12 @@ on:
             BUILD_ENV:
               type: string
               default: ""
+            AZURE_CLIENT_ID:
+              type: string
+              default: ""
+            AZURE_TENANT_ID:
+              type: string
+              default: ""
         secrets:
             AZURE_CREDENTIALS:
                 required: true
@@ -49,9 +55,9 @@ jobs:
         - name: Set up Azure
           uses: azure/login@v1
           with:
-             client-id: ${{ secrets.AZURE_CLIENT_ID }}
-             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+             client-id: ${{ inputs.AZURE_CLIENT_ID }}
+             tenant-id: ${{ inputs.AZURE_TENANT_ID }}
+             subscription-id: ${{ inputs.SUBSCRIPTION_ID }}
         - name: Set up Azure Spring Extension
           run: |
             az extension add --name spring 

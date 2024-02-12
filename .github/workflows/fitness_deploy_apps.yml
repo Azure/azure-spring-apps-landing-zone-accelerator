@@ -20,6 +20,12 @@ on:
             DEPLOY_ASSISTANT:
                 required: true
                 type: string
+            AZURE_CLIENT_ID:
+              type: string
+              default: ""
+            AZURE_TENANT_ID:
+              type: string
+              default: ""
         secrets:
             AZURE_CREDENTIALS:
                 required: true
@@ -29,6 +35,8 @@ jobs:
         uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
             ASA_RG: ${{ inputs.ASA_RG }}
             ASA_APP_NAME: payment-service
@@ -42,6 +50,8 @@ jobs:
         uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
             ASA_RG: ${{ inputs.ASA_RG }}
             ASA_APP_NAME: catalog-service
@@ -55,6 +65,8 @@ jobs:
         uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
             ASA_RG: ${{ inputs.ASA_RG }}
             ASA_APP_NAME: order-service
@@ -66,6 +78,8 @@ jobs:
         uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
             ASA_RG: ${{ inputs.ASA_RG }}
             ASA_APP_NAME: cart-service
@@ -78,6 +92,8 @@ jobs:
         uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
             ASA_RG: ${{ inputs.ASA_RG }}
             ASA_APP_NAME: frontend
@@ -90,6 +106,8 @@ jobs:
         uses: ./.github/workflows/template_blue_green_app_deployment.yml
         with:
             SUBSCRIPTION_ID: ${{ inputs.SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
             ASA_SERVICE_NAME: ${{ inputs.ASA_SERVICE_NAME }}
             ASA_RG: ${{ inputs.ASA_RG }}
             ASA_APP_NAME: assist-service
