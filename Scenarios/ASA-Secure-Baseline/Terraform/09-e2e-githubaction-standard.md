@@ -92,9 +92,9 @@ Switch to the Variables tab and create the following variables
 
 | Variable Name              | Value                                                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `AZURE_CLIENT_ID`          | Your tenant id can be found in Azure Active Directory                                                               |
+| `AZURE_CLIENT_ID`          | Your Service Principal Client ID                                                                                    |
 | `AZURE_SUBSCRIPTION_ID`    | Your subscription id                                                                                                |
-| `AZURE_TENANT_ID`          | Your Service Principal Client ID                                                                                    |
+| `AZURE_TENANT_ID`          | Your tenant id can be found in Azure Active Directory                                                               |
 | `STORAGEACCOUNTNAME`       | Storage Account for storing terraform state                                                                         |
 | `TFSTATE_RG`               | Resource group where Storage Account is located for storing terraform state                                         |
 | `CONTAINERNAME_STANDARD`   | Container in the Storage Account for storing terraform state                                                        |

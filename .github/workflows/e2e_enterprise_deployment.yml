@@ -1,0 +1,210 @@
+name: E2E Enterprise Azure Spring Apps with ACME Fitness
+on: [push, workflow_dispatch]
+
+permissions:
+  id-token: write
+  contents: read
+ 
+env:
+  # === Deploy Firewall ===:
+  DEPLOY_FIREWALL_ENTERPRISE: false
+
+  # === Destroy All ==
+  DESTROY_ENTERPRISE: false
+
+  # === Deploy Open AI Assistant ===
+  DEPLOY_ASSISTANT: false
+
+  # === Baseline Parameters ====:
+  REGION: eastus
+  NAME_PREFIX: springent
+  ENVIRONMENT: dev
+
+  # === Spring Apps Service ===:
+  SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  JUMP_BOX_USERNAME: lzadmin
+  JUMP_BOX_PASSWORD: ${{ secrets.JUMP_BOX_PASSWORD }}
+  # Specify the Object ID for the "Azure Spring Apps Resource Provider" service principal in the customer's Azure AD Tenant
+  # Use this command to obtain:
+  #    az ad sp show --id e8de9221-a19c-4c81-b814-fd37c6caf9d2 --query id --output tsv
+  SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID }}
+
+  # ==== Terraform Backend ===:
+  TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+  STORAGEACCOUNTNAME: ${{ vars.STORAGEACCOUNTNAME }}
+  CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE }}
+
+  # ==== Terraform Azure Login ===:
+  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }} 
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+
+
+jobs:
+  conditions:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_firewall: "${{ env.DEPLOY_FIREWALL_ENTERPRISE }}"
+      destroy: "${{ env.DESTROY_ENTERPRISE }}"
+      name_prefix: ${{ env.NAME_PREFIX}}
+      environment: ${{ env.ENVIRONMENT}}
+      region: ${{env.REGION}}
+      jumpbox_username: ${{ env.JUMP_BOX_USERNAME}}
+      deploy_assistant: ${{ env.DEPLOY_ASSISTANT}}
+    steps:
+      - name: Deploy Firewall Override
+        if: ${{vars.DEPLOY_FIREWALL_ENTERPRISE != 0 }} 
+        run: echo "DEPLOY_FIREWALL_ENTERPRISE=${{ vars.DEPLOY_FIREWALL_ENTERPRISE }}" >> $GITHUB_ENV
+      - name: Destroy Override DESTROY_ENTERPRISE
+        if: ${{vars.DESTROY_ENTERPRISE != 0 }} 
+        run: echo "DESTROY_ENTERPRISE=${{ vars.DESTROY_ENTERPRISE }}" >> $GITHUB_ENV
+      - name: Override Deployment Region
+        if: ${{vars.REGION_ENTERPRISE != 0 }} 
+        run: echo "REGION=${{ vars.REGION_ENTERPRISE }}" >> $GITHUB_ENV
+      - name: Override Name Prefix
+        if: ${{vars.NAME_PREFIX_ENTERPRISE != 0 }} 
+        run: echo "NAME_PREFIX=${{ vars.NAME_PREFIX_ENTERPRISE }}" >> $GITHUB_ENV
+      - name: Override Environment Token
+        if: ${{vars.ENVIRONMENT_ENTERPRISE != 0 }} 
+        run: echo "ENVIRONMENT=${{ vars.ENVIRONMENT_ENTERPRISE }}" >> $GITHUB_ENV
+      - name: Override Jump Box Username
+        if: ${{vars.JUMP_BOX_USERNAME != 0 }} 
+        run: echo "JUMP_BOX_USERNAME=${{ vars.JUMP_BOX_USERNAME }}" >> $GITHUB_ENV
+      - name: Deploy Fitness Store Assistant
+        if: ${{vars.DEPLOY_ASSISTANT != 0 }}
+        run: echo "DEPLOY_ASSISTANT=${{vars.DEPLOY_ASSISTANT }}" >> GITHUB_ENV
+  deploy_infrastructure_baseline:
+    name: Deploy ASA Secure Baseline
+    needs: [conditions]
+    uses: ./.github/workflows/template_asa_baseline_infrastructure.yml
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
+      JUMP_BOX_USERNAME: ${{needs.conditions.outputs.jumpbox_username}}
+      DEPLOY_FIREWALL: ${{ needs.conditions.outputs.DEPLOY_FIREWALL}}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+    secrets: inherit
+  deploy_lz_enterprise:
+    needs:
+      [deploy_infrastructure_baseline, conditions]
+    name: Deploy Spring Apps Enterprise
+    uses: ./.github/workflows/template_asa_enterprise.yml
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+    secrets: inherit
+  deploy_acme_fitness_infra:
+    needs:  [deploy_infrastructure_baseline,deploy_lz_enterprise , conditions]
+    name: Deploy Acme Fitness Store
+    uses: ./.github/workflows/fitness_infrastructure.yml
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+      SPRING_APPS_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}}
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}
+      SPOKE_RG: ${{ needs.deploy_infrastructure_baseline.outputs.spoke_rg}}
+      SHARED_RG: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
+      PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
+      DEPLOY_ASSISTANT: ${{ needs.conditions.outputs.deploy_assistant}}
+    secrets: inherit
+  deploy_fitness_apps:
+        needs:  [deploy_acme_fitness_infra,deploy_lz_enterprise , conditions]
+        name: Deploy apps for ACME Fitness Store
+        uses: ./.github/workflows/fitness_deploy_apps.yml
+        with:
+            SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+            AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+            ASA_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name }}
+            ASA_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+            OPENAI_ENDPOINT: ${{needs.deploy_acme_fitness_infra.outputs.openai_endpoint}}
+            OPENAI_KEY: ${{needs.deploy_acme_fitness_infra.outputs.openai_key}}
+            DEPLOY_ASSISTANT: ${{ needs.conditions.outputs.deploy_assistant }}
+        secrets: inherit 
+  destroy_acme_fitness_infra:
+    needs:  [deploy_infrastructure_baseline,
+            deploy_lz_enterprise, 
+            conditions,
+            deploy_fitness_apps]
+    name: Tear Down Acme Fitness Store
+    uses: ./.github/workflows/fitness_infrastructure_tear_down.yml
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+      SPRING_APPS_RG: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_rg}}
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}
+      SPOKE_RG: ${{ needs.deploy_infrastructure_baseline.outputs.spoke_rg}}
+      SHARED_RG: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
+      PRIVATE_DNS_RG: ${{ needs.deploy_infrastructure_baseline.outputs.private_dns_rg}}
+    secrets: inherit
+  destroy_lz_enterprise:
+    needs: [conditions, destroy_acme_fitness_infra,deploy_lz_enterprise, deploy_infrastructure_baseline]
+    name: Tear Down 06 LZ Spring Apps Enterprise
+    uses: ./.github/workflows/template_asa_enterprise_tear_down.yml
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+      SPRING_APPS_RESOURCE_GROUP: ${{needs.deploy_lz_enterprise.outputs.spring_apps_rg}}
+      SPRING_APPS_SERVICE_NAME: ${{ needs.deploy_lz_enterprise.outputs.spring_apps_service_name}}
+      SHARED_RESOURCE_GROUP: ${{ needs.deploy_infrastructure_baseline.outputs.shared_rg}}
+      JUMP_HOST_NAME: ${{ needs.deploy_infrastructure_baseline.outputs.jump_host_name }}
+    secrets: inherit
+  destroy_infrastructure_baseline:
+    name: Tear Down ASA Secure Baseline
+    needs: [conditions,destroy_lz_enterprise]
+    uses: ./.github/workflows/template_asa_baseline_infrastructure_tear_down.yml
+    if: ${{ always() && needs.conditions.outputs.destroy == 'true'}}
+    with:
+      TFSTATE_RG: ${{ vars.TFSTATE_RG }}
+      STORAGEACCOUNTNAME: ${{vars.STORAGEACCOUNTNAME}}
+      CONTAINERNAME: ${{ vars.CONTAINERNAME_ENTERPRISE}}
+      NAME_PREFIX: ${{needs.conditions.outputs.NAME_PREFIX}}
+      ENVIRONMENT: ${{needs.conditions.outputs.ENVIRONMENT}}
+      REGION: ${{ needs.conditions.outputs.REGION }}
+      SPRINGAPPS_SPN_OBJECT_ID: ${{ vars.SPRINGAPPS_SPN_OBJECT_ID}}
+      JUMP_BOX_USERNAME: ${{needs.conditions.outputs.jumpbox_username}}
+      DEPLOY_FIREWALL: ${{ needs.conditions.outputs.DEPLOY_FIREWALL}}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID}}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID}}
+    secrets: inherit

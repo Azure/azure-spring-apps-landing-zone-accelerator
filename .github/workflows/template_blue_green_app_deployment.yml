@@ -1,0 +1,96 @@
+name: Template Blue Green Deployment for Enterprise
+on:
+    workflow_call:
+        inputs:
+            SUBSCRIPTION_ID:
+                required: true
+                type: string
+            ASA_SERVICE_NAME:
+                required: true
+                type: string
+            ASA_RG:
+                required: true
+                type: string
+            ASA_APP_NAME:
+              required: true
+              type: string
+            REPOSITORY_PATH:
+              required: true
+              type: string
+            SOURCE_PATH:
+              required: true
+              type: string
+            DEPLOYMENT_ENVIRONMENT_SETTINGS:
+              type: string
+              default: ""
+            CONFIG_FILE_PATTERN:
+              type: string
+              default: ""
+            BUILD_ENV:
+              type: string
+              default: ""
+            AZURE_CLIENT_ID:
+              type: string
+              default: ""
+            AZURE_TENANT_ID:
+              type: string
+              default: ""
+        secrets:
+            AZURE_CREDENTIALS:
+                required: true
+jobs:
+    deploy:
+        name: ${{inputs.ASA_APP_NAME }} Blue Green Deployment
+        runs-on: ubuntu-latest
+        env:
+          ENVITONMENT_VARS_COMMAND: --env ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS}}
+          BUILD_ENV_COMMAND: --build-env "${{inputs.BUILD_ENV}}"
+          CONFIG_FILE_PATTERN: --config-file-pattern "${{ inputs.CONFIG_FILE_PATTERN}}"
+        steps:
+        - uses: actions/checkout@v3
+          with:
+            repository: ${{inputs.REPOSITORY_PATH}}
+            path: to-deploy-folder
+            ref: Azure
+        - name: Set up Azure
+          uses: azure/login@v1
+          with:
+             client-id: ${{ inputs.AZURE_CLIENT_ID }}
+             tenant-id: ${{ inputs.AZURE_TENANT_ID }}
+             subscription-id: ${{ inputs.SUBSCRIPTION_ID }}
+        - name: Set up Azure Spring Extension
+          run: |
+            az extension add --name spring 
+            az account set --subscription ${{ inputs.SUBSCRIPTION_ID }} 
+            az configure --defaults group=${{ inputs.ASA_RG}} spring=${{inputs.ASA_SERVICE_NAME}} 
+        - name: Lookup Staging Deployment Name
+          run: |
+            echo "STAGING_APP=$(az spring app deployment list --resource-group ${{ inputs.ASA_RG}} --service "${{inputs.ASA_SERVICE_NAME}}" --app ${{inputs.ASA_APP_NAME}} --query "[?properties.active==\`false\`].name" --output tsv)" >> $GITHUB_ENV
+        - name: Deploy App
+          run: |
+            echo ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS != ''}}
+            echo ${{inputs.BUILD_ENV != ''}}
+            echo ${{ inputs.CONFIG_FILE_PATTERN != ''}}
+            az account set --subscription ${{ inputs.SUBSCRIPTION_ID }}
+            az spring app deploy \
+                --name ${{inputs.ASA_APP_NAME}} \
+                --deployment $STAGING_APP \
+                ${{ inputs.DEPLOYMENT_ENVIRONMENT_SETTINGS != '' && env.ENVITONMENT_VARS_COMMAND || ''}} \
+                ${{inputs.BUILD_ENV != '' && env.BUILD_ENV_COMMAND || ''}} \
+                ${{ inputs.CONFIG_FILE_PATTERN != '' &&  env.CONFIG_FILE_PATTERN || ''}} \
+                --source-path "${{ github.workspace }}/to-deploy-folder/${{inputs.SOURCE_PATH}}"
+        - name: Test Staging Deployment
+          run: |
+            echo "Testing Staging Endpoint"
+        - name: Update Spring Gateway Routes
+          if: ${{inputs.ASA_APP_NAME != 'payment-service'}}
+          run: |
+            az spring gateway route-config update \
+              --name ${{inputs.ASA_APP_NAME}} \
+              --app-name ${{inputs.ASA_APP_NAME}} \
+              --routes-file ${{ github.workspace }}/to-deploy-folder/azure-spring-apps-enterprise/resources/json/routes/${{inputs.ASA_APP_NAME}}.json
+        - name: Active Staging Deployment
+          run: |
+            az spring app set-deployment \
+                --name ${{inputs.ASA_APP_NAME}} \
+                --deployment $STAGING_APP 

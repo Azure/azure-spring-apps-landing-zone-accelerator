@@ -1,0 +1,98 @@
+name: Template ASA Enterprise Service Deployment
+on:
+    workflow_call:        
+      inputs:
+        NAME_PREFIX: 
+            required: true
+            type: string
+        ENVIRONMENT: 
+            required: true
+            type: string
+        REGION:
+            required: true
+            type: string
+        TFSTATE_RG:
+            required: true
+            type: string
+        STORAGEACCOUNTNAME:
+            required: true
+            type: string
+        CONTAINERNAME:
+            required: true
+            type: string
+        AZURE_CLIENT_ID:
+          required: true
+          type: string
+        AZURE_SUBSCRIPTION_ID:
+          required: true
+          type: string
+        AZURE_TENANT_ID:
+          required: true
+          type: string
+        SPRINGAPPS_SPN_OBJECT_ID:
+          required: true
+          type: string
+      secrets:
+        AZURE_CLIENT_SECRET:
+          required: true
+      outputs:
+        spring_apps_service_name:
+            value: ${{jobs.deploy_lz_enterprise.outputs.spring_apps_service_name}}
+        spring_apps_rg:
+            value: ${{ jobs.deploy_lz_enterprise.outputs.spring_apps_rg }}
+env:
+    TFSTATE_RG: ${{inputs.TFSTATE_RG}}
+    STORAGEACCOUNTNAME: ${{inputs.STORAGEACCOUNTNAME}}
+    CONTAINERNAME: ${{ inputs.CONTAINERNAME}}
+    NAME_PREFIX: ${{inputs.NAME_PREFIX}}
+    ENVIRONMENT: ${{inputs.ENVIRONMENT}}
+    REGION: ${{ inputs.REGION }}
+    SPRINGAPPS_SPN_OBJECT_ID: ${{ inputs.SPRINGAPPS_SPN_OBJECT_ID }}
+
+    # ==== Terraform Azure Login ===:
+    ARM_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }} 
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    ARM_SUBSCRIPTION_ID: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+    ARM_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
+
+jobs:
+  deploy_lz_enterprise:
+    name: 06-LZ-SpringApps-Enterprise
+    runs-on: ubuntu-latest
+    outputs:
+      spring_apps_service_name: ${{ steps.output.outputs.spring_apps_service_name }}
+      spring_apps_rg: ${{ steps.output-apps-rg.outputs.spring_apps_rg }}
+    defaults:
+      run:
+        working-directory: Scenarios/ASA-Secure-Baseline/Terraform/06-LZ-SpringApps-Enterprise
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: |
+          terraform init \
+          -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+          -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -backend-config="container_name=${{ env.CONTAINERNAME }}"
+      - name: Terraform Plan
+        run: |
+          terraform plan -out my.plan \
+          -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+          -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+          -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+          -var="location=${{ env.REGION }}" \
+          -var="name_prefix=${{ env.NAME_PREFIX }}" \
+          -var="environment=${{ env.ENVIRONMENT }}" \
+          -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
+      - name: Terraform Apply
+        run: terraform apply my.plan
+      - name: Terraform Output
+        id: output
+        run: echo spring_apps_service_name=$(terraform output -raw spring_apps_service_name) >> $GITHUB_OUTPUT
+      - name: Terraform Output
+        id: output-apps-rg
+        run: echo spring_apps_rg=$(terraform output -raw spring_apps_rg) >> $GITHUB_OUTPUT

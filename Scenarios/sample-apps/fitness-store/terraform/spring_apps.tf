@@ -147,7 +147,7 @@ resource "azurerm_spring_cloud_app" "asa_app_service_bind" {
 
 # Create ASA Apps Deployment
 resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment" {
-  name = "default"
+  name = "blue"
   spring_cloud_app_id = concat(azurerm_spring_cloud_app.asa_app_service,
   azurerm_spring_cloud_app.asa_app_service_bind)[count.index].id
   build_result_id = "<default>"
@@ -168,6 +168,21 @@ resource "azurerm_spring_cloud_active_deployment" "asa_app_deployment_activation
   count = sum([length(var.asa_apps), length(var.asa_apps_bind)])
 }
 
+
+# Create ASA Apps Deployment
+resource "azurerm_spring_cloud_build_deployment" "asa_app_deployment_staging" {
+  name = "green"
+  spring_cloud_app_id = concat(azurerm_spring_cloud_app.asa_app_service,
+  azurerm_spring_cloud_app.asa_app_service_bind)[count.index].id
+  build_result_id = "<default>"
+
+  quota {
+    cpu    = "1"
+    memory = "1Gi"
+  }
+  count = sum([length(var.asa_apps), length(var.asa_apps_bind)])
+}
+
 # Postgres Flexible Server Connector for Order Service
 resource "azurerm_spring_cloud_connection" "asa_app_order_connection" {
   name               = "order_service_db"
@@ -181,10 +196,38 @@ resource "azurerm_spring_cloud_connection" "asa_app_order_connection" {
   }
 }
 
+# Postgres Flexible Server Connector for Order Service
+resource "azurerm_spring_cloud_connection" "asa_app_order_connection_staging" {
+  name               = "order_service_db"
+  spring_cloud_id    = azurerm_spring_cloud_build_deployment.asa_app_deployment_staging[0].id
+  target_resource_id = azurerm_postgresql_flexible_server_database.postgres_order_service_db.id
+  client_type        = "dotnet"
+  authentication {
+    type   = "secret"
+    name   = random_password.admin.result
+    secret = random_password.password.result
+  }
+}
+
 # Postgres Flexible Server Connector for Catalog Service
 resource "azurerm_spring_cloud_connection" "asa_app_catalog_connection" {
   name               = "catalog_service_db"
   spring_cloud_id    = azurerm_spring_cloud_build_deployment.asa_app_deployment[3].id
+  target_resource_id = azurerm_postgresql_flexible_server_database.postgres_catalog_service_db.id
+  client_type        = "springBoot"
+
+  authentication {
+    type   = "secret"
+    name   = random_password.admin.result
+    secret = random_password.password.result
+  }
+
+}
+
+# Postgres Flexible Server Connector for Catalog Service
+resource "azurerm_spring_cloud_connection" "asa_app_catalog_connection_staging" {
+  name               = "catalog_service_db"
+  spring_cloud_id    = azurerm_spring_cloud_build_deployment.asa_app_deployment_staging[3].id
   target_resource_id = azurerm_postgresql_flexible_server_database.postgres_catalog_service_db.id
   client_type        = "springBoot"
 

@@ -1,0 +1,193 @@
+name: Template Tear Down ASA Baseline Infrastructure
+on:
+    workflow_call:        
+      inputs:
+        NAME_PREFIX: 
+            required: true
+            type: string
+        ENVIRONMENT: 
+            required: true
+            type: string
+        REGION:
+            required: true
+            type: string
+        TFSTATE_RG:
+            required: true
+            type: string
+        STORAGEACCOUNTNAME:
+            required: true
+            type: string
+        CONTAINERNAME:
+            required: true
+            type: string
+        SPRINGAPPS_SPN_OBJECT_ID:
+          required: true
+          type: string
+        JUMP_BOX_USERNAME:
+          required: true
+          type: string
+        DEPLOY_FIREWALL:
+          required: true
+          type: string
+        AZURE_CLIENT_ID:
+          required: true
+          type: string
+        AZURE_SUBSCRIPTION_ID:
+          required: true
+          type: string
+        AZURE_TENANT_ID:
+          required: true
+          type: string
+      secrets:
+        JUMP_BOX_PASSWORD:
+          required: true
+        AZURE_CLIENT_SECRET:
+          required: true
+     
+env:
+    TFSTATE_RG: ${{inputs.TFSTATE_RG}}
+    STORAGEACCOUNTNAME: ${{inputs.STORAGEACCOUNTNAME}}
+    CONTAINERNAME: ${{ inputs.CONTAINERNAME}}
+    NAME_PREFIX: ${{inputs.NAME_PREFIX}}
+    ENVIRONMENT: ${{inputs.ENVIRONMENT}}
+    REGION: ${{ inputs.REGION }}
+    SPRINGAPPS_SPN_OBJECT_ID: ${{ inputs.SPRINGAPPS_SPN_OBJECT_ID}}
+    JUMP_BOX_USERNAME: ${{inputs.JUMP_BOX_USERNAME}}
+    DEPLOY_FIREWALL: ${{ inputs.DEPLOY_FIREWALL}}
+    
+    # ==== Terraform Azure Login ===:
+    ARM_CLIENT_ID: ${{ inputs.AZURE_CLIENT_ID }} 
+    ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    ARM_SUBSCRIPTION_ID: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+    ARM_TENANT_ID: ${{ inputs.AZURE_TENANT_ID }}
+
+jobs:
+    destroy_hub_firewall:
+      name: Destroy 05 Hub Firewall
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: Scenarios/ASA-Secure-Baseline/Terraform/05-Hub-AzureFirewall
+      steps:
+        - name: Checkout this repository
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2.0.3
+          with:
+            terraform_wrapper: false
+        - name: Terraform Init
+          run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+            -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -backend-config="container_name=${{ env.CONTAINERNAME }}"
+        - name: Terraform Plan
+          run: |
+            terraform plan -destroy -out my.plan \
+            -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+            -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+            -var="location=${{ env.REGION }}" \
+            -var="name_prefix=${{ env.NAME_PREFIX }}" \
+            -var="environment=${{ env.ENVIRONMENT }}" \
+            -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
+        - name: Terraform Apply
+          run: terraform apply my.plan
+    destroy_lz_shared:
+      needs: [destroy_hub_firewall]
+      name: Destroy 04 LZ Shared Resources
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: Scenarios/ASA-Secure-Baseline/Terraform/04-LZ-SharedResources
+      steps:
+        - name: Checkout this repository
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2.0.3
+          with:
+            terraform_wrapper: false
+        - name: Terraform Init
+          run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+            -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -backend-config="container_name=${{ env.CONTAINERNAME }}"
+        - name: Terraform Plan
+          run: |
+            terraform plan -destroy -out my.plan \
+            -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+            -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+            -var="location=${{ env.REGION }}" \
+            -var="name_prefix=${{ env.NAME_PREFIX }}" \
+            -var="environment=${{ env.ENVIRONMENT }}" \
+            -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}" \
+            -var="jump_host_admin_username=${{ env.JUMP_BOX_USERNAME }}" \
+            -var="jump_host_password=${{ secrets.JUMP_BOX_PASSWORD}}"
+        - name: Terraform Apply
+          run: terraform apply my.plan
+    destroy_lz_network:
+      needs: [destroy_lz_shared]
+      name: Destroy 03 LZ Network
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: Scenarios/ASA-Secure-Baseline/Terraform/03-LZ-Network
+      steps:
+        - name: Checkout this repository
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2.0.3
+          with:
+            terraform_wrapper: false
+        - name: Terraform Init
+          run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+            -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -backend-config="container_name=${{ env.CONTAINERNAME }}"
+        - name: Terraform Plan
+          run: |
+            terraform plan -destroy -out my.plan \
+            -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+            -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+            -var="location=${{ env.REGION }}" \
+            -var="name_prefix=${{ env.NAME_PREFIX }}" \
+            -var="environment=${{ env.ENVIRONMENT }}" \
+            -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
+        - name: Terraform Apply
+          run: terraform apply my.plan
+    destroy_hub_network:
+      name: Destroy 02 Hub Network
+      needs: [destroy_lz_network]
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: Scenarios/ASA-Secure-Baseline/Terraform/02-Hub-Network
+      steps:
+        - name: Checkout this repository
+          uses: actions/checkout@v3
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2.0.3
+          with:
+            terraform_wrapper: false
+        - name: Terraform Init
+          run: |
+            terraform init \
+            -backend-config="resource_group_name=${{ env.TFSTATE_RG }}" \
+            -backend-config="storage_account_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -backend-config="container_name=${{ env.CONTAINERNAME }}"
+        - name: Terraform Plan
+          run: |
+            terraform plan -destroy -out my.plan \
+            -var="state_sa_rg=${{ env.TFSTATE_RG }}" \
+            -var="state_sa_name=${{ env.STORAGEACCOUNTNAME }}" \
+            -var="state_sa_container_name=${{ env.CONTAINERNAME }}" \
+            -var="location=${{ env.REGION }}" \
+            -var="name_prefix=${{ env.NAME_PREFIX }}" \
+            -var="environment=${{ env.ENVIRONMENT }}" \
+            -var="SPRINGAPPS_SPN_OBJECT_ID=${{ env.SPRINGAPPS_SPN_OBJECT_ID }}"
+        - name: Terraform Apply
+          run: terraform apply my.plan

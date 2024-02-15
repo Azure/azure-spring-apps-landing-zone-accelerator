@@ -91,9 +91,9 @@ Switch to the Variables tab and create the following variables
 
 | Variable Name              | Value                                                                                                               |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `AZURE_CLIENT_ID`          | Your tenant id can be found in Azure Active Directory                                                               |
+| `AZURE_CLIENT_ID`          | Your Service Principal Client ID                                                                                    |
 | `AZURE_SUBSCRIPTION_ID`    | Your subscription id                                                                                                |
-| `AZURE_TENANT_ID`          | Your Service Principal Client ID                                                                                    |
+| `AZURE_TENANT_ID`          | Your tenant id can be found in Azure Active Directory                                                               |
 | `STORAGEACCOUNTNAME`       | Storage Account for storing terraform state                                                                         |
 | `TFSTATE_RG`               | Resource group where Storage Account is located for storing terraform state                                         |
 | `CONTAINERNAME_ENTERPRISE` | Container in the Storage Account for storing terraform state                                                        |
@@ -115,6 +115,17 @@ Optionally you may set the following variables to control the behavoir of the wo
 | `DEPLOY_FIREWALL_ENTERPRISE` | Optionally deploy Azure firewall : true or false                                   | false         |
 | `DESTROY_ENTERPRISE`         | Optionally destroy the resources : true or false                                   | false         |
 
+
+## Optional Fit Assitant with Azure OpenAI 
+
+Optionally you may include the Fit Assistant powered by Azure OpenAI.
+
+To deploy the Fit Assistant add the following variable to you Action variables and set it to `true`:
+| Variable Name      | Value                                                                          | Default Value |
+| ------------------ | ------------------------------------------------------------------------------ | ------------- |
+| `DEPLOY_ASSISTANT` | Will create resources for Fit Assistant(Azure OpenAI account with Deployments) | false         |
+## [Prerequisite]
+ * You must have access to Azure OpenAI and the ability to create Azure OpenAI Services
 
 
 ## Find the Object ID for Spring Apps Service Principal
